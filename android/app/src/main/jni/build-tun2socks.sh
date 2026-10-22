@@ -3,6 +3,10 @@
 # Run from Git Bash after updating jni/hev-socks5-tunnel:
 #   android/app/src/main/jni/build-tun2socks.sh
 #
+# The source isn't committed (see .gitignore). To get it:
+#   git clone --depth 1 --branch 2.19.1 --recursive --shallow-submodules \
+#       https://github.com/heiher/hev-socks5-tunnel.git android/app/src/main/jni/hev-socks5-tunnel
+#
 # Note for Windows: the library's git repos contain symlinked headers. Clone with
 # `git -c core.symlinks=true clone --recursive ...` (needs Developer Mode), or replace each
 # symlink placeholder file with a copy of its target before building.

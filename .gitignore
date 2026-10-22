@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Vendored tun2socks source (hev-socks5-tunnel 2.19.1); only needed to rebuild jniLibs.
+# See android/app/src/main/jni/build-tun2socks.sh
+/android/app/src/main/jni/hev-socks5-tunnel/

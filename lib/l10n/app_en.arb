@@ -1,0 +1,125 @@
+{
+  "@@locale": "en",
+  "appTitle": "Share Link",
+  "start": "START",
+  "stop": "STOP",
+  "statusStopped": "Stopped",
+  "statusStarting": "Starting…",
+  "statusRunning": "Running",
+  "statusError": "Error",
+  "hintStopped": "Connect this phone to Wi-Fi, then tap Start to share it.",
+  "networkName": "Network name",
+  "password": "Password",
+  "proxyIp": "Proxy IP",
+  "proxyPort": "Proxy port",
+  "copy": "Copy",
+  "copied": "{label} copied",
+  "@copied": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "connections": "Connections",
+  "upload": "Upload",
+  "download": "Download",
+  "wifiLost": "This phone lost its Wi-Fi connection. Sharing resumes when it reconnects.",
+  "permissionRequired": "Wi-Fi Direct permission is required to share the connection.",
+  "settingsAction": "Settings",
+
+  "errorPermissionDenied": "Wi-Fi Direct permission was denied. Allow it in the app settings.",
+  "errorLocationDisabled": "Location is turned off. Android needs it on for Wi-Fi Direct.",
+  "errorWifiDisabled": "Wi-Fi is turned off. Turn it on and connect to a network.",
+  "errorWifiNotConnected": "This phone is not connected to a Wi-Fi network with internet.",
+  "errorP2pUnsupported": "This phone does not support Wi-Fi Direct.",
+  "errorP2pBusy": "Wi-Fi Direct is busy. Turn Wi-Fi off and on, then try again.",
+  "errorInvalidSettings": "The network name or password is invalid.",
+  "errorServiceFailed": "Could not start the background service.",
+  "errorPortInUse": "The proxy port is already used by another app. Choose a different port in Settings.",
+  "errorProxyFailed": "Could not start the proxy server.",
+  "errorGeneric": "Could not create the Wi-Fi Direct group.",
+  "openAppSettings": "App settings",
+  "openLocationSettings": "Location settings",
+  "openWifiSettings": "Wi-Fi settings",
+
+  "qrTitle": "Scan to join",
+  "qrCaption": "Scan with the other phone's camera to join the network. You still need to set the proxy (see the guide below).",
+
+  "guideTitle": "How to connect the other phone",
+  "guideStep1": "Open Wi-Fi settings and join \"{ssid}\", or scan the QR code.",
+  "@guideStep1": {
+    "placeholders": {
+      "ssid": { "type": "String" }
+    }
+  },
+  "guideStep2": "Enter the password: {password}",
+  "@guideStep2": {
+    "placeholders": {
+      "password": { "type": "String" }
+    }
+  },
+  "guideStep3": "Tap the gear icon (or long-press the network), then Modify / Advanced options.",
+  "guideStep4": "Set Proxy to Manual: host {host}, port {port}. Leave the bypass list empty and save.",
+  "@guideStep4": {
+    "placeholders": {
+      "host": { "type": "String" },
+      "port": { "type": "String" }
+    }
+  },
+  "guideStep5": "If the phone says \"No internet\", choose to stay connected. Browsing still works.",
+  "guideNote": "Browsers and most apps use the proxy. Some games, calls and VPN apps ignore it and won't work.",
+
+  "settingsTitle": "Settings",
+  "sectionNetwork": "Wi-Fi Direct network",
+  "networkNameHelper": "Full name: {fullName}",
+  "@networkNameHelper": {
+    "placeholders": {
+      "fullName": { "type": "String" }
+    }
+  },
+  "customNetworkUnsupported": "On this Android version the system picks the network name and password automatically. Only the port can be changed.",
+  "passwordHelper": "8–63 characters",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "generatePassword": "Generate password",
+  "portHelper": "1024–65535 (default 8282)",
+  "save": "Save",
+  "saved": "Settings saved",
+  "restartToApply": "Settings saved. Restart sharing to apply them.",
+  "restart": "Restart",
+  "sectionLanguage": "Language",
+  "languageSystem": "System",
+  "languageEnglish": "English",
+  "languageArabic": "العربية",
+  "sectionBattery": "Battery",
+  "batteryRestricted": "Battery optimization is on",
+  "batteryRestrictedBody": "Android may stop sharing while the screen is off. Allow the app to run in the background.",
+  "batteryAllow": "Allow",
+  "batteryUnrestricted": "Battery optimization is off",
+  "batteryUnrestrictedBody": "Sharing can keep running in the background.",
+  "errorInvalidName": "Enter a network name.",
+  "errorNameTooLong": "The name is too long (the full name must fit in 32 bytes).",
+  "errorInvalidPassword": "Use 8–63 English letters, numbers or symbols.",
+  "errorInvalidPort": "Use a port between 1024 and 65535.",
+
+  "modeShare": "Share Wi-Fi",
+  "modeConnect": "Connect",
+  "connect": "CONNECT",
+  "disconnect": "DISCONNECT",
+  "clientDisconnected": "Disconnected",
+  "clientConnecting": "Connecting…",
+  "clientConnected": "Connected",
+  "clientPhoneA": "Connected to Phone A",
+  "clientPortHelper": "The port shown on Phone A (default 8282)",
+  "clientStepsTitle": "Use this phone with Phone A's internet",
+  "clientStep1": "In Wi-Fi settings, join the \"DIRECT-…\" network shown on Phone A (password or QR code).",
+  "clientStep2": "If you set a manual proxy on that network before, set Proxy back to None.",
+  "clientStep3": "Tap CONNECT and accept the VPN request. All apps (WhatsApp, Telegram, banking) then use Phone A's internet.",
+  "clientBankNote": "A few banking apps refuse to open while any VPN is on. That is the bank's security policy and can't be changed by this app.",
+  "errorVpnDenied": "VPN permission was not given. Tap CONNECT again and choose OK.",
+  "errorNotOnDirect": "This phone isn't connected to Phone A's \"DIRECT-…\" network. Join it in Wi-Fi settings first.",
+  "errorHostUnreachable": "Can't reach Phone A. Make sure sharing is running on Phone A and the port matches.",
+  "errorVpnFailed": "Could not start the VPN tunnel.",
+  "errorConnectionLost": "The connection to Phone A was lost. Rejoin its Wi-Fi network and connect again.",
+  "guideRecommended": "Best option: install Share Link on the other phone too. Join this network, choose \"Connect\" at the top and tap CONNECT. Every app works, including WhatsApp, Telegram and banking apps.",
+  "guideManualTitle": "Without the app (browsers and some apps only):"
+}

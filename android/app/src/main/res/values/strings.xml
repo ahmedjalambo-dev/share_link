@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Share Link</string>
+    <string name="notif_channel_name">Wi-Fi sharing</string>
+    <string name="notif_title">Sharing Wi-Fi</string>
+    <string name="notif_starting">Starting Wi-Fi Direct…</string>
+    <string name="notif_running_text">Network: %1$s\nPassword: %2$s\nProxy: %3$s:%4$d</string>
+    <string name="notif_stop">Stop</string>
+</resources>

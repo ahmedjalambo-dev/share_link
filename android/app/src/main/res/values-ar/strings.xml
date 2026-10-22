@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Share Link</string>
+    <string name="notif_channel_name">مشاركة الواي فاي</string>
+    <string name="notif_title">جارٍ مشاركة الواي فاي</string>
+    <string name="notif_starting">جارٍ تشغيل Wi-Fi Direct…</string>
+    <string name="notif_running_text">الشبكة: %1$s\nكلمة المرور: %2$s\nالبروكسي: %3$s:%4$d</string>
+    <string name="notif_stop">إيقاف</string>
+</resources>

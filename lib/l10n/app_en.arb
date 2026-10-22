@@ -121,5 +121,15 @@
   "errorVpnFailed": "Could not start the VPN tunnel.",
   "errorConnectionLost": "The connection to Phone A was lost. Rejoin its Wi-Fi network and connect again.",
   "guideRecommended": "Best option: install Share Link on the other phone too. Join this network, choose \"Connect\" at the top and tap CONNECT. Every app works, including WhatsApp, Telegram and banking apps.",
-  "guideManualTitle": "Without the app (browsers and some apps only):"
+  "guideManualTitle": "Without the app (browsers and some apps only):",
+
+  "clientNetworkTitle": "Phone A's network",
+  "clientAutoJoin": "Join automatically",
+  "clientAutoJoinHelp": "The app joins Phone A's Wi-Fi when you tap CONNECT and leaves it when you disconnect.",
+  "clientSsidHintAny": "Optional. Leave empty to choose Phone A's network from a list.",
+  "clientSsidHintExact": "Exactly as shown on Phone A.",
+  "clientJoining": "Joining Phone A's Wi-Fi…",
+  "clientAutoStep1": "Enter the password shown on Phone A (it's saved for next time).",
+  "clientAutoStep2": "Tap CONNECT. If Android asks, choose Phone A's network and allow the connection, then accept the VPN request.",
+  "errorJoinFailed": "Couldn't join Phone A's Wi-Fi. Make sure sharing is running on Phone A and the password is correct."
 }

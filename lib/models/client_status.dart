@@ -10,6 +10,7 @@ class ClientStatus {
     this.bytesDown = 0,
     this.errorCode,
     this.errorDetail,
+    this.joining = false,
   });
 
   static const disconnected = ClientStatus(kind: ClientStatusKind.disconnected);
@@ -25,6 +26,7 @@ class ClientStatus {
       bytesDown: map['bytesDown'] as int? ?? 0,
       errorCode: map['errorCode'] as String?,
       errorDetail: map['errorDetail'] as String?,
+      joining: map['joining'] == true,
     );
   }
 
@@ -37,6 +39,9 @@ class ClientStatus {
   final int bytesDown;
   final String? errorCode;
   final String? errorDetail;
+
+  /// True while connecting and the app is joining Phone A's Wi-Fi itself.
+  final bool joining;
 
   bool get isActive =>
       kind == ClientStatusKind.connecting || kind == ClientStatusKind.connected;

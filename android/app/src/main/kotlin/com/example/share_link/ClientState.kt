@@ -7,7 +7,11 @@ object ClientErrorCodes {
     const val HOST_UNREACHABLE = "host_unreachable"
     const val VPN_FAILED = "vpn_failed"
     const val CONNECTION_LOST = "connection_lost"
+    const val JOIN_FAILED = "join_failed"
 }
+
+/** A client-mode failure with the code shown to the user. */
+internal class ClientException(val code: String, message: String) : Exception(message)
 
 enum class ClientStatus(val wire: String) {
     DISCONNECTED("disconnected"),
@@ -24,6 +28,8 @@ data class ClientSnapshot(
     val bytesDown: Long = 0,
     val errorCode: String? = null,
     val errorDetail: String? = null,
+    /** True while connecting and the app is joining Phone A's Wi-Fi itself. */
+    val joining: Boolean = false,
 ) {
     fun toMap(): Map<String, Any?> = mapOf(
         "status" to status.wire,
@@ -33,6 +39,7 @@ data class ClientSnapshot(
         "bytesDown" to bytesDown,
         "errorCode" to errorCode,
         "errorDetail" to errorDetail,
+        "joining" to joining,
     )
 }
 

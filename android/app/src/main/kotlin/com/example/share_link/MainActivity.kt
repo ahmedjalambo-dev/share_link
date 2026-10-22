@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.net.VpnService
 import android.net.wifi.WifiManager
@@ -120,7 +121,7 @@ class MainActivity : FlutterActivity() {
             }
             "getClientStatus" -> result.success(ClientState.current.toMap())
             "prepareVpn" -> prepareVpn(result)
-            "connectClient" -> connectClient(call.argument<Int>("port") ?: settings.clientPort, result)
+            "connectClient" -> connectClient(call, result)
             "disconnectClient" -> {
                 ClientVpnService.disconnect(this)
                 ClientState.update { if (it.status == ClientStatus.ERROR) ClientSnapshot() else it }
@@ -162,16 +163,19 @@ class MainActivity : FlutterActivity() {
         if (!packageManager.hasSystemFeature(PackageManager.FEATURE_WIFI_DIRECT)) return ErrorCodes.P2P_UNSUPPORTED
         if (!hasRequiredPermissions()) return ErrorCodes.PERMISSION_DENIED
 
-        val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        if (!wifiManager.isWifiEnabled) return ErrorCodes.WIFI_DISABLED
+        if (!wifiManager().isWifiEnabled) return ErrorCodes.WIFI_DISABLED
         if (NetworkUtils.findWifiNetwork(this) == null) return ErrorCodes.WIFI_NOT_CONNECTED
-
-        // Android 12 and below only allow Wi-Fi Direct while Location is on.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-            val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            if (!LocationManagerCompat.isLocationEnabled(locationManager)) return ErrorCodes.LOCATION_DISABLED
-        }
+        if (locationRequiredButOff()) return ErrorCodes.LOCATION_DISABLED
         return null
+    }
+
+    private fun wifiManager() = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+    /** Android 12 and below only allow Wi-Fi Direct and Wi-Fi network requests while Location is on. */
+    private fun locationRequiredButOff(): Boolean {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) return false
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return !LocationManagerCompat.isLocationEnabled(locationManager)
     }
 
     // endregion
@@ -198,19 +202,45 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun connectClient(port: Int, result: MethodChannel.Result) {
-        if (port !in 1024..65535) {
-            result.error(ErrorCodes.INVALID_PORT, null, null)
+    /** Saves Phone B's connection details, runs the pre-checks and starts the VPN service. */
+    private fun connectClient(call: MethodCall, result: MethodChannel.Result) {
+        val port = call.argument<Int>("port") ?: settings.clientPort
+        val autoJoin = call.argument<Boolean>("autoJoin") ?: settings.clientAutoJoin
+        val invalid = settings.saveClient(
+            port,
+            call.argument<String>("ssid") ?: settings.clientSsid,
+            call.argument<String>("passphrase") ?: settings.clientPassphrase,
+            autoJoin,
+        )
+        if (invalid != null) {
+            result.error(invalid, null, null)
             return
         }
-        if (VpnService.prepare(this) != null) {
-            ClientState.update { ClientSnapshot(status = ClientStatus.ERROR, errorCode = ClientErrorCodes.VPN_DENIED) }
+        val error = when {
+            VpnService.prepare(this) != null -> ClientErrorCodes.VPN_DENIED
+            autoJoin -> joinPreflightError()
+            else -> null
+        }
+        if (error != null) {
+            ClientState.update { ClientSnapshot(status = ClientStatus.ERROR, errorCode = error) }
             result.success(false)
             return
         }
-        settings.clientPort = port
         ClientVpnService.connect(this, port)
         result.success(true)
+    }
+
+    /** Checks needed only when the app will join Phone A's network itself. */
+    private fun joinPreflightError(): String? {
+        val cm = getSystemService(ConnectivityManager::class.java)
+        if (cm != null && NetworkUtils.findDirectNetwork(cm) != null) return null // already joined
+        if (!hasRequiredPermissions()) return ErrorCodes.PERMISSION_DENIED
+        // From Android 10 apps can't turn Wi-Fi on; below that the joiner does it.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !wifiManager().isWifiEnabled) {
+            return ErrorCodes.WIFI_DISABLED
+        }
+        if (locationRequiredButOff()) return ErrorCodes.LOCATION_DISABLED
+        return null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

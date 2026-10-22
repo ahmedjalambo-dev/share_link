@@ -3,7 +3,6 @@ package com.example.share_link
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
-import android.net.LinkProperties
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
@@ -15,7 +14,6 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import java.io.File
 import java.io.IOException
-import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -26,14 +24,24 @@ import java.net.Socket
  */
 class ClientVpnService : VpnService() {
 
-    private class ClientException(val code: String, message: String) : Exception(message)
+    /**
+     * A running tunnel: the VPN interface, the DIRECT network it rides on, Phone A's address, and
+     * the joiner if the app joined that network itself (released on disconnect).
+     */
+    private class Session(
+        val fd: ParcelFileDescriptor,
+        val network: Network,
+        val host: String,
+        val joiner: DirectNetworkJoiner?,
+    )
 
-    /** A running tunnel: the VPN interface, the DIRECT network it rides on, and Phone A's address. */
-    private class Session(val fd: ParcelFileDescriptor, val network: Network, val host: String)
-
-    // All fields below are only touched on the main thread.
+    // All fields below are only touched on the main thread, except [pendingJoiner].
     private val mainHandler = Handler(Looper.getMainLooper())
     private var session: Session? = null
+
+    /** The join in progress on the connect thread, so [disconnect] can cancel Android's dialog. */
+    @Volatile
+    private var pendingJoiner: DirectNetworkJoiner? = null
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
     private var connecting = false
 
@@ -88,7 +96,8 @@ class ClientVpnService : VpnService() {
                         return@post
                     }
                     session = established
-                    watchNetwork(established.network)
+                    // A joined network reports its own loss through the joiner.
+                    if (established.joiner?.reportsLoss != true) watchNetwork(established.network)
                     ClientState.update {
                         it.copy(status = ClientStatus.CONNECTED, host = established.host, port = port)
                     }
@@ -106,9 +115,47 @@ class ClientVpnService : VpnService() {
     /** Runs on a background thread; touches no fields. On failure everything it set up is undone. */
     private fun establish(port: Int): Session {
         val cm = getSystemService(ConnectivityManager::class.java)
-        val (network, host) = findDirectNetwork(cm)
-            ?: throw ClientException(ClientErrorCodes.NOT_ON_DIRECT_NETWORK, "Not on a DIRECT- network")
+        var joiner: DirectNetworkJoiner? = null
+        try {
+            val (network, host) = NetworkUtils.findDirectNetwork(cm) ?: run {
+                val settings = ShareSettings(this)
+                if (!settings.clientAutoJoin) {
+                    throw ClientException(ClientErrorCodes.NOT_ON_DIRECT_NETWORK, "Not on a DIRECT- network")
+                }
+                val newJoiner = DirectNetworkJoiner(this)
+                joiner = newJoiner
+                joinPhoneA(newJoiner, settings)
+            }
+            return startTunnel(cm, network, host, port, joiner)
+        } catch (e: Throwable) {
+            joiner?.release()
+            throw e
+        } finally {
+            pendingJoiner = null
+        }
+    }
 
+    /** Joins Phone A's network with the saved name/password, showing "Joining…" meanwhile. */
+    private fun joinPhoneA(joiner: DirectNetworkJoiner, settings: ShareSettings): Pair<Network, InetAddress> {
+        pendingJoiner = joiner
+        ClientState.update { it.copy(joining = true) }
+        try {
+            return joiner.join(settings.clientSsid, settings.clientPassphrase) {
+                mainHandler.post { fail(ClientErrorCodes.CONNECTION_LOST, "Wi-Fi Direct network lost") }
+            }
+        } finally {
+            ClientState.update { if (it.status == ClientStatus.CONNECTING) it.copy(joining = false) else it }
+        }
+    }
+
+    /** Probes Phone A, then brings up the VPN and the native tunnel over [network]. */
+    private fun startTunnel(
+        cm: ConnectivityManager,
+        network: Network,
+        host: InetAddress,
+        port: Int,
+        joiner: DirectNetworkJoiner?,
+    ): Session {
         try {
             Socket().use { probe ->
                 network.bindSocket(probe)
@@ -154,31 +201,12 @@ class ClientVpnService : VpnService() {
                 closeQuietly(fd)
                 throw ClientException(ClientErrorCodes.VPN_FAILED, "Tunnel failed to start")
             }
-            return Session(fd, network, hostAddress)
+            return Session(fd, network, hostAddress, joiner)
         } catch (e: Throwable) {
             cm.bindProcessToNetwork(null)
             throw e
         }
     }
-
-    /** The Wi-Fi network on Phone A's Wi-Fi Direct subnet, and Phone A's address (its gateway). */
-    private fun findDirectNetwork(cm: ConnectivityManager): Pair<Network, InetAddress>? {
-        @Suppress("DEPRECATION")
-        for (network in cm.allNetworks) {
-            val caps = cm.getNetworkCapabilities(network) ?: continue
-            if (!caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) continue
-            val link = cm.getLinkProperties(network) ?: continue
-            val onDirectSubnet = link.linkAddresses.any {
-                it.address is Inet4Address && it.address.hostAddress?.startsWith(DIRECT_SUBNET_PREFIX) == true
-            }
-            if (onDirectSubnet) return network to (gatewayOf(link) ?: InetAddress.getByName(DIRECT_OWNER_IP))
-        }
-        return null
-    }
-
-    private fun gatewayOf(link: LinkProperties): InetAddress? =
-        link.routes.firstOrNull { it.isDefaultRoute && it.gateway is Inet4Address }?.gateway
-            ?.takeUnless { it.isAnyLocalAddress }
 
     private fun watchNetwork(network: Network) {
         val cm = getSystemService(ConnectivityManager::class.java) ?: return
@@ -236,6 +264,8 @@ class ClientVpnService : VpnService() {
 
     private fun disconnect() {
         if (connecting) cancelRequested = true
+        // Cancels a join still waiting on Android's dialog.
+        pendingJoiner?.release()
         mainHandler.removeCallbacks(statsTicker)
         networkCallback?.let {
             try {
@@ -250,11 +280,12 @@ class ClientVpnService : VpnService() {
         ClientState.update { if (it.status == ClientStatus.ERROR) it else ClientSnapshot() }
     }
 
-    /** Stops the tunnel, closes the VPN interface and releases the network binding. */
+    /** Stops the tunnel, closes the VPN interface, and leaves Phone A's network if we joined it. */
     private fun close(session: Session) {
         TProxyService.TProxyStopService()
         closeQuietly(session.fd)
         getSystemService(ConnectivityManager::class.java)?.bindProcessToNetwork(null)
+        session.joiner?.release()
     }
 
     companion object {

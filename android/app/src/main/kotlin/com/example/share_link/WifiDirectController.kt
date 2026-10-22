@@ -154,7 +154,7 @@ class WifiDirectController(context: Context) {
                 if (cancelled) return@requestConnectionInfo
                 val ip = info?.groupOwnerAddress?.hostAddress
                     ?: interfaceIpv4(group.`interface`)
-                    ?: DEFAULT_OWNER_IP
+                    ?: DIRECT_OWNER_IP
                 Log.i(TAG, "Group ready: ssid=$ssid ip=$ip")
                 onResult(Result.success(GroupDetails(ssid, pass, ip)))
             }
@@ -181,8 +181,6 @@ class WifiDirectController(context: Context) {
     }
 
     companion object {
-        private const val TAG = "ShareLink"
-        const val DEFAULT_OWNER_IP = "192.168.49.1"
         private const val MAX_CREATE_ATTEMPTS = 3
         private const val RETRY_DELAY_MS = 1000L
         private const val MAX_INFO_ATTEMPTS = 10

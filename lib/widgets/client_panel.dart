@@ -8,6 +8,7 @@ import '../models/client_status.dart';
 import '../services/share_channel.dart';
 import 'credential_tile.dart';
 import 'error_card.dart';
+import 'numbered_step.dart';
 import 'power_button.dart';
 import 'stats_card.dart';
 
@@ -153,25 +154,7 @@ class _ClientPanelState extends State<ClientPanel> {
             Text(l.clientStepsTitle, style: theme.textTheme.titleMedium),
             const SizedBox(height: 12),
             for (var i = 0; i < steps.length; i++)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      radius: 12,
-                      backgroundColor: theme.colorScheme.primaryContainer,
-                      foregroundColor: theme.colorScheme.onPrimaryContainer,
-                      child: Text(
-                        '${i + 1}',
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(child: Text(steps[i])),
-                  ],
-                ),
-              ),
+              NumberedStep(number: i + 1, text: steps[i]),
             Align(
               alignment: AlignmentDirectional.centerStart,
               child: OutlinedButton.icon(

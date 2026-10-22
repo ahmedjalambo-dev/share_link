@@ -1,8 +1,6 @@
 package com.example.share_link
 
-import java.util.concurrent.CopyOnWriteArraySet
-
-/** Error codes sent to Flutter; the UI maps them to localized messages. */
+/** Error codes sent to Flutter; the UI maps them to localized messages (lib/utils/messages.dart). */
 object ErrorCodes {
     const val PERMISSION_DENIED = "permission_denied"
     const val LOCATION_DISABLED = "location_disabled"
@@ -15,6 +13,12 @@ object ErrorCodes {
     const val SERVICE_FAILED = "service_failed"
     const val PORT_IN_USE = "port_in_use"
     const val PROXY_FAILED = "proxy_failed"
+
+    // Settings validation (ShareSettings.save)
+    const val INVALID_NAME = "invalid_name"
+    const val NAME_TOO_LONG = "name_too_long"
+    const val INVALID_PASSWORD = "invalid_password"
+    const val INVALID_PORT = "invalid_port"
 }
 
 enum class ShareStatus(val wire: String) {
@@ -53,27 +57,5 @@ data class ShareSnapshot(
     )
 }
 
-/** Process-wide sharing state, written by [ShareService] and observed by [MainActivity]. */
-object ShareState {
-    @Volatile
-    var current = ShareSnapshot()
-        private set
-
-    private val listeners = CopyOnWriteArraySet<(ShareSnapshot) -> Unit>()
-
-    @Synchronized
-    fun update(transform: (ShareSnapshot) -> ShareSnapshot) {
-        val next = transform(current)
-        if (next == current) return
-        current = next
-        listeners.forEach { it(next) }
-    }
-
-    fun addListener(listener: (ShareSnapshot) -> Unit) {
-        listeners.add(listener)
-    }
-
-    fun removeListener(listener: (ShareSnapshot) -> Unit) {
-        listeners.remove(listener)
-    }
-}
+/** Sharing state (Phone A), written by [ShareService]. */
+object ShareState : ObservableState<ShareSnapshot>(ShareSnapshot())

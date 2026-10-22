@@ -39,14 +39,8 @@ class MainActivity : FlutterActivity() {
         val messenger = flutterEngine.dartExecutor.binaryMessenger
 
         MethodChannel(messenger, CONTROL_CHANNEL).setMethodCallHandler(::onMethodCall)
-        stateChannel(
-            messenger, STATUS_CHANNEL, { ShareState.current }, ShareSnapshot::toMap,
-            ShareState::addListener, ShareState::removeListener,
-        )
-        stateChannel(
-            messenger, CLIENT_STATUS_CHANNEL, { ClientState.current }, ClientSnapshot::toMap,
-            ClientState::addListener, ClientState::removeListener,
-        )
+        stateChannel(messenger, STATUS_CHANNEL, ShareState, ShareSnapshot::toMap)
+        stateChannel(messenger, CLIENT_STATUS_CHANNEL, ClientState, ClientSnapshot::toMap)
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
@@ -59,14 +53,12 @@ class MainActivity : FlutterActivity() {
     private fun <T> stateChannel(
         messenger: BinaryMessenger,
         name: String,
-        current: () -> T,
+        state: ObservableState<T>,
         toMap: (T) -> Map<String, Any?>,
-        addListener: ((T) -> Unit) -> Unit,
-        removeListener: ((T) -> Unit) -> Unit,
     ) {
         var active: ((T) -> Unit)? = null
         val detach = {
-            active?.let(removeListener)
+            active?.let(state::removeListener)
             active = null
         }
         channelDetachers += detach
@@ -78,8 +70,8 @@ class MainActivity : FlutterActivity() {
                     mainHandler.post { if (active === listener) events.success(toMap(value)) }
                 }
                 active = listener
-                addListener(listener)
-                events.success(toMap(current()))
+                state.addListener(listener)
+                events.success(toMap(state.current))
             }
 
             override fun onCancel(arguments: Any?) = detach()
@@ -208,7 +200,7 @@ class MainActivity : FlutterActivity() {
 
     private fun connectClient(port: Int, result: MethodChannel.Result) {
         if (port !in 1024..65535) {
-            result.error("invalid_port", null, null)
+            result.error(ErrorCodes.INVALID_PORT, null, null)
             return
         }
         if (VpnService.prepare(this) != null) {

@@ -307,7 +307,6 @@ class ShareService : Service() {
     }
 
     companion object {
-        private const val TAG = "ShareLink"
         private const val ACTION_START = "com.example.share_link.action.START"
         private const val ACTION_STOP = "com.example.share_link.action.STOP"
         private const val CHANNEL_ID = "share_link_service"

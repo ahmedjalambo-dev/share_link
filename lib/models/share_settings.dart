@@ -1,3 +1,5 @@
+import '../utils/constants.dart';
+
 /// User settings stored on the native side (see ShareSettings.kt).
 class ShareSettingsData {
   const ShareSettingsData({
@@ -16,10 +18,10 @@ class ShareSettingsData {
       ssidPrefix: map['ssidPrefix'] as String? ?? 'DIRECT-',
       networkName: map['networkName'] as String? ?? '',
       passphrase: map['passphrase'] as String? ?? '',
-      port: map['port'] as int? ?? 8282,
+      port: map['port'] as int? ?? kDefaultPort,
       language: map['language'] as String? ?? 'system',
       mode: map['mode'] as String? ?? 'share',
-      clientPort: map['clientPort'] as int? ?? 8282,
+      clientPort: map['clientPort'] as int? ?? kDefaultPort,
       customNetworkSupported: map['customNetworkSupported'] == true,
     );
   }

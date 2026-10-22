@@ -14,11 +14,11 @@ class ErrorCard extends StatelessWidget {
   /// Settings screen that fixes the error, if any.
   static (String, String)? _action(AppLocalizations l, String? code) =>
       switch (code) {
-        'permission_denied' => (l.openAppSettings, 'app'),
-        'location_disabled' => (l.openLocationSettings, 'location'),
-        'wifi_disabled' ||
-        'wifi_not_connected' ||
-        'not_on_direct_network' => (l.openWifiSettings, 'wifi'),
+        ErrorCode.permissionDenied => (l.openAppSettings, 'app'),
+        ErrorCode.locationDisabled => (l.openLocationSettings, 'location'),
+        ErrorCode.wifiDisabled ||
+        ErrorCode.wifiNotConnected ||
+        ErrorCode.notOnDirectNetwork => (l.openWifiSettings, 'wifi'),
         _ => null,
       };
 

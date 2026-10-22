@@ -8,6 +8,7 @@ import '../app_locale.dart';
 import '../l10n/app_localizations.dart';
 import '../models/share_settings.dart';
 import '../services/share_channel.dart';
+import '../utils/constants.dart';
 import '../utils/messages.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -104,12 +105,11 @@ class _SettingsScreenState extends State<SettingsScreen>
   }
 
   void _generatePassword() {
-    const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
     final random = Random.secure();
     setState(() {
       _password.text = List.generate(
         10,
-        (_) => chars[random.nextInt(chars.length)],
+        (_) => kPasswordChars[random.nextInt(kPasswordChars.length)],
       ).join();
       _obscurePassword = false;
     });

@@ -60,10 +60,10 @@ class ShareSettings(context: Context) {
     /** Validates and stores the settings. Returns an error code, or null on success. */
     fun save(name: String, pass: String, newPort: Int): String? {
         val trimmed = name.trim()
-        if (trimmed.isEmpty()) return "invalid_name"
-        if ((ssidPrefix + trimmed).toByteArray(Charsets.UTF_8).size > MAX_SSID_BYTES) return "name_too_long"
-        if (pass.length !in 8..63 || pass.any { it.code !in 32..126 }) return "invalid_password"
-        if (newPort !in 1024..65535) return "invalid_port"
+        if (trimmed.isEmpty()) return ErrorCodes.INVALID_NAME
+        if ((ssidPrefix + trimmed).toByteArray(Charsets.UTF_8).size > MAX_SSID_BYTES) return ErrorCodes.NAME_TOO_LONG
+        if (pass.length !in 8..63 || pass.any { it.code !in 32..126 }) return ErrorCodes.INVALID_PASSWORD
+        if (newPort !in 1024..65535) return ErrorCodes.INVALID_PORT
         prefs.edit {
             putString(KEY_NAME, trimmed)
             putString(KEY_PASS, pass)

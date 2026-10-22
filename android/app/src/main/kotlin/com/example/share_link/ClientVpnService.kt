@@ -28,9 +28,12 @@ class ClientVpnService : VpnService() {
 
     private class ClientException(val code: String, message: String) : Exception(message)
 
+    /** A running tunnel: the VPN interface, the DIRECT network it rides on, and Phone A's address. */
+    private class Session(val fd: ParcelFileDescriptor, val network: Network, val host: String)
+
+    // All fields below are only touched on the main thread.
     private val mainHandler = Handler(Looper.getMainLooper())
-    private var tunnel: ParcelFileDescriptor? = null
-    private var directNetwork: Network? = null
+    private var session: Session? = null
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
     private var connecting = false
 
@@ -39,7 +42,7 @@ class ClientVpnService : VpnService() {
 
     private val statsTicker = object : Runnable {
         override fun run() {
-            if (tunnel == null) return
+            if (session == null) return
             val stats = TProxyService.TProxyGetStats()
             ClientState.update { it.copy(bytesUp = stats[1], bytesDown = stats[3]) }
             mainHandler.postDelayed(this, STATS_INTERVAL_MS)
@@ -69,7 +72,7 @@ class ClientVpnService : VpnService() {
     }
 
     private fun connect(port: Int) {
-        if (connecting || tunnel != null) return
+        if (connecting || session != null) return
         connecting = true
         ClientState.update { ClientSnapshot(status = ClientStatus.CONNECTING, port = port) }
         // Finding the network and probing Phone A block, so do it off the main thread.
@@ -77,15 +80,21 @@ class ClientVpnService : VpnService() {
             val result = runCatching { establish(port) }
             mainHandler.post {
                 connecting = false
-                if (cancelRequested) {
-                    cancelRequested = false
-                    disconnect()
-                    return@post
-                }
-                result.onSuccess { host ->
-                    ClientState.update { it.copy(status = ClientStatus.CONNECTED, host = host, port = port) }
+                val cancelled = cancelRequested
+                cancelRequested = false
+                result.onSuccess { established ->
+                    if (cancelled) {
+                        close(established)
+                        return@post
+                    }
+                    session = established
+                    watchNetwork(established.network)
+                    ClientState.update {
+                        it.copy(status = ClientStatus.CONNECTED, host = established.host, port = port)
+                    }
                     mainHandler.post(statsTicker)
                 }.onFailure { e ->
+                    if (cancelled) return@post
                     Log.e(TAG, "Client connect failed", e)
                     val code = (e as? ClientException)?.code ?: ClientErrorCodes.VPN_FAILED
                     fail(code, e.message)
@@ -94,8 +103,8 @@ class ClientVpnService : VpnService() {
         }, "client-connect").start()
     }
 
-    /** Runs on a background thread. Returns Phone A's address. */
-    private fun establish(port: Int): String {
+    /** Runs on a background thread; touches no fields. On failure everything it set up is undone. */
+    private fun establish(port: Int): Session {
         val cm = getSystemService(ConnectivityManager::class.java)
         val (network, host) = findDirectNetwork(cm)
             ?: throw ClientException(ClientErrorCodes.NOT_ON_DIRECT_NETWORK, "Not on a DIRECT- network")
@@ -120,35 +129,36 @@ class ClientVpnService : VpnService() {
         // Our own process is excluded from the VPN; make the tunnel's sockets use the DIRECT
         // network even if mobile data is the default network.
         cm.bindProcessToNetwork(network)
-        directNetwork = network
+        try {
+            val builder = Builder()
+                .setSession(getString(R.string.app_name))
+                .setMtu(TUNNEL_MTU)
+                .addAddress(TUNNEL_IPV4, 32)
+                .addAddress(TUNNEL_IPV6, 128)
+                .addRoute("0.0.0.0", 0)
+                .addRoute("::", 0)
+                .addDnsServer(MAPPED_DNS)
+                .addDisallowedApplication(packageName)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) builder.setMetered(false)
 
-        val builder = Builder()
-            .setSession(getString(R.string.app_name))
-            .setMtu(TUNNEL_MTU)
-            .addAddress(TUNNEL_IPV4, 32)
-            .addAddress(TUNNEL_IPV6, 128)
-            .addRoute("0.0.0.0", 0)
-            .addRoute("::", 0)
-            .addDnsServer(MAPPED_DNS)
-            .addDisallowedApplication(packageName)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) builder.setMetered(false)
-
-        val fd = builder.establish()
-            ?: throw ClientException(ClientErrorCodes.VPN_DENIED, "VPN permission not granted")
-        val started = try {
-            val config = writeConfig(host.hostAddress ?: DEFAULT_HOST, port)
-            TProxyService.TProxyStartService(config.absolutePath, fd.fd)
+            val fd = builder.establish()
+                ?: throw ClientException(ClientErrorCodes.VPN_DENIED, "VPN permission not granted")
+            val hostAddress = host.hostAddress ?: DIRECT_OWNER_IP
+            val started = try {
+                TProxyService.TProxyStartService(writeConfig(hostAddress, port).absolutePath, fd.fd)
+            } catch (e: Throwable) {
+                closeQuietly(fd)
+                throw ClientException(ClientErrorCodes.VPN_FAILED, "Tunnel failed to start: $e")
+            }
+            if (!started) {
+                closeQuietly(fd)
+                throw ClientException(ClientErrorCodes.VPN_FAILED, "Tunnel failed to start")
+            }
+            return Session(fd, network, hostAddress)
         } catch (e: Throwable) {
-            fd.close()
-            throw ClientException(ClientErrorCodes.VPN_FAILED, "Tunnel failed to start: $e")
+            cm.bindProcessToNetwork(null)
+            throw e
         }
-        if (!started) {
-            fd.close()
-            throw ClientException(ClientErrorCodes.VPN_FAILED, "Tunnel failed to start")
-        }
-        tunnel = fd
-        watchNetwork(cm, network)
-        return host.hostAddress ?: DEFAULT_HOST
     }
 
     /** The Wi-Fi network on Phone A's Wi-Fi Direct subnet, and Phone A's address (its gateway). */
@@ -161,7 +171,7 @@ class ClientVpnService : VpnService() {
             val onDirectSubnet = link.linkAddresses.any {
                 it.address is Inet4Address && it.address.hostAddress?.startsWith(DIRECT_SUBNET_PREFIX) == true
             }
-            if (onDirectSubnet) return network to (gatewayOf(link) ?: InetAddress.getByName(DEFAULT_HOST))
+            if (onDirectSubnet) return network to (gatewayOf(link) ?: InetAddress.getByName(DIRECT_OWNER_IP))
         }
         return null
     }
@@ -170,7 +180,8 @@ class ClientVpnService : VpnService() {
         link.routes.firstOrNull { it.isDefaultRoute && it.gateway is Inet4Address }?.gateway
             ?.takeUnless { it.isAnyLocalAddress }
 
-    private fun watchNetwork(cm: ConnectivityManager, network: Network) {
+    private fun watchNetwork(network: Network) {
+        val cm = getSystemService(ConnectivityManager::class.java) ?: return
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onLost(lost: Network) {
                 if (lost != network) return
@@ -226,38 +237,30 @@ class ClientVpnService : VpnService() {
     private fun disconnect() {
         if (connecting) cancelRequested = true
         mainHandler.removeCallbacks(statsTicker)
-        val cm = getSystemService(ConnectivityManager::class.java)
         networkCallback?.let {
             try {
-                cm?.unregisterNetworkCallback(it)
+                getSystemService(ConnectivityManager::class.java)?.unregisterNetworkCallback(it)
             } catch (e: IllegalArgumentException) {
                 // Already unregistered.
             }
         }
         networkCallback = null
-        tunnel?.let {
-            TProxyService.TProxyStopService()
-            try {
-                it.close()
-            } catch (e: IOException) {
-                // Ignore.
-            }
-        }
-        tunnel = null
-        if (directNetwork != null) {
-            cm?.bindProcessToNetwork(null)
-            directNetwork = null
-        }
+        session?.let(::close)
+        session = null
         ClientState.update { if (it.status == ClientStatus.ERROR) it else ClientSnapshot() }
     }
 
+    /** Stops the tunnel, closes the VPN interface and releases the network binding. */
+    private fun close(session: Session) {
+        TProxyService.TProxyStopService()
+        closeQuietly(session.fd)
+        getSystemService(ConnectivityManager::class.java)?.bindProcessToNetwork(null)
+    }
+
     companion object {
-        private const val TAG = "ShareLink"
         private const val ACTION_CONNECT = "com.example.share_link.action.CONNECT"
         private const val ACTION_DISCONNECT = "com.example.share_link.action.DISCONNECT"
         private const val EXTRA_PORT = "port"
-        private const val DEFAULT_HOST = "192.168.49.1"
-        private const val DIRECT_SUBNET_PREFIX = "192.168.49."
         private const val TUNNEL_MTU = 8500
         private const val TUNNEL_IPV4 = "198.18.0.1"
         private const val TUNNEL_IPV6 = "fc00::1"

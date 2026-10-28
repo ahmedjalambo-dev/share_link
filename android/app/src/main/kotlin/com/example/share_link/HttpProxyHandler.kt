@@ -17,6 +17,8 @@ internal class HttpProxyHandler(private val server: ProxyServer) {
         val target = parts[1]
         val version = parts[2]
 
+        if (isInfoRequest(method, target)) return sendInfo(client)
+
         if (method == "CONNECT") {
             val (host, port) = parseHostPort(target, 443) ?: return sendError(client, 400, "Bad Request")
             val upstream = openUpstream(client, host, port) ?: return
@@ -49,6 +51,24 @@ internal class HttpProxyHandler(private val server: ProxyServer) {
         null
     }
 
+    /** Tells Phone B this phone's network name, so it can rejoin without Android's picker. */
+    private fun sendInfo(client: Socket) {
+        val ssid = server.networkName() ?: return sendError(client, 404, "Not Found")
+        val body = buildInfoJson(ssid).toByteArray(Charsets.UTF_8)
+        val head = "HTTP/1.1 200 OK\r\n" +
+            "Content-Type: application/json\r\n" +
+            "Content-Length: ${body.size}\r\n" +
+            "Connection: close\r\n\r\n"
+        try {
+            client.getOutputStream().apply {
+                write(head.toByteArray(Charsets.ISO_8859_1))
+                write(body)
+            }
+        } catch (e: IOException) {
+            // Client already gone.
+        }
+    }
+
     private fun sendError(client: Socket, code: Int, reason: String) {
         val body = "$code $reason\n"
         val response = "HTTP/1.1 $code $reason\r\n" +
@@ -67,6 +87,28 @@ internal class HttpProxyHandler(private val server: ProxyServer) {
 // Pure parsing helpers (unit-tested in ProxyParsingTest).
 
 internal data class HttpTarget(val host: String, val port: Int, val path: String)
+
+/** Path Phone B requests directly from Phone A's proxy to learn its network name. */
+internal const val PHONE_A_INFO_PATH = "/.sharelink/info"
+
+/**
+ * True for Phone B's direct info request. Browsers using the proxy always send absolute URIs
+ * ("http://host/…"), so this exact origin-form path only arrives when the proxy itself is asked.
+ */
+internal fun isInfoRequest(method: String, target: String) = method == "GET" && target == PHONE_A_INFO_PATH
+
+/** `{"ssid":"…","v":1}` with the name JSON-escaped. */
+internal fun buildInfoJson(ssid: String): String {
+    val escaped = ssid.replace("\\", "\\\\").replace("\"", "\\\"")
+    return "{\"ssid\":\"$escaped\",\"v\":1}"
+}
+
+/** The network name from [buildInfoJson]'s output, or null if it isn't a DIRECT- name. */
+internal fun parseInfoSsid(json: String): String? {
+    val match = Regex(""""ssid"\s*:\s*"((?:[^"\\]|\\.)*)"""").find(json) ?: return null
+    val ssid = match.groupValues[1].replace(Regex("""\\(.)"""), "$1")
+    return ssid.takeIf { it.startsWith("DIRECT-") }
+}
 
 /** Reads the request line and headers (up to the blank line). Returns null on EOF or oversize. */
 internal fun readHead(input: InputStream): List<String>? {

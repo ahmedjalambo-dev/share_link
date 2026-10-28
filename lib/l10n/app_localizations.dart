@@ -697,6 +697,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t join Phone A\'s Wi-Fi. Make sure sharing is running on Phone A and the password is correct.'**
   String get errorJoinFailed;
+
+  /// No description provided for @clientReconnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting… (attempt {attempt})'**
+  String clientReconnecting(int attempt);
+
+  /// No description provided for @clientReconnectingHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone A can\'t be reached. Reconnecting automatically; apps resume by themselves. Tap DISCONNECT to stop.'**
+  String get clientReconnectingHelp;
 }
 
 class _AppLocalizationsDelegate

@@ -105,6 +105,9 @@ class ShareSettings(context: Context) {
         return null
     }
 
+    /** Remembers Phone A's exact network name, learned after connecting via Android's picker. */
+    fun saveClientSsid(ssid: String) = prefs.edit { putString(KEY_CLIENT_SSID, ssid) }
+
     /** WPA2 passphrase: 8–63 printable ASCII characters. */
     private fun isValidPassphrase(pass: String) = pass.length in 8..63 && pass.all { it.code in 32..126 }
 

@@ -131,5 +131,9 @@
   "clientJoining": "Joining Phone A's Wi-Fi…",
   "clientAutoStep1": "Enter the password shown on Phone A (it's saved for next time).",
   "clientAutoStep2": "Tap CONNECT. If Android asks, choose Phone A's network and allow the connection, then accept the VPN request.",
-  "errorJoinFailed": "Couldn't join Phone A's Wi-Fi. Make sure sharing is running on Phone A and the password is correct."
+  "errorJoinFailed": "Couldn't join Phone A's Wi-Fi. Make sure sharing is running on Phone A and the password is correct.",
+
+  "clientReconnecting": "Reconnecting… (attempt {attempt})",
+  "@clientReconnecting": {"placeholders": {"attempt": {"type": "int"}}},
+  "clientReconnectingHelp": "Phone A can't be reached. Reconnecting automatically; apps resume by themselves. Tap DISCONNECT to stop."
 }

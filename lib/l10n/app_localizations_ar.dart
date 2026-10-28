@@ -348,4 +348,13 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get errorJoinFailed =>
       'تعذّر الانضمام إلى شبكة الهاتف (أ). تأكد أن المشاركة تعمل عليه وأن كلمة المرور صحيحة.';
+
+  @override
+  String clientReconnecting(int attempt) {
+    return 'جارٍ إعادة الاتصال… (المحاولة $attempt)';
+  }
+
+  @override
+  String get clientReconnectingHelp =>
+      'تعذّر الوصول إلى الهاتف (أ). تتم إعادة الاتصال تلقائيًا وستعود التطبيقات للعمل وحدها. اضغط قطع الاتصال للإيقاف.';
 }

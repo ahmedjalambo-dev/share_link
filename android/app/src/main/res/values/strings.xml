@@ -6,4 +6,9 @@
     <string name="notif_starting">Starting Wi-Fi Direct…</string>
     <string name="notif_running_text">Network: %1$s\nPassword: %2$s\nProxy: %3$s:%4$d</string>
     <string name="notif_stop">Stop</string>
+    <string name="client_notif_channel_name">Connection to Phone A</string>
+    <string name="client_notif_connecting">Connecting to Phone A…</string>
+    <string name="client_notif_connected">Connected to Phone A</string>
+    <string name="client_notif_reconnecting">Reconnecting to Phone A… (attempt %1$d)</string>
+    <string name="client_notif_disconnect">Disconnect</string>
 </resources>

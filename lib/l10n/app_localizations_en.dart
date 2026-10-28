@@ -350,4 +350,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorJoinFailed =>
       'Couldn\'t join Phone A\'s Wi-Fi. Make sure sharing is running on Phone A and the password is correct.';
+
+  @override
+  String clientReconnecting(int attempt) {
+    return 'Reconnecting… (attempt $attempt)';
+  }
+
+  @override
+  String get clientReconnectingHelp =>
+      'Phone A can\'t be reached. Reconnecting automatically; apps resume by themselves. Tap DISCONNECT to stop.';
 }

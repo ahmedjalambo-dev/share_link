@@ -132,7 +132,7 @@ class ShareService : Service() {
     private fun startProxy(group: WifiDirectController.GroupDetails) {
         val port = settings.port
         Thread({
-            val server = ProxyServer(port, { upstreamNetwork }, ::upstreamDnsServer)
+            val server = ProxyServer(port, { upstreamNetwork }, ::upstreamDnsServer) { ShareState.current.ssid }
             var error: IOException? = null
             for (attempt in 1..BIND_ATTEMPTS) {
                 try {

@@ -6,4 +6,9 @@
     <string name="notif_starting">جارٍ تشغيل Wi-Fi Direct…</string>
     <string name="notif_running_text">الشبكة: %1$s\nكلمة المرور: %2$s\nالبروكسي: %3$s:%4$d</string>
     <string name="notif_stop">إيقاف</string>
+    <string name="client_notif_channel_name">الاتصال بالهاتف (أ)</string>
+    <string name="client_notif_connecting">جارٍ الاتصال بالهاتف (أ)…</string>
+    <string name="client_notif_connected">متصل بالهاتف (أ)</string>
+    <string name="client_notif_reconnecting">جارٍ إعادة الاتصال بالهاتف (أ)… (المحاولة %1$d)</string>
+    <string name="client_notif_disconnect">قطع الاتصال</string>
 </resources>

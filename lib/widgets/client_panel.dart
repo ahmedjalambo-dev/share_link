@@ -6,8 +6,10 @@ import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../models/client_status.dart';
 import '../models/share_settings.dart';
+import '../screens/qr_scan_screen.dart';
 import '../services/share_channel.dart';
 import '../utils/messages.dart';
+import '../utils/wifi_qr.dart';
 import 'credential_tile.dart';
 import 'error_card.dart';
 import 'numbered_step.dart';
@@ -67,8 +69,29 @@ class _ClientPanelState extends State<ClientPanel> {
     if (_busy) return;
     if (_status.isActive) {
       await ShareChannel.disconnectClient();
-      return;
+    } else {
+      await _connect();
     }
+  }
+
+  /// Opens the scanner; a valid Phone A code fills the fields and connects.
+  Future<void> _scanQr() async {
+    final data = await Navigator.of(
+      context,
+    ).push<WifiQrData>(MaterialPageRoute(builder: (_) => const QrScanScreen()));
+    if (data == null || !mounted) return;
+    setState(() {
+      _ssid.text = data.ssid;
+      _password.text = data.password;
+      _autoJoin = true;
+    });
+    // Let the form rebuild with the auto-join fields before validating.
+    await WidgetsBinding.instance.endOfFrame;
+    if (mounted && !_busy && !_status.isActive) await _connect();
+  }
+
+  /// Validates the form, asks for the needed permissions and starts client mode.
+  Future<void> _connect() async {
     if (!_formKey.currentState!.validate()) return;
 
     final l = AppLocalizations.of(context);
@@ -205,6 +228,13 @@ class _ClientPanelState extends State<ClientPanel> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Quickest way in: one scan of Phone A's QR fills this card and connects.
+              FilledButton.icon(
+                onPressed: enabled && !_busy ? _scanQr : null,
+                icon: const Icon(Icons.qr_code_scanner),
+                label: Text(l.scanQr),
+              ),
+              const SizedBox(height: 16),
               Text(
                 l.clientNetworkTitle,
                 style: Theme.of(context).textTheme.titleMedium,

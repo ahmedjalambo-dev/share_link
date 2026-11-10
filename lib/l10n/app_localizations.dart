@@ -643,6 +643,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Without the app (browsers and some apps only):'**
   String get guideManualTitle;
+
+  /// No description provided for @clientNetworkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone A\'s network'**
+  String get clientNetworkTitle;
+
+  /// No description provided for @clientAutoJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Join automatically'**
+  String get clientAutoJoin;
+
+  /// No description provided for @clientAutoJoinHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'The app joins Phone A\'s Wi-Fi when you tap CONNECT and leaves it when you disconnect.'**
+  String get clientAutoJoinHelp;
+
+  /// No description provided for @clientSsidHintAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. Leave empty to choose Phone A\'s network from a list.'**
+  String get clientSsidHintAny;
+
+  /// No description provided for @clientSsidHintExact.
+  ///
+  /// In en, this message translates to:
+  /// **'Exactly as shown on Phone A.'**
+  String get clientSsidHintExact;
+
+  /// No description provided for @clientJoining.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining Phone A\'s Wi-Fi…'**
+  String get clientJoining;
+
+  /// No description provided for @clientAutoStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the password shown on Phone A (it\'s saved for next time).'**
+  String get clientAutoStep1;
+
+  /// No description provided for @clientAutoStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap CONNECT. If Android asks, choose Phone A\'s network and allow the connection, then accept the VPN request.'**
+  String get clientAutoStep2;
+
+  /// No description provided for @errorJoinFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t join Phone A\'s Wi-Fi. Make sure sharing is running on Phone A and the password is correct.'**
+  String get errorJoinFailed;
 }
 
 class _AppLocalizationsDelegate

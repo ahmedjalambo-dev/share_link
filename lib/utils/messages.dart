@@ -20,6 +20,7 @@ abstract final class ErrorCode {
   static const hostUnreachable = 'host_unreachable';
   static const vpnFailed = 'vpn_failed';
   static const connectionLost = 'connection_lost';
+  static const joinFailed = 'join_failed';
 
   // Settings validation
   static const invalidName = 'invalid_name';
@@ -45,6 +46,7 @@ String shareErrorMessage(AppLocalizations l, String? code) => switch (code) {
   ErrorCode.hostUnreachable => l.errorHostUnreachable,
   ErrorCode.vpnFailed => l.errorVpnFailed,
   ErrorCode.connectionLost => l.errorConnectionLost,
+  ErrorCode.joinFailed => l.errorJoinFailed,
   _ => l.errorGeneric,
 };
 

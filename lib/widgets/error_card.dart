@@ -18,7 +18,8 @@ class ErrorCard extends StatelessWidget {
         ErrorCode.locationDisabled => (l.openLocationSettings, 'location'),
         ErrorCode.wifiDisabled ||
         ErrorCode.wifiNotConnected ||
-        ErrorCode.notOnDirectNetwork => (l.openWifiSettings, 'wifi'),
+        ErrorCode.notOnDirectNetwork ||
+        ErrorCode.joinFailed => (l.openWifiSettings, 'wifi'),
         _ => null,
       };
 

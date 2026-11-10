@@ -117,9 +117,21 @@ class ShareChannel {
   static Future<bool> prepareVpn() async =>
       await _control.invokeMethod<bool>('prepareVpn') ?? false;
 
-  /// Returns false if the VPN isn't allowed; progress arrives on [clientStatusStream].
-  static Future<bool> connectClient(int port) async =>
-      await _control.invokeMethod<bool>('connectClient', {'port': port}) ??
+  /// Saves the connection details and starts client mode. Returns false if a
+  /// pre-check failed (the reason arrives on [clientStatusStream]); throws a
+  /// [PlatformException] with a settings error code if a value is invalid.
+  static Future<bool> connectClient({
+    required int port,
+    required String ssid,
+    required String passphrase,
+    required bool autoJoin,
+  }) async =>
+      await _control.invokeMethod<bool>('connectClient', {
+        'port': port,
+        'ssid': ssid,
+        'passphrase': passphrase,
+        'autoJoin': autoJoin,
+      }) ??
       false;
 
   static Future<void> disconnectClient() =>

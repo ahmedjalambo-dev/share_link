@@ -318,4 +318,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get guideManualTitle =>
       'Without the app (browsers and some apps only):';
+
+  @override
+  String get clientNetworkTitle => 'Phone A\'s network';
+
+  @override
+  String get clientAutoJoin => 'Join automatically';
+
+  @override
+  String get clientAutoJoinHelp =>
+      'The app joins Phone A\'s Wi-Fi when you tap CONNECT and leaves it when you disconnect.';
+
+  @override
+  String get clientSsidHintAny =>
+      'Optional. Leave empty to choose Phone A\'s network from a list.';
+
+  @override
+  String get clientSsidHintExact => 'Exactly as shown on Phone A.';
+
+  @override
+  String get clientJoining => 'Joining Phone A\'s Wi-Fi…';
+
+  @override
+  String get clientAutoStep1 =>
+      'Enter the password shown on Phone A (it\'s saved for next time).';
+
+  @override
+  String get clientAutoStep2 =>
+      'Tap CONNECT. If Android asks, choose Phone A\'s network and allow the connection, then accept the VPN request.';
+
+  @override
+  String get errorJoinFailed =>
+      'Couldn\'t join Phone A\'s Wi-Fi. Make sure sharing is running on Phone A and the password is correct.';
 }

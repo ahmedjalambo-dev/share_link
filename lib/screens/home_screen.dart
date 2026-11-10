@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const Center(child: CircularProgressIndicator())
             else if (_mode == AppMode.connect)
               ClientPanel(
-                initialPort: settings.clientPort,
+                settings: settings,
                 onActiveChanged: _onPanelActiveChanged,
               )
             else

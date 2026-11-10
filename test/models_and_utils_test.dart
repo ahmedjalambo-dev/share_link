@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:share_link/models/client_status.dart';
+import 'package:share_link/models/share_settings.dart';
+import 'package:share_link/utils/constants.dart';
 import 'package:share_link/models/share_status.dart';
 import 'package:share_link/utils/format.dart';
 
@@ -60,6 +62,40 @@ void main() {
     expect(status.isActive, isFalse);
     expect(ClientStatus.fromMap({}).kind, ClientStatusKind.disconnected);
   });
+
+  test('ClientStatus parses the joining flag', () {
+    expect(
+      ClientStatus.fromMap({'status': 'connecting', 'joining': true}).joining,
+      isTrue,
+    );
+    expect(ClientStatus.fromMap({'status': 'connecting'}).joining, isFalse);
+  });
+
+  test('ShareSettingsData parses client-mode fields', () {
+    final settings = ShareSettingsData.fromMap({
+      'clientPort': 9000,
+      'clientSsid': 'DIRECT-ab-ShareLink',
+      'clientPassphrase': 'secret123',
+      'clientAutoJoin': false,
+      'apiLevel': 28,
+    });
+    expect(settings.clientPort, 9000);
+    expect(settings.clientSsid, 'DIRECT-ab-ShareLink');
+    expect(settings.clientPassphrase, 'secret123');
+    expect(settings.clientAutoJoin, isFalse);
+    expect(settings.canPickNetwork, isFalse);
+  });
+
+  test(
+    'ShareSettingsData defaults: auto-join on, defaults for missing values',
+    () {
+      final settings = ShareSettingsData.fromMap({'apiLevel': 34});
+      expect(settings.clientAutoJoin, isTrue);
+      expect(settings.clientSsid, '');
+      expect(settings.clientPort, kDefaultPort);
+      expect(settings.canPickNetwork, isTrue);
+    },
+  );
 
   test('formatBytes picks a readable unit', () {
     expect(formatBytes(512), '512 B');

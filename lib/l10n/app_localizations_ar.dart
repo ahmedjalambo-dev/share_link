@@ -316,4 +316,36 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get guideManualTitle => 'بدون التطبيق (المتصفحات وبعض التطبيقات فقط):';
+
+  @override
+  String get clientNetworkTitle => 'شبكة الهاتف (أ)';
+
+  @override
+  String get clientAutoJoin => 'الانضمام تلقائيًا';
+
+  @override
+  String get clientAutoJoinHelp =>
+      'ينضم التطبيق إلى شبكة الهاتف (أ) عند الضغط على اتصال، ويغادرها عند قطع الاتصال.';
+
+  @override
+  String get clientSsidHintAny =>
+      'اختياري. اتركه فارغًا لاختيار شبكة الهاتف (أ) من قائمة.';
+
+  @override
+  String get clientSsidHintExact => 'كما يظهر تمامًا على الهاتف (أ).';
+
+  @override
+  String get clientJoining => 'جارٍ الانضمام إلى شبكة الهاتف (أ)…';
+
+  @override
+  String get clientAutoStep1 =>
+      'أدخل كلمة المرور الظاهرة على الهاتف (أ) (تُحفظ للمرات القادمة).';
+
+  @override
+  String get clientAutoStep2 =>
+      'اضغط اتصال. إذا سألك أندرويد فاختر شبكة الهاتف (أ) واسمح بالاتصال، ثم وافق على طلب VPN.';
+
+  @override
+  String get errorJoinFailed =>
+      'تعذّر الانضمام إلى شبكة الهاتف (أ). تأكد أن المشاركة تعمل عليه وأن كلمة المرور صحيحة.';
 }

@@ -97,6 +97,18 @@ void main() {
     },
   );
 
+  test('ClientStatus parses reconnecting state', () {
+    final status = ClientStatus.fromMap({
+      'status': 'reconnecting',
+      'reconnectAttempt': 3,
+      'errorCode': 'host_unreachable',
+    });
+    expect(status.kind, ClientStatusKind.reconnecting);
+    expect(status.isActive, isTrue);
+    expect(status.reconnectAttempt, 3);
+    expect(status.errorCode, 'host_unreachable');
+  });
+
   test('formatBytes picks a readable unit', () {
     expect(formatBytes(512), '512 B');
     expect(formatBytes(1536), '1.5 KB');

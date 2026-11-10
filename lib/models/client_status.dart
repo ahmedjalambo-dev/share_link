@@ -1,4 +1,12 @@
-enum ClientStatusKind { disconnected, connecting, connected, error }
+enum ClientStatusKind {
+  disconnected,
+  connecting,
+  connected,
+
+  /// Phone A dropped; the VPN stays up and the app keeps retrying until DISCONNECT.
+  reconnecting,
+  error,
+}
 
 /// Snapshot of client mode (Phone B), as sent over the client status EventChannel.
 class ClientStatus {
@@ -11,6 +19,7 @@ class ClientStatus {
     this.errorCode,
     this.errorDetail,
     this.joining = false,
+    this.reconnectAttempt = 0,
   });
 
   static const disconnected = ClientStatus(kind: ClientStatusKind.disconnected);
@@ -27,6 +36,7 @@ class ClientStatus {
       errorCode: map['errorCode'] as String?,
       errorDetail: map['errorDetail'] as String?,
       joining: map['joining'] == true,
+      reconnectAttempt: map['reconnectAttempt'] as int? ?? 0,
     );
   }
 
@@ -43,6 +53,12 @@ class ClientStatus {
   /// True while connecting and the app is joining Phone A's Wi-Fi itself.
   final bool joining;
 
+  /// Retry number while [ClientStatusKind.reconnecting]; [errorCode] then holds
+  /// the last attempt's failure.
+  final int reconnectAttempt;
+
   bool get isActive =>
-      kind == ClientStatusKind.connecting || kind == ClientStatusKind.connected;
+      kind == ClientStatusKind.connecting ||
+      kind == ClientStatusKind.connected ||
+      kind == ClientStatusKind.reconnecting;
 }

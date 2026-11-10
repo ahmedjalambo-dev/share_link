@@ -144,9 +144,14 @@ class _ClientPanelState extends State<ClientPanel> {
         _status.joining ? l.clientJoining : l.clientConnecting,
       ),
       ClientStatusKind.connected => (PowerState.active, l.clientConnected),
+      ClientStatusKind.reconnecting => (
+        PowerState.working,
+        l.clientReconnecting(_status.reconnectAttempt),
+      ),
       ClientStatusKind.error => (PowerState.error, l.statusError),
     };
     final connected = _status.kind == ClientStatusKind.connected;
+    final reconnecting = _status.kind == ClientStatusKind.reconnecting;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -166,7 +171,11 @@ class _ClientPanelState extends State<ClientPanel> {
         const SizedBox(height: 24),
         if (_status.kind == ClientStatusKind.error)
           ErrorCard(code: _status.errorCode, detail: _status.errorDetail),
-        if (connected) ...[
+        if (reconnecting) ...[
+          _ReconnectingCard(errorCode: _status.errorCode),
+          const SizedBox(height: 8),
+          StatsCard(bytesUp: _status.bytesUp, bytesDown: _status.bytesDown),
+        ] else if (connected) ...[
           Card(
             child: CredentialTile(
               icon: Icons.phone_android,
@@ -305,6 +314,36 @@ class _ClientPanelState extends State<ClientPanel> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Shown while Phone A can't be reached and the app is retrying by itself.
+class _ReconnectingCard extends StatelessWidget {
+  const _ReconnectingCard({required this.errorCode});
+
+  /// Why the last attempt failed, if any.
+  final String? errorCode;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return Card(
+      color: scheme.tertiaryContainer,
+      child: ListTile(
+        leading: Icon(Icons.sync_problem, color: scheme.onTertiaryContainer),
+        title: Text(
+          l.clientReconnectingHelp,
+          style: TextStyle(color: scheme.onTertiaryContainer),
+        ),
+        subtitle: errorCode == null
+            ? null
+            : Text(
+                shareErrorMessage(l, errorCode),
+                style: TextStyle(color: scheme.onTertiaryContainer),
+              ),
       ),
     );
   }

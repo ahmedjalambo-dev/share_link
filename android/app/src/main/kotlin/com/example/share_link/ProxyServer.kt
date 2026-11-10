@@ -33,6 +33,8 @@ class ProxyServer(
     internal val upstreamNetwork: () -> Network?,
     /** DNS server of the Wi-Fi network; UDP DNS queries from clients are redirected to it. */
     internal val upstreamDns: () -> InetAddress? = { null },
+    /** This phone's Wi-Fi Direct network name, served to Phone B at [PHONE_A_INFO_PATH]. */
+    internal val networkName: () -> String? = { null },
 ) {
     val activeConnections = AtomicInteger()
     val bytesUp = AtomicLong()

@@ -17,6 +17,8 @@ enum class ClientStatus(val wire: String) {
     DISCONNECTED("disconnected"),
     CONNECTING("connecting"),
     CONNECTED("connected"),
+    /** Phone A dropped; the VPN stays up and the service keeps retrying until DISCONNECT. */
+    RECONNECTING("reconnecting"),
     ERROR("error"),
 }
 
@@ -30,6 +32,8 @@ data class ClientSnapshot(
     val errorDetail: String? = null,
     /** True while connecting and the app is joining Phone A's Wi-Fi itself. */
     val joining: Boolean = false,
+    /** Current retry number while RECONNECTING (errorCode/errorDetail hold the last failure). */
+    val reconnectAttempt: Int = 0,
 ) {
     fun toMap(): Map<String, Any?> = mapOf(
         "status" to status.wire,
@@ -40,6 +44,7 @@ data class ClientSnapshot(
         "errorCode" to errorCode,
         "errorDetail" to errorDetail,
         "joining" to joining,
+        "reconnectAttempt" to reconnectAttempt,
     )
 }
 

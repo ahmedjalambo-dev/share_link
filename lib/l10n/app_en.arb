@@ -155,5 +155,12 @@
   "scanNotShareLink": "This isn't Phone A's Share Link QR code.",
   "scanNoCodeInImage": "No QR code found in this picture.",
   "scanCameraDenied": "Camera permission is needed to scan. Allow it in the app settings, or choose a photo of the QR code instead.",
-  "scanCameraUnavailable": "The camera can't be used right now. You can choose a photo of the QR code instead."
+  "scanCameraUnavailable": "The camera can't be used right now. You can choose a photo of the QR code instead.",
+  "sectionTile": "Quick Settings tile",
+  "tileAddButton": "Add Quick Settings tile",
+  "tileAddHint": "Swipe down twice from the top of the screen, tap the edit (pencil) button, and drag the Share Link tile into your tiles.",
+  "tileAdded": "Tile added. Swipe down to start or stop from anywhere.",
+  "tileAlreadyAdded": "The tile is already in your Quick Settings.",
+  "tileNotAdded": "The tile wasn't added.",
+  "errorSetupNeeded": "Enter Phone A's password or scan its QR code first, then tap CONNECT."
 }

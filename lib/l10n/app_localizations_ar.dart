@@ -387,4 +387,28 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get scanCameraUnavailable =>
       'لا يمكن استخدام الكاميرا الآن. يمكنك اختيار صورة لرمز QR بدلًا من ذلك.';
+
+  @override
+  String get sectionTile => 'مربع الإعدادات السريعة';
+
+  @override
+  String get tileAddButton => 'إضافة مربع إلى الإعدادات السريعة';
+
+  @override
+  String get tileAddHint =>
+      'اسحب من أعلى الشاشة إلى الأسفل مرتين، واضغط زر التعديل (القلم)، ثم اسحب مربع Share Link إلى مربعاتك.';
+
+  @override
+  String get tileAdded =>
+      'تمت إضافة المربع. اسحب للأسفل للتشغيل أو الإيقاف من أي مكان.';
+
+  @override
+  String get tileAlreadyAdded => 'المربع موجود بالفعل في الإعدادات السريعة.';
+
+  @override
+  String get tileNotAdded => 'لم تتم إضافة المربع.';
+
+  @override
+  String get errorSetupNeeded =>
+      'أدخل كلمة مرور الهاتف (أ) أو امسح رمز QR الخاص به أولًا، ثم اضغط اتصال.';
 }

@@ -130,8 +130,9 @@ class ShareSettings(context: Context) {
         private const val KEY_CLIENT_SSID = "client_ssid"
         private const val KEY_CLIENT_PASS = "client_passphrase"
         private const val KEY_CLIENT_AUTO_JOIN = "client_auto_join"
-        private const val MODE_SHARE = "share"
-        val MODES = setOf(MODE_SHARE, "connect")
+        const val MODE_SHARE = "share"
+        const val MODE_CONNECT = "connect"
+        val MODES = setOf(MODE_SHARE, MODE_CONNECT)
         private const val LANGUAGE_SYSTEM = "system"
         val LANGUAGES = setOf(LANGUAGE_SYSTEM, "en", "ar")
         private const val ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"

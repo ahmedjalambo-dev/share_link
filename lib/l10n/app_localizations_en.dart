@@ -389,4 +389,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get scanCameraUnavailable =>
       'The camera can\'t be used right now. You can choose a photo of the QR code instead.';
+
+  @override
+  String get sectionTile => 'Quick Settings tile';
+
+  @override
+  String get tileAddButton => 'Add Quick Settings tile';
+
+  @override
+  String get tileAddHint =>
+      'Swipe down twice from the top of the screen, tap the edit (pencil) button, and drag the Share Link tile into your tiles.';
+
+  @override
+  String get tileAdded =>
+      'Tile added. Swipe down to start or stop from anywhere.';
+
+  @override
+  String get tileAlreadyAdded => 'The tile is already in your Quick Settings.';
+
+  @override
+  String get tileNotAdded => 'The tile wasn\'t added.';
+
+  @override
+  String get errorSetupNeeded =>
+      'Enter Phone A\'s password or scan its QR code first, then tap CONNECT.';
 }

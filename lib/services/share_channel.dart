@@ -134,6 +134,11 @@ class ShareChannel {
       }) ??
       false;
 
+  /// Android 13+ prompt to add the Quick Settings tile. Returns `added`,
+  /// `alreadyAdded`, `notAdded`, `error` or `unsupported` (below Android 13).
+  static Future<String> requestAddTile() async =>
+      await _control.invokeMethod<String>('requestAddTile') ?? 'error';
+
   static Future<void> disconnectClient() =>
       _control.invokeMethod<void>('disconnectClient');
 }

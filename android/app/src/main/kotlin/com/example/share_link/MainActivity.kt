@@ -2,23 +2,20 @@ package com.example.share_link
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.StatusBarManager
 import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.LocationManager
-import android.net.ConnectivityManager
 import android.net.Uri
+import android.graphics.drawable.Icon
 import android.net.VpnService
-import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.location.LocationManagerCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
@@ -82,9 +79,9 @@ class MainActivity : FlutterActivity() {
     private fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "getStatus" -> result.success(ShareState.current.toMap())
-            "start" -> result.success(startSharing())
+            "start" -> result.success(AppActions.startSharing(this))
             "stop" -> {
-                stopSharing()
+                AppActions.stopSharing(this)
                 result.success(null)
             }
             "getSettings" -> result.success(settings.toMap())
@@ -123,10 +120,10 @@ class MainActivity : FlutterActivity() {
             "prepareVpn" -> prepareVpn(result)
             "connectClient" -> connectClient(call, result)
             "disconnectClient" -> {
-                ClientVpnService.disconnect(this)
-                ClientState.update { if (it.status == ClientStatus.ERROR) ClientSnapshot() else it }
+                AppActions.disconnectClient(this)
                 result.success(null)
             }
+            "requestAddTile" -> requestAddTile(result)
             "checkPermissions" -> result.success(permissionMap(afterRequest = false))
             "requestPermissions" -> requestSharePermissions(result)
             "openSystemSettings" -> {
@@ -136,49 +133,6 @@ class MainActivity : FlutterActivity() {
             else -> result.notImplemented()
         }
     }
-
-    // region Start / stop
-
-    /** Runs the pre-start checks and starts the service. Failures are reported through [ShareState]. */
-    private fun startSharing(): Boolean {
-        val status = ShareState.current.status
-        if (status == ShareStatus.STARTING || status == ShareStatus.RUNNING) return true
-
-        val error = preflightError()
-        if (error != null) {
-            ShareState.update { ShareSnapshot(status = ShareStatus.ERROR, errorCode = error) }
-            return false
-        }
-        ShareService.start(this)
-        return true
-    }
-
-    private fun stopSharing() {
-        ShareService.stop(this)
-        // Clears an error left by a failed start (the service may not be running at all).
-        ShareState.update { if (it.status == ShareStatus.ERROR) ShareSnapshot() else it }
-    }
-
-    private fun preflightError(): String? {
-        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_WIFI_DIRECT)) return ErrorCodes.P2P_UNSUPPORTED
-        if (!hasRequiredPermissions()) return ErrorCodes.PERMISSION_DENIED
-
-        if (!wifiManager().isWifiEnabled) return ErrorCodes.WIFI_DISABLED
-        if (NetworkUtils.findWifiNetwork(this) == null) return ErrorCodes.WIFI_NOT_CONNECTED
-        if (locationRequiredButOff()) return ErrorCodes.LOCATION_DISABLED
-        return null
-    }
-
-    private fun wifiManager() = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-
-    /** Android 12 and below only allow Wi-Fi Direct and Wi-Fi network requests while Location is on. */
-    private fun locationRequiredButOff(): Boolean {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) return false
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return !LocationManagerCompat.isLocationEnabled(locationManager)
-    }
-
-    // endregion
 
     // region Client mode (Phone B)
 
@@ -216,31 +170,7 @@ class MainActivity : FlutterActivity() {
             result.error(invalid, null, null)
             return
         }
-        val error = when {
-            VpnService.prepare(this) != null -> ClientErrorCodes.VPN_DENIED
-            autoJoin -> joinPreflightError()
-            else -> null
-        }
-        if (error != null) {
-            ClientState.update { ClientSnapshot(status = ClientStatus.ERROR, errorCode = error) }
-            result.success(false)
-            return
-        }
-        ClientVpnService.connect(this, port)
-        result.success(true)
-    }
-
-    /** Checks needed only when the app will join Phone A's network itself. */
-    private fun joinPreflightError(): String? {
-        val cm = getSystemService(ConnectivityManager::class.java)
-        if (cm != null && NetworkUtils.findDirectNetwork(cm) != null) return null // already joined
-        if (!hasRequiredPermissions()) return ErrorCodes.PERMISSION_DENIED
-        // From Android 10 apps can't turn Wi-Fi on; below that the joiner does it.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !wifiManager().isWifiEnabled) {
-            return ErrorCodes.WIFI_DISABLED
-        }
-        if (locationRequiredButOff()) return ErrorCodes.LOCATION_DISABLED
-        return null
+        result.success(AppActions.connectClient(this))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -254,14 +184,6 @@ class MainActivity : FlutterActivity() {
 
     // region Permissions
 
-    /** Permissions without which the Wi-Fi Direct group can't be created. */
-    private fun requiredPermissions(): List<String> =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            listOf(Manifest.permission.NEARBY_WIFI_DEVICES)
-        } else {
-            listOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-
     /** Everything to ask for: required ones plus notifications, and COARSE alongside FINE (needed on Android 12). */
     private fun requestablePermissions(): List<String> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -270,10 +192,9 @@ class MainActivity : FlutterActivity() {
             listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
         }
 
-    private fun isGranted(permission: String) =
-        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+    private fun isGranted(permission: String) = AppActions.isGranted(this, permission)
 
-    private fun hasRequiredPermissions() = requiredPermissions().all(::isGranted)
+    private fun hasRequiredPermissions() = AppActions.hasRequiredPermissions(this)
 
     private fun notificationsGranted() =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || isGranted(Manifest.permission.POST_NOTIFICATIONS)
@@ -281,7 +202,7 @@ class MainActivity : FlutterActivity() {
     private fun permissionMap(afterRequest: Boolean): Map<String, Boolean> {
         val granted = hasRequiredPermissions()
         // After a denial, "no rationale" means the user chose "Don't ask again".
-        val permanentlyDenied = afterRequest && !granted && requiredPermissions().any {
+        val permanentlyDenied = afterRequest && !granted && AppActions.requiredPermissions().any {
             !isGranted(it) && !ActivityCompat.shouldShowRequestPermissionRationale(this, it)
         }
         return mapOf(
@@ -333,6 +254,35 @@ class MainActivity : FlutterActivity() {
             )
         } catch (e: Exception) {
             startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+        }
+    }
+
+    /** Android 13+ "Add tile to Quick Settings?" prompt; resolves to added/alreadyAdded/notAdded/error/unsupported. */
+    private fun requestAddTile(result: MethodChannel.Result) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            result.success("unsupported")
+            return
+        }
+        val statusBar = getSystemService(StatusBarManager::class.java)
+        if (statusBar == null) {
+            result.success("unsupported")
+            return
+        }
+        val mode = settings.mode
+        statusBar.requestAddTileService(
+            ComponentName(this, ShareTileService::class.java),
+            getString(ShareTileService.labelFor(mode)),
+            Icon.createWithResource(this, ShareTileService.iconFor(mode)),
+            mainExecutor,
+        ) { code ->
+            result.success(
+                when (code) {
+                    StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED -> "added"
+                    StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED -> "alreadyAdded"
+                    StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_NOT_ADDED -> "notAdded"
+                    else -> "error"
+                },
+            )
         }
     }
 

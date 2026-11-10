@@ -763,6 +763,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The camera can\'t be used right now. You can choose a photo of the QR code instead.'**
   String get scanCameraUnavailable;
+
+  /// No description provided for @sectionTile.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Settings tile'**
+  String get sectionTile;
+
+  /// No description provided for @tileAddButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Quick Settings tile'**
+  String get tileAddButton;
+
+  /// No description provided for @tileAddHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe down twice from the top of the screen, tap the edit (pencil) button, and drag the Share Link tile into your tiles.'**
+  String get tileAddHint;
+
+  /// No description provided for @tileAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Tile added. Swipe down to start or stop from anywhere.'**
+  String get tileAdded;
+
+  /// No description provided for @tileAlreadyAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'The tile is already in your Quick Settings.'**
+  String get tileAlreadyAdded;
+
+  /// No description provided for @tileNotAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'The tile wasn\'t added.'**
+  String get tileNotAdded;
+
+  /// No description provided for @errorSetupNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Phone A\'s password or scan its QR code first, then tap CONNECT.'**
+  String get errorSetupNeeded;
 }
 
 class _AppLocalizationsDelegate

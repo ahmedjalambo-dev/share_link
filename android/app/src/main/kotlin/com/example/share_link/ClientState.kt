@@ -8,6 +8,8 @@ object ClientErrorCodes {
     const val VPN_FAILED = "vpn_failed"
     const val CONNECTION_LOST = "connection_lost"
     const val JOIN_FAILED = "join_failed"
+    /** Auto-join is on but Phone A's password (or, below Android 10, its name) isn't saved yet. */
+    const val SETUP_NEEDED = "setup_needed"
 }
 
 /** A client-mode failure with the code shown to the user. */

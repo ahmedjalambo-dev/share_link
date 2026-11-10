@@ -311,7 +311,7 @@ abstract class AppLocalizations {
   /// No description provided for @qrCaption.
   ///
   /// In en, this message translates to:
-  /// **'Scan with the other phone\'s camera to join the network. You still need to set the proxy (see the guide below).'**
+  /// **'On the other phone, open Share Link → Connect → \"Scan Phone A\'s QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.'**
   String get qrCaption;
 
   /// No description provided for @guideTitle.
@@ -709,6 +709,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Phone A can\'t be reached. Reconnecting automatically; apps resume by themselves. Tap DISCONNECT to stop.'**
   String get clientReconnectingHelp;
+
+  /// No description provided for @scanQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Phone A\'s QR code'**
+  String get scanQr;
+
+  /// No description provided for @scanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Phone A\'s QR code'**
+  String get scanTitle;
+
+  /// No description provided for @scanHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Point the camera at the QR code on Phone A\'s screen.'**
+  String get scanHint;
+
+  /// No description provided for @scanFromPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a photo'**
+  String get scanFromPhoto;
+
+  /// No description provided for @scanTorch.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashlight'**
+  String get scanTorch;
+
+  /// No description provided for @scanNotShareLink.
+  ///
+  /// In en, this message translates to:
+  /// **'This isn\'t Phone A\'s Share Link QR code.'**
+  String get scanNotShareLink;
+
+  /// No description provided for @scanNoCodeInImage.
+  ///
+  /// In en, this message translates to:
+  /// **'No QR code found in this picture.'**
+  String get scanNoCodeInImage;
+
+  /// No description provided for @scanCameraDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera permission is needed to scan. Allow it in the app settings, or choose a photo of the QR code instead.'**
+  String get scanCameraDenied;
+
+  /// No description provided for @scanCameraUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The camera can\'t be used right now. You can choose a photo of the QR code instead.'**
+  String get scanCameraUnavailable;
 }
 
 class _AppLocalizationsDelegate

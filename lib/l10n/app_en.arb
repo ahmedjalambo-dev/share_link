@@ -16,7 +16,9 @@
   "copied": "{label} copied",
   "@copied": {
     "placeholders": {
-      "label": { "type": "String" }
+      "label": {
+        "type": "String"
+      }
     }
   },
   "connections": "Connections",
@@ -25,7 +27,6 @@
   "wifiLost": "This phone lost its Wi-Fi connection. Sharing resumes when it reconnects.",
   "permissionRequired": "Wi-Fi Direct permission is required to share the connection.",
   "settingsAction": "Settings",
-
   "errorPermissionDenied": "Wi-Fi Direct permission was denied. Allow it in the app settings.",
   "errorLocationDisabled": "Location is turned off. Android needs it on for Wi-Fi Direct.",
   "errorWifiDisabled": "Wi-Fi is turned off. Turn it on and connect to a network.",
@@ -40,40 +41,47 @@
   "openAppSettings": "App settings",
   "openLocationSettings": "Location settings",
   "openWifiSettings": "Wi-Fi settings",
-
   "qrTitle": "Scan to join",
-  "qrCaption": "Scan with the other phone's camera to join the network. You still need to set the proxy (see the guide below).",
-
+  "qrCaption": "On the other phone, open Share Link → Connect → \"Scan Phone A's QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.",
   "guideTitle": "How to connect the other phone",
   "guideStep1": "Open Wi-Fi settings and join \"{ssid}\", or scan the QR code.",
   "@guideStep1": {
     "placeholders": {
-      "ssid": { "type": "String" }
+      "ssid": {
+        "type": "String"
+      }
     }
   },
   "guideStep2": "Enter the password: {password}",
   "@guideStep2": {
     "placeholders": {
-      "password": { "type": "String" }
+      "password": {
+        "type": "String"
+      }
     }
   },
   "guideStep3": "Tap the gear icon (or long-press the network), then Modify / Advanced options.",
   "guideStep4": "Set Proxy to Manual: host {host}, port {port}. Leave the bypass list empty and save.",
   "@guideStep4": {
     "placeholders": {
-      "host": { "type": "String" },
-      "port": { "type": "String" }
+      "host": {
+        "type": "String"
+      },
+      "port": {
+        "type": "String"
+      }
     }
   },
   "guideStep5": "If the phone says \"No internet\", choose to stay connected. Browsing still works.",
   "guideNote": "Browsers and most apps use the proxy. Some games, calls and VPN apps ignore it and won't work.",
-
   "settingsTitle": "Settings",
   "sectionNetwork": "Wi-Fi Direct network",
   "networkNameHelper": "Full name: {fullName}",
   "@networkNameHelper": {
     "placeholders": {
-      "fullName": { "type": "String" }
+      "fullName": {
+        "type": "String"
+      }
     }
   },
   "customNetworkUnsupported": "On this Android version the system picks the network name and password automatically. Only the port can be changed.",
@@ -100,7 +108,6 @@
   "errorNameTooLong": "The name is too long (the full name must fit in 32 bytes).",
   "errorInvalidPassword": "Use 8–63 English letters, numbers or symbols.",
   "errorInvalidPort": "Use a port between 1024 and 65535.",
-
   "modeShare": "Share Wi-Fi",
   "modeConnect": "Connect",
   "connect": "CONNECT",
@@ -122,7 +129,6 @@
   "errorConnectionLost": "The connection to Phone A was lost. Rejoin its Wi-Fi network and connect again.",
   "guideRecommended": "Best option: install Share Link on the other phone too. Join this network, choose \"Connect\" at the top and tap CONNECT. Every app works, including WhatsApp, Telegram and banking apps.",
   "guideManualTitle": "Without the app (browsers and some apps only):",
-
   "clientNetworkTitle": "Phone A's network",
   "clientAutoJoin": "Join automatically",
   "clientAutoJoinHelp": "The app joins Phone A's Wi-Fi when you tap CONNECT and leaves it when you disconnect.",
@@ -132,8 +138,22 @@
   "clientAutoStep1": "Enter the password shown on Phone A (it's saved for next time).",
   "clientAutoStep2": "Tap CONNECT. If Android asks, choose Phone A's network and allow the connection, then accept the VPN request.",
   "errorJoinFailed": "Couldn't join Phone A's Wi-Fi. Make sure sharing is running on Phone A and the password is correct.",
-
   "clientReconnecting": "Reconnecting… (attempt {attempt})",
-  "@clientReconnecting": {"placeholders": {"attempt": {"type": "int"}}},
-  "clientReconnectingHelp": "Phone A can't be reached. Reconnecting automatically; apps resume by themselves. Tap DISCONNECT to stop."
+  "@clientReconnecting": {
+    "placeholders": {
+      "attempt": {
+        "type": "int"
+      }
+    }
+  },
+  "clientReconnectingHelp": "Phone A can't be reached. Reconnecting automatically; apps resume by themselves. Tap DISCONNECT to stop.",
+  "scanQr": "Scan Phone A's QR code",
+  "scanTitle": "Scan Phone A's QR code",
+  "scanHint": "Point the camera at the QR code on Phone A's screen.",
+  "scanFromPhoto": "Choose a photo",
+  "scanTorch": "Flashlight",
+  "scanNotShareLink": "This isn't Phone A's Share Link QR code.",
+  "scanNoCodeInImage": "No QR code found in this picture.",
+  "scanCameraDenied": "Camera permission is needed to scan. Allow it in the app settings, or choose a photo of the QR code instead.",
+  "scanCameraUnavailable": "The camera can't be used right now. You can choose a photo of the QR code instead."
 }

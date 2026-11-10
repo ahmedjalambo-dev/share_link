@@ -124,7 +124,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get qrCaption =>
-      'امسح الرمز بكاميرا الهاتف الآخر للانضمام إلى الشبكة. ما زلت بحاجة إلى ضبط البروكسي (راجع الدليل أدناه).';
+      'على الهاتف الآخر افتح Share Link ← اتصال ← \"امسح رمز QR للهاتف (أ)\" للانضمام والاتصال بخطوة واحدة. يمكن لتطبيق الكاميرا أيضًا مسحه، لكنه عندها ينضم إلى الواي فاي فقط.';
 
   @override
   String get guideTitle => 'طريقة توصيل الهاتف الآخر';
@@ -357,4 +357,34 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get clientReconnectingHelp =>
       'تعذّر الوصول إلى الهاتف (أ). تتم إعادة الاتصال تلقائيًا وستعود التطبيقات للعمل وحدها. اضغط قطع الاتصال للإيقاف.';
+
+  @override
+  String get scanQr => 'امسح رمز QR للهاتف (أ)';
+
+  @override
+  String get scanTitle => 'امسح رمز QR للهاتف (أ)';
+
+  @override
+  String get scanHint => 'وجّه الكاميرا نحو رمز QR الظاهر على شاشة الهاتف (أ).';
+
+  @override
+  String get scanFromPhoto => 'اختر صورة';
+
+  @override
+  String get scanTorch => 'الفلاش';
+
+  @override
+  String get scanNotShareLink =>
+      'هذا ليس رمز QR الخاص بـ Share Link على الهاتف (أ).';
+
+  @override
+  String get scanNoCodeInImage => 'لم يُعثر على رمز QR في هذه الصورة.';
+
+  @override
+  String get scanCameraDenied =>
+      'يلزم إذن الكاميرا للمسح. اسمح به من إعدادات التطبيق، أو اختر صورة لرمز QR بدلًا من ذلك.';
+
+  @override
+  String get scanCameraUnavailable =>
+      'لا يمكن استخدام الكاميرا الآن. يمكنك اختيار صورة لرمز QR بدلًا من ذلك.';
 }

@@ -126,7 +126,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrCaption =>
-      'Scan with the other phone\'s camera to join the network. You still need to set the proxy (see the guide below).';
+      'On the other phone, open Share Link → Connect → \"Scan Phone A\'s QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.';
 
   @override
   String get guideTitle => 'How to connect the other phone';
@@ -359,4 +359,34 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get clientReconnectingHelp =>
       'Phone A can\'t be reached. Reconnecting automatically; apps resume by themselves. Tap DISCONNECT to stop.';
+
+  @override
+  String get scanQr => 'Scan Phone A\'s QR code';
+
+  @override
+  String get scanTitle => 'Scan Phone A\'s QR code';
+
+  @override
+  String get scanHint =>
+      'Point the camera at the QR code on Phone A\'s screen.';
+
+  @override
+  String get scanFromPhoto => 'Choose a photo';
+
+  @override
+  String get scanTorch => 'Flashlight';
+
+  @override
+  String get scanNotShareLink => 'This isn\'t Phone A\'s Share Link QR code.';
+
+  @override
+  String get scanNoCodeInImage => 'No QR code found in this picture.';
+
+  @override
+  String get scanCameraDenied =>
+      'Camera permission is needed to scan. Allow it in the app settings, or choose a photo of the QR code instead.';
+
+  @override
+  String get scanCameraUnavailable =>
+      'The camera can\'t be used right now. You can choose a photo of the QR code instead.';
 }

@@ -21,6 +21,7 @@ abstract final class ErrorCode {
   static const vpnFailed = 'vpn_failed';
   static const connectionLost = 'connection_lost';
   static const joinFailed = 'join_failed';
+  static const setupNeeded = 'setup_needed';
 
   // Settings validation
   static const invalidName = 'invalid_name';
@@ -47,6 +48,7 @@ String shareErrorMessage(AppLocalizations l, String? code) => switch (code) {
   ErrorCode.vpnFailed => l.errorVpnFailed,
   ErrorCode.connectionLost => l.errorConnectionLost,
   ErrorCode.joinFailed => l.errorJoinFailed,
+  ErrorCode.setupNeeded => l.errorSetupNeeded,
   _ => l.errorGeneric,
 };
 

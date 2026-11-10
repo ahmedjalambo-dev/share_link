@@ -6,9 +6,26 @@
     <string name="notif_starting">Starting Wi-Fi Direct…</string>
     <string name="notif_running_text">Network: %1$s\nPassword: %2$s\nProxy: %3$s:%4$d</string>
     <string name="notif_stop">Stop</string>
+    <string name="notif_start">Start</string>
+    <string name="notif_stopped_title">Sharing stopped</string>
+    <string name="notif_stopped_text">Tap Start to share your Wi-Fi again.</string>
+    <string name="notif_failed_text">Couldn\'t start. Open the app to see why.</string>
     <string name="client_notif_channel_name">Connection to Phone A</string>
     <string name="client_notif_connecting">Connecting to Phone A…</string>
     <string name="client_notif_connected">Connected to Phone A</string>
     <string name="client_notif_reconnecting">Reconnecting to Phone A… (attempt %1$d)</string>
     <string name="client_notif_disconnect">Disconnect</string>
+    <string name="client_notif_connect">Connect</string>
+    <string name="client_notif_disconnected">Disconnected from Phone A</string>
+    <string name="client_notif_disconnected_text">Tap Connect to use Phone A\'s internet again.</string>
+    <string name="tile_label">Share Link</string>
+    <string name="tile_share">Share Wi-Fi</string>
+    <string name="tile_connect">Connect to Phone A</string>
+    <string name="tile_off">Off</string>
+    <string name="tile_starting">Starting…</string>
+    <string name="tile_sharing">Sharing</string>
+    <string name="tile_connecting">Connecting…</string>
+    <string name="tile_connected">Connected</string>
+    <string name="tile_reconnecting">Reconnecting…</string>
+    <string name="tile_error">Tap to see the problem</string>
 </resources>

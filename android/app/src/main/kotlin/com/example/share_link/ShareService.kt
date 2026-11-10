@@ -86,9 +86,12 @@ class ShareService : Service() {
         wifiDirect.onChannelLost = null
         wifiDirect.removeGroup()
         releaseLocks()
-        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        // Keep the notification and turn it into "Sharing stopped" [Start], so sharing can be
+        // toggled from the notification shade.
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_DETACH)
         // Keep an error visible to the UI; otherwise go back to "stopped".
         ShareState.update { if (it.status == ShareStatus.ERROR) it else ShareSnapshot() }
+        postStoppedNotification()
         Log.i(TAG, "Service destroyed")
         super.onDestroy()
     }
@@ -112,6 +115,12 @@ class ShareService : Service() {
         } catch (e: Exception) {
             Log.e(TAG, "startForeground failed", e)
             fail(ErrorCodes.SERVICE_FAILED, e.message)
+            return
+        }
+        // The notification's Start button starts this service without going through the app,
+        // so run the same checks here (after startForeground, which must come first).
+        AppActions.sharePreflightError(this)?.let { code ->
+            fail(code, null)
             return
         }
 
@@ -304,6 +313,41 @@ class ShareService : Service() {
             .setContentIntent(openApp)
             .addAction(0, getString(R.string.notif_stop), stop)
             .build()
+    }
+
+    /** Replaces the (detached) running notification with "Sharing stopped" [Start]; swipeable. */
+    @SuppressLint("MissingPermission")
+    private fun postStoppedNotification() {
+        val flags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        val openApp = PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            flags,
+        )
+        val startIntent = Intent(this, ShareService::class.java).setAction(ACTION_START)
+        val start = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PendingIntent.getForegroundService(this, 3, startIntent, flags)
+        } else {
+            PendingIntent.getService(this, 3, startIntent, flags)
+        }
+        val failed = ShareState.current.status == ShareStatus.ERROR
+        val text = getString(if (failed) R.string.notif_failed_text else R.string.notif_stopped_text)
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_stat_share)
+            .setContentTitle(getString(R.string.notif_stopped_title))
+            .setContentText(text)
+            .setOngoing(false)
+            .setOnlyAlertOnce(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentIntent(openApp)
+            .addAction(0, getString(R.string.notif_start), start)
+            .build()
+        try {
+            getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification)
+        } catch (e: SecurityException) {
+            Log.w(TAG, "Cannot post stopped notification", e)
+        }
     }
 
     companion object {

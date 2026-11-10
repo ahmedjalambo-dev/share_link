@@ -98,6 +98,19 @@ class _SettingsScreenState extends State<SettingsScreen>
     }
   }
 
+  Future<void> _addTile() async {
+    final l = AppLocalizations.of(context);
+    final result = await ShareChannel.requestAddTile();
+    if (!mounted) return;
+    final message = switch (result) {
+      'added' => l.tileAdded,
+      'alreadyAdded' => l.tileAlreadyAdded,
+      'notAdded' => l.tileNotAdded,
+      _ => l.tileAddHint,
+    };
+    _showSnack(message);
+  }
+
   Future<void> _setLanguage(String code) async {
     setState(() => _language = code);
     AppLocale.notifier.value = AppLocale.fromCode(code);
@@ -268,6 +281,18 @@ class _SettingsScreenState extends State<SettingsScreen>
                     unrestricted: _batteryUnrestricted,
                     onAllow: ShareChannel.requestIgnoreBatteryOptimizations,
                   ),
+                  const SizedBox(height: 24),
+                  _SectionHeader(l.sectionTile),
+                  // Android 13+ can add the tile with one prompt; older
+                  // versions need the Quick Settings editor.
+                  if (settings.apiLevel >= 33)
+                    OutlinedButton.icon(
+                      onPressed: _addTile,
+                      icon: const Icon(Icons.add_to_home_screen),
+                      label: Text(l.tileAddButton),
+                    )
+                  else
+                    Text(l.tileAddHint),
                 ],
               ),
             ),

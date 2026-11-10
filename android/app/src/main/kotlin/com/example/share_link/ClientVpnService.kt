@@ -56,6 +56,9 @@ class ClientVpnService : VpnService() {
     private var wifiLock: WifiManager.WifiLock? = null
     private var port = ShareSettings.DEFAULT_PORT
 
+    /** The connection notification is shown as a foreground notification. */
+    private var inForeground = false
+
     /** Between CONNECT and DISCONNECT (or a failed first connect). */
     private var active = false
     private var reconnecting = false
@@ -96,6 +99,13 @@ class ClientVpnService : VpnService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_CONNECT -> connect(intent.getIntExtra(EXTRA_PORT, ShareSettings.DEFAULT_PORT))
+            // The "Disconnected" notification's Connect button: this skips the app, so run the
+            // app's checks here, after startForeground (which a foreground start requires first).
+            ACTION_CONNECT_SAVED -> if (!active) {
+                startForegroundNotification()
+                val error = AppActions.clientPreflightError(this)
+                if (error != null) fail(error, null) else connect(ShareSettings(this).clientPort)
+            }
             else -> {
                 disconnect()
                 stopSelf()
@@ -447,13 +457,18 @@ class ClientVpnService : VpnService() {
     /** Only used when the first connect fails; drops are handled by reconnecting instead. */
     private fun fail(code: String, detail: String?) {
         Log.e(TAG, "Client failed: $code ($detail)")
-        disconnect()
+        // Set the error first: disconnect() keeps it, and its "Disconnected" notification shows it.
         ClientState.update { ClientSnapshot(status = ClientStatus.ERROR, errorCode = code, errorDetail = detail) }
+        disconnect()
         stopSelf()
     }
 
     private fun disconnect() {
-        if (!active && vpnFd == null) return
+        if (!active && vpnFd == null) {
+            // e.g. the notification's Connect failed its checks before connecting started.
+            leaveForeground()
+            return
+        }
         active = false
         reconnecting = false
         generation++
@@ -466,8 +481,49 @@ class ClientVpnService : VpnService() {
         bytesUpBase = 0
         bytesDownBase = 0
         releaseWifiLock()
-        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         ClientState.update { if (it.status == ClientStatus.ERROR) it else ClientSnapshot() }
+        leaveForeground()
+    }
+
+    /**
+     * Keeps the notification and turns it into "Disconnected" [Connect], so the connection can be
+     * toggled from the notification shade. Swipeable once it's no longer a foreground notification.
+     */
+    @SuppressLint("MissingPermission")
+    private fun leaveForeground() {
+        if (!inForeground) return
+        inForeground = false
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_DETACH)
+        val flags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        val openApp = PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            flags,
+        )
+        val connectIntent = Intent(this, ClientVpnService::class.java).setAction(ACTION_CONNECT_SAVED)
+        val connect = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PendingIntent.getForegroundService(this, 4, connectIntent, flags)
+        } else {
+            PendingIntent.getService(this, 4, connectIntent, flags)
+        }
+        val failed = ClientState.current.status == ClientStatus.ERROR
+        val text = getString(if (failed) R.string.notif_failed_text else R.string.client_notif_disconnected_text)
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_stat_share)
+            .setContentTitle(getString(R.string.client_notif_disconnected))
+            .setContentText(text)
+            .setOngoing(false)
+            .setOnlyAlertOnce(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentIntent(openApp)
+            .addAction(0, getString(R.string.client_notif_connect), connect)
+            .build()
+        try {
+            getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification)
+        } catch (e: SecurityException) {
+            Log.w(TAG, "Cannot post disconnected notification", e)
+        }
     }
 
     // region Keep-alive: foreground notification and Wi-Fi lock
@@ -485,6 +541,7 @@ class ClientVpnService : VpnService() {
                     0
                 },
             )
+            inForeground = true
         } catch (e: Exception) {
             // Still works while the app is open; only background reconnects get less reliable.
             Log.w(TAG, "Client startForeground failed", e)
@@ -566,6 +623,7 @@ class ClientVpnService : VpnService() {
     companion object {
         private const val ACTION_CONNECT = "com.example.share_link.action.CONNECT"
         private const val ACTION_DISCONNECT = "com.example.share_link.action.DISCONNECT"
+        private const val ACTION_CONNECT_SAVED = "com.example.share_link.action.CONNECT_SAVED"
         private const val EXTRA_PORT = "port"
         private const val CHANNEL_ID = "share_link_client"
         private const val NOTIFICATION_ID = 2

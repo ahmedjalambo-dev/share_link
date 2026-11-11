@@ -154,7 +154,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get guideNote =>
-      'المتصفحات ومعظم التطبيقات تستخدم البروكسي. بعض الألعاب والمكالمات وتطبيقات VPN تتجاهله فلن تعمل.';
+      'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام استخدام إعداد SOCKS5 الخاص به أعلاه. أما واتساب والمكالمات فتتجاهلهما: لها ثبّت Share Link على الهاتف الآخر واستخدم وضع «اتصال».';
 
   @override
   String get settingsTitle => 'الإعدادات';
@@ -411,4 +411,12 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get errorSetupNeeded =>
       'أدخل كلمة مرور الهاتف (أ) أو امسح رمز QR الخاص به أولًا، ثم اضغط اتصال.';
+
+  @override
+  String get guideTelegramTitle => 'تيليجرام بدون التطبيق';
+
+  @override
+  String guideTelegram(String host, String port) {
+    return 'في تيليجرام: الإعدادات ← البيانات والتخزين ← إعدادات البروكسي ← إضافة بروكسي ← SOCKS5. الخادم $host والمنفذ $port، واترك اسم المستخدم وكلمة المرور فارغين.';
+  }
 }

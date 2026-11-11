@@ -156,7 +156,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guideNote =>
-      'Browsers and most apps use the proxy. Some games, calls and VPN apps ignore it and won\'t work.';
+      'Browsers and most apps use the manual proxy, and Telegram can use its own SOCKS5 setting above. WhatsApp and calls ignore both: for them, install Share Link on the other phone and use Connect.';
 
   @override
   String get settingsTitle => 'Settings';
@@ -413,4 +413,12 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorSetupNeeded =>
       'Enter Phone A\'s password or scan its QR code first, then tap CONNECT.';
+
+  @override
+  String get guideTelegramTitle => 'Telegram without the app';
+
+  @override
+  String guideTelegram(String host, String port) {
+    return 'In Telegram: Settings → Data and Storage → Proxy Settings → Add proxy → SOCKS5. Server $host, port $port, leave username and password empty.';
+  }
 }

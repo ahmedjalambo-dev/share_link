@@ -58,7 +58,16 @@ class ConnectGuide extends StatelessWidget {
           ),
           for (var i = 0; i < steps.length; i++)
             NumberedStep(number: i + 1, text: steps[i]),
-          const SizedBox(height: 4),
+          // Telegram ignores the system proxy but has its own SOCKS5 setting,
+          // which Phone A's proxy port also speaks.
+          Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: ListTile(
+              leading: const Icon(Icons.send),
+              title: Text(l.guideTelegramTitle),
+              subtitle: Text(l.guideTelegram(host, port)),
+            ),
+          ),
           Text(
             l.guideNote,
             style: Theme.of(

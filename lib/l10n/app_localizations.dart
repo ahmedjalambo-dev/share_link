@@ -353,7 +353,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideNote.
   ///
   /// In en, this message translates to:
-  /// **'Browsers and most apps use the proxy. Some games, calls and VPN apps ignore it and won\'t work.'**
+  /// **'Browsers and most apps use the manual proxy, and Telegram can use its own SOCKS5 setting above. WhatsApp and calls ignore both: for them, install Share Link on the other phone and use Connect.'**
   String get guideNote;
 
   /// No description provided for @settingsTitle.
@@ -805,6 +805,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter Phone A\'s password or scan its QR code first, then tap CONNECT.'**
   String get errorSetupNeeded;
+
+  /// No description provided for @guideTelegramTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Telegram without the app'**
+  String get guideTelegramTitle;
+
+  /// No description provided for @guideTelegram.
+  ///
+  /// In en, this message translates to:
+  /// **'In Telegram: Settings → Data and Storage → Proxy Settings → Add proxy → SOCKS5. Server {host}, port {port}, leave username and password empty.'**
+  String guideTelegram(String host, String port);
 }
 
 class _AppLocalizationsDelegate

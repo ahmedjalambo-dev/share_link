@@ -81,6 +81,16 @@ class ConnectGuide extends StatelessWidget {
                 subtitle: Text(l.guideWhatsApp(host)),
               ),
             ),
+          // Apps that check the internet themselves need a DNS that answers;
+          // Phone A's own address (handed out by Android) doesn't.
+          Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: ListTile(
+              leading: const Icon(Icons.dns),
+              title: Text(l.guideDnsTitle),
+              subtitle: Text(l.guideDnsTip(host)),
+            ),
+          ),
           Text(
             whatsAppProxy ? l.guideNoteWithWhatsApp : l.guideNote,
             style: Theme.of(

@@ -175,8 +175,11 @@ class ShareService : Service() {
             return
         }
         proxy = server
+        // WhatsApp proxy for phones without the app; if its ports can't be opened, sharing still runs.
+        val whatsApp = WhatsAppRelay.start(server, InetAddress.getByName(group.ownerIp))
         ShareState.update {
             it.copy(
+                whatsAppProxy = whatsApp,
                 status = ShareStatus.RUNNING,
                 ssid = group.ssid,
                 passphrase = group.passphrase,

@@ -41,6 +41,8 @@ data class ShareSnapshot(
     val bytesDown: Long = 0,
     /** False while Phone A's Wi-Fi is down; the proxy keeps running and recovers when it returns. */
     val upstreamAvailable: Boolean = true,
+    /** The WhatsApp proxy ports (WhatsAppRelay) are open. */
+    val whatsAppProxy: Boolean = false,
 ) {
     fun toMap(): Map<String, Any?> = mapOf(
         "status" to status.wire,
@@ -54,6 +56,7 @@ data class ShareSnapshot(
         "bytesUp" to bytesUp,
         "bytesDown" to bytesDown,
         "upstreamAvailable" to upstreamAvailable,
+        "whatsAppProxy" to whatsAppProxy,
     )
 }
 

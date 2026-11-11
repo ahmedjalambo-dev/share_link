@@ -14,6 +14,7 @@ class ShareStatus {
     this.bytesUp = 0,
     this.bytesDown = 0,
     this.upstreamAvailable = true,
+    this.whatsAppProxy = false,
   });
 
   static const stopped = ShareStatus(kind: ShareStatusKind.stopped);
@@ -33,6 +34,7 @@ class ShareStatus {
       bytesUp: map['bytesUp'] as int? ?? 0,
       bytesDown: map['bytesDown'] as int? ?? 0,
       upstreamAvailable: map['upstreamAvailable'] as bool? ?? true,
+      whatsAppProxy: map['whatsAppProxy'] == true,
     );
   }
 
@@ -49,6 +51,9 @@ class ShareStatus {
 
   /// False while Phone A's Wi-Fi is down (the proxy keeps running).
   final bool upstreamAvailable;
+
+  /// The experimental WhatsApp proxy ports are open on Phone A.
+  final bool whatsAppProxy;
 
   /// True while the service is starting or running (the button acts as "Stop").
   bool get isActive =>

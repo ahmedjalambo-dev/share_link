@@ -419,4 +419,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String guideTelegram(String host, String port) {
     return 'في تيليجرام: الإعدادات ← البيانات والتخزين ← إعدادات البروكسي ← إضافة بروكسي ← SOCKS5. الخادم $host والمنفذ $port، واترك اسم المستخدم وكلمة المرور فارغين.';
   }
+
+  @override
+  String get guideWhatsAppTitle => 'واتساب بدون التطبيق';
+
+  @override
+  String guideWhatsApp(String host) {
+    return 'في واتساب: الإعدادات ← التخزين والبيانات ← البروكسي ← استخدام البروكسي. مضيف البروكسي $host، منفذ الدردشة 5222، منفذ الوسائط 7777. الرسائل والوسائط تعمل؛ المكالمات لا تمر عبر البروكسي.';
+  }
+
+  @override
+  String get guideNoteWithWhatsApp =>
+      'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام وواتساب استخدام إعدادات البروكسي الخاصة بهما أعلاه. للمكالمات، ثبّت Share Link على الهاتف الآخر واستخدم وضع «اتصال».';
 }

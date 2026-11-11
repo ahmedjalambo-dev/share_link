@@ -421,4 +421,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String guideTelegram(String host, String port) {
     return 'In Telegram: Settings → Data and Storage → Proxy Settings → Add proxy → SOCKS5. Server $host, port $port, leave username and password empty.';
   }
+
+  @override
+  String get guideWhatsAppTitle => 'WhatsApp without the app';
+
+  @override
+  String guideWhatsApp(String host) {
+    return 'In WhatsApp: Settings → Storage and data → Proxy → Use proxy. Proxy host $host, chat port 5222, media port 7777. Messages and media work; calls don\'t go through the proxy.';
+  }
+
+  @override
+  String get guideNoteWithWhatsApp =>
+      'Browsers and most apps use the manual proxy, and Telegram and WhatsApp can use their own proxy settings above. For calls, install Share Link on the other phone and use Connect.';
 }

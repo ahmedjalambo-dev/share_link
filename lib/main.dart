@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'app_locale.dart';
 import 'l10n/app_localizations.dart';
-import 'screens/home_screen.dart';
+import 'screens/app_shell.dart';
 import 'services/share_channel.dart';
 
 Future<void> main() async {
@@ -44,7 +44,7 @@ class ShareLinkApp extends StatelessWidget {
           fontFamily: _latinFont,
           fontFamilyFallback: _arabicFallback,
         ),
-        home: const HomeScreen(),
+        home: const AppShell(),
       ),
     );
   }

@@ -30,6 +30,8 @@ object AppActions {
             ShareState.update { ShareSnapshot(status = ShareStatus.ERROR, errorCode = error) }
             return false
         }
+        // The Quick Settings tile follows the last thing started.
+        ShareSettings(context).mode = ShareSettings.MODE_SHARE
         ShareService.start(context)
         return true
     }
@@ -69,7 +71,10 @@ object AppActions {
             ClientState.update { ClientSnapshot(status = ClientStatus.ERROR, errorCode = error) }
             return false
         }
-        ClientVpnService.connect(context, ShareSettings(context).clientPort)
+        val settings = ShareSettings(context)
+        // The Quick Settings tile follows the last thing started.
+        settings.mode = ShareSettings.MODE_CONNECT
+        ClientVpnService.connect(context, settings.clientPort)
         return true
     }
 

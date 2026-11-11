@@ -635,7 +635,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideRecommended.
   ///
   /// In en, this message translates to:
-  /// **'Best option: install Share Link on the other phone too. Join this network, choose \"Connect\" at the top and tap CONNECT. Every app works, including WhatsApp, Telegram and banking apps.'**
+  /// **'Or without installing anything on the other phone, using the steps below.'**
   String get guideRecommended;
 
   /// No description provided for @guideManualTitle.
@@ -847,6 +847,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Some apps (e.g. wallets) check the internet themselves. In the other phone\'s Wi-Fi settings for this network, set DNS to Manual, keep {host} and add 1.1.1.1. On iPhone: Settings → Wi-Fi → ⓘ → Configure DNS → Manual → Add Server.'**
   String guideDnsTip(String host);
+
+  /// No description provided for @navHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// No description provided for @navConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect a device'**
+  String get navConnect;
+
+  /// No description provided for @receiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive internet'**
+  String get receiveTitle;
+
+  /// No description provided for @receiveCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Best: install Share Link on the other phone'**
+  String get receiveCardTitle;
+
+  /// No description provided for @receiveCardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'With the app on the other phone, every app works there, including calls. On that phone open \"Connect a device\" and tap the button below.'**
+  String get receiveCardBody;
+
+  /// No description provided for @receiveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'This phone needs internet? Open Receive mode'**
+  String get receiveButton;
+
+  /// No description provided for @receivingBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiving internet from Phone A'**
+  String get receivingBanner;
+
+  /// No description provided for @open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
+
+  /// No description provided for @stopReceivingFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect Receive mode first.'**
+  String get stopReceivingFirst;
+
+  /// No description provided for @stopSharingFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop sharing on this phone first.'**
+  String get stopSharingFirst;
 }
 
 class _AppLocalizationsDelegate

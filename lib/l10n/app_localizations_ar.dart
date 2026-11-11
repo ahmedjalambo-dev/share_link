@@ -312,7 +312,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get guideRecommended =>
-      'الخيار الأفضل: ثبّت Share Link على الهاتف الآخر أيضًا. انضم إلى هذه الشبكة، واختر \"اتصال\" في الأعلى ثم اضغط اتصال. ستعمل كل التطبيقات، ومنها واتساب وتيليجرام وتطبيقات البنوك.';
+      'أو بدون تثبيت أي شيء على الهاتف الآخر، بالخطوات التالية.';
 
   @override
   String get guideManualTitle => 'بدون التطبيق (المتصفحات وبعض التطبيقات فقط):';
@@ -439,4 +439,35 @@ class AppLocalizationsAr extends AppLocalizations {
   String guideDnsTip(String host) {
     return 'بعض التطبيقات (مثل المحافظ) تفحص الإنترنت بنفسها. في إعدادات الواي فاي على الهاتف الآخر لهذه الشبكة، اجعل DNS يدويًا، أبقِ $host وأضف 1.1.1.1. على الآيفون: الإعدادات ← Wi-Fi ← ⓘ ← تكوين DNS ← يدوي ← إضافة خادم.';
   }
+
+  @override
+  String get navHome => 'الرئيسية';
+
+  @override
+  String get navConnect => 'توصيل جهاز';
+
+  @override
+  String get receiveTitle => 'استقبال الإنترنت';
+
+  @override
+  String get receiveCardTitle => 'الأفضل: ثبّت Share Link على الهاتف الآخر';
+
+  @override
+  String get receiveCardBody =>
+      'مع التطبيق على الهاتف الآخر تعمل عليه كل التطبيقات، ومنها المكالمات. على ذلك الهاتف افتح «توصيل جهاز» واضغط الزر بالأسفل.';
+
+  @override
+  String get receiveButton => 'هذا الهاتف يحتاج إنترنت؟ افتح وضع الاستقبال';
+
+  @override
+  String get receivingBanner => 'يستقبل هذا الهاتف الإنترنت من الهاتف (أ)';
+
+  @override
+  String get open => 'فتح';
+
+  @override
+  String get stopReceivingFirst => 'اقطع اتصال وضع الاستقبال أولًا.';
+
+  @override
+  String get stopSharingFirst => 'أوقف المشاركة على هذا الهاتف أولًا.';
 }

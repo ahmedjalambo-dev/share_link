@@ -107,15 +107,6 @@ class MainActivity : FlutterActivity() {
                 requestIgnoreBatteryOptimizations()
                 result.success(null)
             }
-            "setMode" -> {
-                val mode = call.argument<String>("mode") ?: ""
-                if (mode in ShareSettings.MODES) {
-                    settings.mode = mode
-                    result.success(null)
-                } else {
-                    result.error("invalid_mode", null, null)
-                }
-            }
             "getClientStatus" -> result.success(ClientState.current.toMap())
             "prepareVpn" -> prepareVpn(result)
             "connectClient" -> connectClient(call, result)

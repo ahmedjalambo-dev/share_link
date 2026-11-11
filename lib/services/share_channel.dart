@@ -103,11 +103,14 @@ class ShareChannel {
   static Future<void> requestIgnoreBatteryOptimizations() =>
       _control.invokeMethod<void>('requestIgnoreBatteryOptimizations');
 
-  /// [mode] is `share` or `connect`.
-  static Future<void> setMode(String mode) =>
-      _control.invokeMethod<void>('setMode', {'mode': mode});
-
   // Client mode (Phone B)
+
+  static Future<ClientStatus> getClientStatus() async {
+    final map = await _control.invokeMapMethod<Object?, Object?>(
+      'getClientStatus',
+    );
+    return map == null ? ClientStatus.disconnected : ClientStatus.fromMap(map);
+  }
 
   static final Stream<ClientStatus> clientStatusStream = _clientStatus
       .receiveBroadcastStream()

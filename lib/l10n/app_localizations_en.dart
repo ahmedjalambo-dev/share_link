@@ -313,7 +313,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guideRecommended =>
-      'Best option: install Share Link on the other phone too. Join this network, choose \"Connect\" at the top and tap CONNECT. Every app works, including WhatsApp, Telegram and banking apps.';
+      'Or without installing anything on the other phone, using the steps below.';
 
   @override
   String get guideManualTitle =>
@@ -441,4 +441,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String guideDnsTip(String host) {
     return 'Some apps (e.g. wallets) check the internet themselves. In the other phone\'s Wi-Fi settings for this network, set DNS to Manual, keep $host and add 1.1.1.1. On iPhone: Settings → Wi-Fi → ⓘ → Configure DNS → Manual → Add Server.';
   }
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navConnect => 'Connect a device';
+
+  @override
+  String get receiveTitle => 'Receive internet';
+
+  @override
+  String get receiveCardTitle => 'Best: install Share Link on the other phone';
+
+  @override
+  String get receiveCardBody =>
+      'With the app on the other phone, every app works there, including calls. On that phone open \"Connect a device\" and tap the button below.';
+
+  @override
+  String get receiveButton => 'This phone needs internet? Open Receive mode';
+
+  @override
+  String get receivingBanner => 'Receiving internet from Phone A';
+
+  @override
+  String get open => 'Open';
+
+  @override
+  String get stopReceivingFirst => 'Disconnect Receive mode first.';
+
+  @override
+  String get stopSharingFirst => 'Stop sharing on this phone first.';
 }

@@ -835,6 +835,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Browsers and most apps use the manual proxy, and Telegram and WhatsApp can use their own proxy settings above. For calls, install Share Link on the other phone and use Connect.'**
   String get guideNoteWithWhatsApp;
+
+  /// No description provided for @guideDnsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'If an app says it isn\'t connected'**
+  String get guideDnsTitle;
+
+  /// No description provided for @guideDnsTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Some apps (e.g. wallets) check the internet themselves. In the other phone\'s Wi-Fi settings for this network, set DNS to Manual, keep {host} and add 1.1.1.1. On iPhone: Settings → Wi-Fi → ⓘ → Configure DNS → Manual → Add Server.'**
+  String guideDnsTip(String host);
 }
 
 class _AppLocalizationsDelegate

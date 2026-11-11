@@ -431,4 +431,12 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get guideNoteWithWhatsApp =>
       'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام وواتساب استخدام إعدادات البروكسي الخاصة بهما أعلاه. للمكالمات، ثبّت Share Link على الهاتف الآخر واستخدم وضع «اتصال».';
+
+  @override
+  String get guideDnsTitle => 'إذا قال تطبيق إنه غير متصل';
+
+  @override
+  String guideDnsTip(String host) {
+    return 'بعض التطبيقات (مثل المحافظ) تفحص الإنترنت بنفسها. في إعدادات الواي فاي على الهاتف الآخر لهذه الشبكة، اجعل DNS يدويًا، أبقِ $host وأضف 1.1.1.1. على الآيفون: الإعدادات ← Wi-Fi ← ⓘ ← تكوين DNS ← يدوي ← إضافة خادم.';
+  }
 }

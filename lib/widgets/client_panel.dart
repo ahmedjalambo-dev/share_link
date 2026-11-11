@@ -93,6 +93,14 @@ class _ClientPanelState extends State<ClientPanel> {
   /// Validates the form, asks for the needed permissions and starts client mode.
   Future<void> _connect() async {
     if (!_formKey.currentState!.validate()) return;
+    // One phone can't share and receive at the same time.
+    if ((await ShareChannel.getStatus()).isActive) {
+      if (mounted) {
+        _showSnack(AppLocalizations.of(context).stopSharingFirst);
+      }
+      return;
+    }
+    if (!mounted) return;
 
     final l = AppLocalizations.of(context);
     setState(() => _busy = true);

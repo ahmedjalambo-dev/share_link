@@ -4,26 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
-import '../models/share_settings.dart';
 import '../models/share_status.dart';
 import '../services/share_channel.dart';
-import '../utils/constants.dart';
-import 'connect_guide.dart';
 import 'credential_tile.dart';
 import 'error_card.dart';
 import 'power_button.dart';
 import 'stats_card.dart';
 import 'wifi_qr_card.dart';
 
-/// Share mode (Phone A): Wi-Fi Direct group + proxy, with credentials, QR and guide.
+/// Share mode (Phone A): Wi-Fi Direct group + proxy, with credentials, QR and stats.
 class SharePanel extends StatefulWidget {
-  const SharePanel({super.key, required this.settings, this.onActiveChanged});
+  const SharePanel({super.key, this.receiving = false});
 
-  /// Saved settings, used to fill the guide while sharing is stopped.
-  final ShareSettingsData settings;
-
-  /// Lets the home screen lock the mode switch while sharing.
-  final ValueChanged<bool>? onActiveChanged;
+  /// Receive mode is active on this phone; sharing can't start until it's disconnected.
+  final bool receiving;
 
   @override
   State<SharePanel> createState() => _SharePanelState();
@@ -39,7 +33,6 @@ class _SharePanelState extends State<SharePanel> {
     super.initState();
     _subscription = ShareChannel.statusStream.listen((status) {
       setState(() => _status = status);
-      widget.onActiveChanged?.call(status.isActive);
     });
   }
 
@@ -55,6 +48,10 @@ class _SharePanelState extends State<SharePanel> {
     try {
       if (_status.isActive) {
         await ShareChannel.stop();
+        return;
+      }
+      if (widget.receiving) {
+        _showSnack(AppLocalizations.of(context).stopReceivingFirst);
         return;
       }
       final permissions = await ShareChannel.requestPermissions();
@@ -139,8 +136,6 @@ class _SharePanelState extends State<SharePanel> {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-        const SizedBox(height: 8),
-        _guide(running),
       ],
     );
   }
@@ -171,27 +166,6 @@ class _SharePanelState extends State<SharePanel> {
           ),
         ],
       ),
-    );
-  }
-
-  /// Uses the live values when running, otherwise the saved settings.
-  Widget _guide(bool running) {
-    final settings = widget.settings;
-    final custom = settings.customNetworkSupported;
-    final ssid = running ? _status.ssid : (custom ? settings.fullSsid : null);
-    final password = running
-        ? _status.passphrase
-        : (custom ? settings.passphrase : null);
-    return ConnectGuide(
-      // Re-create when sharing starts/stops so initiallyExpanded applies.
-      key: ValueKey(running),
-      ssid: ssid ?? 'DIRECT-…',
-      password: password ?? '…',
-      host: running ? (_status.ownerIp ?? kDefaultOwnerIp) : kDefaultOwnerIp,
-      port: '${running ? _status.port ?? kDefaultPort : settings.port}',
-      initiallyExpanded: running,
-      // Always offered; while sharing, only if its ports actually opened.
-      whatsAppProxy: !running || _status.whatsAppProxy,
     );
   }
 }

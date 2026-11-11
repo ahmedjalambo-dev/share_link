@@ -36,7 +36,7 @@ class ShareSettings(context: Context) {
         get() = prefs.getString(KEY_LANGUAGE, null) ?: LANGUAGE_SYSTEM
         set(value) = prefs.edit { putString(KEY_LANGUAGE, value) }
 
-    /** Home screen mode: "share" (Phone A) or "connect" (Phone B). */
+    /** Last thing started, "share" (Phone A) or "connect" (Phone B); the Quick Settings tile follows it. */
     var mode: String
         get() = prefs.getString(KEY_MODE, null) ?: MODE_SHARE
         set(value) = prefs.edit { putString(KEY_MODE, value) }
@@ -132,7 +132,6 @@ class ShareSettings(context: Context) {
         private const val KEY_CLIENT_AUTO_JOIN = "client_auto_join"
         const val MODE_SHARE = "share"
         const val MODE_CONNECT = "connect"
-        val MODES = setOf(MODE_SHARE, MODE_CONNECT)
         private const val LANGUAGE_SYSTEM = "system"
         val LANGUAGES = setOf(LANGUAGE_SYSTEM, "en", "ar")
         private const val ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"

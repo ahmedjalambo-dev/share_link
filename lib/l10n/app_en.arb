@@ -174,5 +174,15 @@
         "type": "String"
       }
     }
-  }
+  },
+  "guideWhatsAppTitle": "WhatsApp without the app",
+  "guideWhatsApp": "In WhatsApp: Settings → Storage and data → Proxy → Use proxy. Proxy host {host}, chat port 5222, media port 7777. Messages and media work; calls don't go through the proxy.",
+  "@guideWhatsApp": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "guideNoteWithWhatsApp": "Browsers and most apps use the manual proxy, and Telegram and WhatsApp can use their own proxy settings above. For calls, install Share Link on the other phone and use Connect."
 }

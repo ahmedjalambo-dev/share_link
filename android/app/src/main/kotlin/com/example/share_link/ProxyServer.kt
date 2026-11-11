@@ -55,30 +55,53 @@ class ProxyServer(
     @Volatile
     private var serverSocket: ServerSocket? = null
 
+    /** Extra listeners from [startTcpRelay] (e.g. the WhatsApp proxy ports). */
+    private val relayServers: MutableSet<ServerSocket> = ConcurrentHashMap.newKeySet()
+
     @Volatile
     private var running = false
 
     /** Binds to [bindAddress]:[port] and starts accepting. Throws if the bind fails. */
     @Throws(IOException::class)
     fun start(bindAddress: InetAddress) {
+        val server = bindServer(bindAddress, port)
+        serverSocket = server
+        running = true
+        executor.execute { acceptLoop(server, ::handleClient) }
+        Log.i(TAG, "Proxy listening on ${bindAddress.hostAddress}:$port")
+    }
+
+    /**
+     * Also listens on [listenPort] and pipes every connection, unchanged, to the fixed
+     * [targetHost]:[targetPort] over Wi-Fi. Only that target is reachable, so it isn't an open
+     * relay. Call after [start]; throws if the port can't be bound.
+     */
+    @Throws(IOException::class)
+    fun startTcpRelay(bindAddress: InetAddress, listenPort: Int, targetHost: String, targetPort: Int) {
+        val server = bindServer(bindAddress, listenPort)
+        relayServers.add(server)
+        executor.execute { acceptLoop(server) { client -> handleRelay(client, targetHost, targetPort) } }
+        Log.i(TAG, "Relay ${bindAddress.hostAddress}:$listenPort → $targetHost:$targetPort")
+    }
+
+    private fun bindServer(bindAddress: InetAddress, listenPort: Int): ServerSocket {
         val server = ServerSocket()
         try {
             server.reuseAddress = true
-            server.bind(InetSocketAddress(bindAddress, port), BACKLOG)
+            server.bind(InetSocketAddress(bindAddress, listenPort), BACKLOG)
         } catch (e: IOException) {
             closeQuietly(server)
             throw e
         }
-        serverSocket = server
-        running = true
-        executor.execute { acceptLoop(server) }
-        Log.i(TAG, "Proxy listening on ${bindAddress.hostAddress}:$port")
+        return server
     }
 
     fun stop() {
         running = false
         closeQuietly(serverSocket)
         serverSocket = null
+        relayServers.forEach(::closeQuietly)
+        relayServers.clear()
         openSockets.forEach(::closeQuietly)
         openSockets.clear()
         openDatagrams.forEach(::closeQuietly)
@@ -87,7 +110,7 @@ class ProxyServer(
         Log.i(TAG, "Proxy stopped")
     }
 
-    private fun acceptLoop(server: ServerSocket) {
+    private fun acceptLoop(server: ServerSocket, handler: (Socket) -> Unit) {
         while (running) {
             val client = try {
                 server.accept()
@@ -100,10 +123,32 @@ class ProxyServer(
                 continue
             }
             try {
-                executor.execute { handleClient(client) }
+                executor.execute { handler(client) }
             } catch (e: RejectedExecutionException) {
                 closeQuietly(client)
             }
+        }
+    }
+
+    /** One relay connection: no protocol, just bytes both ways to the fixed target. */
+    private fun handleRelay(client: Socket, targetHost: String, targetPort: Int) {
+        activeConnections.incrementAndGet()
+        openSockets.add(client)
+        try {
+            client.tcpNoDelay = true
+            val upstream = connectUpstream(targetHost, targetPort)
+            try {
+                tunnel(client, client.getInputStream(), upstream)
+            } finally {
+                release(upstream)
+            }
+        } catch (e: IOException) {
+            Log.d(TAG, "Relay to $targetHost:$targetPort failed: ${e.message}")
+        } catch (e: Exception) {
+            Log.w(TAG, "Unexpected relay error", e)
+        } finally {
+            release(client)
+            activeConnections.decrementAndGet()
         }
     }
 

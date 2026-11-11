@@ -12,6 +12,7 @@ class ConnectGuide extends StatelessWidget {
     required this.host,
     required this.port,
     this.initiallyExpanded = false,
+    this.whatsAppProxy = false,
   });
 
   final String ssid;
@@ -19,6 +20,9 @@ class ConnectGuide extends StatelessWidget {
   final String host;
   final String port;
   final bool initiallyExpanded;
+
+  /// Show how to use Phone A as a WhatsApp proxy (false only if its ports failed to open).
+  final bool whatsAppProxy;
 
   @override
   Widget build(BuildContext context) {
@@ -68,8 +72,17 @@ class ConnectGuide extends StatelessWidget {
               subtitle: Text(l.guideTelegram(host, port)),
             ),
           ),
+          if (whatsAppProxy)
+            Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                leading: const Icon(Icons.chat),
+                title: Text(l.guideWhatsAppTitle),
+                subtitle: Text(l.guideWhatsApp(host)),
+              ),
+            ),
           Text(
-            l.guideNote,
+            whatsAppProxy ? l.guideNoteWithWhatsApp : l.guideNote,
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),

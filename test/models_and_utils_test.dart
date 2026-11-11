@@ -109,6 +109,11 @@ void main() {
     expect(status.errorCode, 'host_unreachable');
   });
 
+  test('WhatsApp proxy status flag parses and defaults to off', () {
+    expect(ShareStatus.fromMap({'whatsAppProxy': true}).whatsAppProxy, isTrue);
+    expect(ShareStatus.fromMap({}).whatsAppProxy, isFalse);
+  });
+
   test('formatBytes picks a readable unit', () {
     expect(formatBytes(512), '512 B');
     expect(formatBytes(1536), '1.5 KB');

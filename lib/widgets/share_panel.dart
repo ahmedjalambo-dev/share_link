@@ -190,6 +190,8 @@ class _SharePanelState extends State<SharePanel> {
       host: running ? (_status.ownerIp ?? kDefaultOwnerIp) : kDefaultOwnerIp,
       port: '${running ? _status.port ?? kDefaultPort : settings.port}',
       initiallyExpanded: running,
+      // Always offered; while sharing, only if its ports actually opened.
+      whatsAppProxy: !running || _status.whatsAppProxy,
     );
   }
 }

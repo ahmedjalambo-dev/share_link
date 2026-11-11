@@ -67,6 +67,37 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # IBM Plex Sans draws Latin text; Arabic letters fall back to IBM Plex Sans
+  # Arabic (see the theme in lib/main.dart). Only these weights are bundled.
+  fonts:
+    - family: IBMPlexSans
+      fonts:
+        - asset: assets/fonts/IBM_Plex_Sans/static/IBMPlexSans-Light.ttf
+          weight: 300
+        - asset: assets/fonts/IBM_Plex_Sans/static/IBMPlexSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/IBM_Plex_Sans/static/IBMPlexSans-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/IBM_Plex_Sans/static/IBMPlexSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/IBM_Plex_Sans/static/IBMPlexSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/IBM_Plex_Sans/static/IBMPlexSans-Bold.ttf
+          weight: 700
+    - family: IBMPlexSansArabic
+      fonts:
+        - asset: assets/fonts/IBM_Plex_Sans_Arabic/IBMPlexSansArabic-Light.ttf
+          weight: 300
+        - asset: assets/fonts/IBM_Plex_Sans_Arabic/IBMPlexSansArabic-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/IBM_Plex_Sans_Arabic/IBMPlexSansArabic-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/IBM_Plex_Sans_Arabic/IBMPlexSansArabic-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/IBM_Plex_Sans_Arabic/IBMPlexSansArabic-Bold.ttf
+          weight: 700
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

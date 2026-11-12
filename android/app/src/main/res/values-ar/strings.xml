@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Share Link</string>
+    <string name="app_name">شير لينك</string>
     <string name="notif_channel_name">مشاركة الواي فاي</string>
     <string name="notif_title">جارٍ مشاركة الواي فاي</string>
     <string name="notif_starting">جارٍ تشغيل Wi-Fi Direct…</string>
@@ -18,7 +18,7 @@
     <string name="client_notif_connect">اتصال</string>
     <string name="client_notif_disconnected">انقطع الاتصال بالهاتف (أ)</string>
     <string name="client_notif_disconnected_text">اضغط اتصال لاستخدام إنترنت الهاتف (أ) مجددًا.</string>
-    <string name="tile_label">Share Link</string>
+    <string name="tile_label">شير لينك</string>
     <string name="tile_share">مشاركة الواي فاي</string>
     <string name="tile_connect">الاتصال بالهاتف (أ)</string>
     <string name="tile_off">متوقف</string>

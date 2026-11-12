@@ -305,6 +305,8 @@ class ShareService : Service() {
         }
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_share)
+            // Fills the icon's circle in the notification shade (Android 12+).
+            .setColor(ContextCompat.getColor(this, R.color.brand_teal))
             .setContentTitle(getString(R.string.notif_title))
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
@@ -338,6 +340,8 @@ class ShareService : Service() {
         val text = getString(if (failed) R.string.notif_failed_text else R.string.notif_stopped_text)
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_share)
+            // Fills the icon's circle in the notification shade (Android 12+).
+            .setColor(ContextCompat.getColor(this, R.color.brand_teal))
             .setContentTitle(getString(R.string.notif_stopped_title))
             .setContentText(text)
             .setOngoing(false)

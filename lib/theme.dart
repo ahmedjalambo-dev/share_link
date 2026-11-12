@@ -32,6 +32,7 @@ ThemeData buildTheme(Brightness brightness) {
       border: OutlineInputBorder(),
     ),
     appBarTheme: AppBarTheme(
+      centerTitle: true,
       backgroundColor: scheme.surface,
       scrolledUnderElevation: 2,
       titleTextStyle: TextStyle(

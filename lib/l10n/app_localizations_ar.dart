@@ -9,7 +9,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'Share Link';
+  String get appTitle => 'شير لينك';
 
   @override
   String get start => 'تشغيل';
@@ -124,7 +124,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get qrCaption =>
-      'على الهاتف الآخر افتح Share Link ← توصيل جهاز ← وضع الاستقبال ← \"امسح رمز QR للهاتف (أ)\" للانضمام والاتصال بخطوة واحدة. يمكن لتطبيق الكاميرا أيضًا مسحه، لكنه عندها ينضم إلى الواي فاي فقط.';
+      'على الهاتف الآخر افتح شير لينك ← توصيل جهاز ← وضع الاستقبال ← \"امسح رمز QR للهاتف (أ)\" للانضمام والاتصال بخطوة واحدة. يمكن لتطبيق الكاميرا أيضًا مسحه، لكنه عندها ينضم إلى الواي فاي فقط.';
 
   @override
   String guideStep1(String ssid) {
@@ -151,7 +151,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get guideNote =>
-      'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام استخدام إعداد SOCKS5 الخاص به. أما واتساب والمكالمات فتتجاهلهما: لها ثبّت Share Link على الهاتف الآخر واستخدم وضع الاستقبال.';
+      'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام استخدام إعداد SOCKS5 الخاص به. أما واتساب والمكالمات فتتجاهلهما: لها ثبّت شير لينك على الهاتف الآخر واستخدم وضع الاستقبال.';
 
   @override
   String get settingsTitle => 'الإعدادات';
@@ -362,7 +362,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get scanNotShareLink =>
-      'هذا ليس رمز QR الخاص بـ Share Link على الهاتف (أ).';
+      'هذا ليس رمز QR الخاص بـ شير لينك على الهاتف (أ).';
 
   @override
   String get scanNoCodeInImage => 'لم يُعثر على رمز QR في هذه الصورة.';
@@ -383,7 +383,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get tileAddHint =>
-      'اسحب من أعلى الشاشة إلى الأسفل مرتين، واضغط زر التعديل (القلم)، ثم اسحب مربع Share Link إلى مربعاتك.';
+      'اسحب من أعلى الشاشة إلى الأسفل مرتين، واضغط زر التعديل (القلم)، ثم اسحب مربع شير لينك إلى مربعاتك.';
 
   @override
   String get tileAdded =>
@@ -417,7 +417,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get guideNoteWithWhatsApp =>
-      'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام وواتساب استخدام إعدادات البروكسي الخاصة بهما. للمكالمات، ثبّت Share Link على الهاتف الآخر واستخدم وضع الاستقبال.';
+      'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام وواتساب استخدام إعدادات البروكسي الخاصة بهما. للمكالمات، ثبّت شير لينك على الهاتف الآخر واستخدم وضع الاستقبال.';
 
   @override
   String get guideDnsTitle => 'إذا قال تطبيق إنه غير متصل';
@@ -437,7 +437,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get receiveTitle => 'استقبال الإنترنت';
 
   @override
-  String get receiveCardTitle => 'الأفضل: ثبّت Share Link على الهاتف الآخر';
+  String get receiveCardTitle => 'الأفضل: ثبّت شير لينك على الهاتف الآخر';
 
   @override
   String get receiveCardBody =>

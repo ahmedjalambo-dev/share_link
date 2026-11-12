@@ -36,6 +36,11 @@ class ShareSettings(context: Context) {
         get() = prefs.getString(KEY_LANGUAGE, null) ?: LANGUAGE_SYSTEM
         set(value) = prefs.edit { putString(KEY_LANGUAGE, value) }
 
+    /** UI theme: "system", "light" or "dark". */
+    var themeMode: String
+        get() = prefs.getString(KEY_THEME_MODE, null) ?: THEME_SYSTEM
+        set(value) = prefs.edit { putString(KEY_THEME_MODE, value) }
+
     /** Last thing started, "share" (Phone A) or "connect" (Phone B); the Quick Settings tile follows it. */
     var mode: String
         get() = prefs.getString(KEY_MODE, null) ?: MODE_SHARE
@@ -63,6 +68,7 @@ class ShareSettings(context: Context) {
         "passphrase" to passphrase,
         "port" to port,
         "language" to language,
+        "themeMode" to themeMode,
         "mode" to mode,
         "clientPort" to clientPort,
         "clientSsid" to clientSsid,
@@ -125,6 +131,7 @@ class ShareSettings(context: Context) {
         private const val KEY_PASS = "passphrase"
         private const val KEY_PORT = "port"
         private const val KEY_LANGUAGE = "language"
+        private const val KEY_THEME_MODE = "theme_mode"
         private const val KEY_MODE = "mode"
         private const val KEY_CLIENT_PORT = "client_port"
         private const val KEY_CLIENT_SSID = "client_ssid"
@@ -134,6 +141,8 @@ class ShareSettings(context: Context) {
         const val MODE_CONNECT = "connect"
         private const val LANGUAGE_SYSTEM = "system"
         val LANGUAGES = setOf(LANGUAGE_SYSTEM, "en", "ar")
+        private const val THEME_SYSTEM = "system"
+        val THEME_MODES = setOf(THEME_SYSTEM, "light", "dark")
         private const val ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
         // No look-alike characters (0/O, 1/l/I) so the password is easy to type on Phone B.
         private const val PASS_CHARS = "abcdefghjkmnpqrstuvwxyz23456789"

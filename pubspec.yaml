@@ -67,6 +67,12 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # Licence texts shown in Settings → About (see lib/licenses.dart).
+  assets:
+    - assets/fonts/IBM_Plex_Sans/OFL.txt
+    - assets/fonts/IBM_Plex_Sans_Arabic/OFL.txt
+    - assets/licenses/
+
   # IBM Plex Sans draws Latin text; Arabic letters fall back to IBM Plex Sans
   # Arabic (see the theme in lib/main.dart). Only these weights are bundled.
   fonts:

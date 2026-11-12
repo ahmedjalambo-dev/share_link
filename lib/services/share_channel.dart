@@ -96,6 +96,18 @@ class ShareChannel {
   static Future<void> setLanguage(String language) =>
       _control.invokeMethod<void>('setLanguage', {'language': language});
 
+  static Future<void> setThemeMode(String themeMode) =>
+      _control.invokeMethod<void>('setThemeMode', {'themeMode': themeMode});
+
+  /// Version name and build number of the installed app.
+  static Future<({String version, int build})> getAppInfo() async {
+    final map = await _control.invokeMapMethod<Object?, Object?>('getAppInfo');
+    return (
+      version: map?['version'] as String? ?? '',
+      build: map?['build'] as int? ?? 0,
+    );
+  }
+
   static Future<bool> isIgnoringBatteryOptimizations() async =>
       await _control.invokeMethod<bool>('isIgnoringBatteryOptimizations') ??
       false;

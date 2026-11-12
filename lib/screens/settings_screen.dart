@@ -1,16 +1,17 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app_locale.dart';
+import '../app_theme_mode.dart';
 import '../l10n/app_localizations.dart';
 import '../models/share_settings.dart';
 import '../services/share_channel.dart';
-import '../utils/constants.dart';
 import '../utils/messages.dart';
+import '../widgets/settings_dialogs.dart';
 
+/// Settings tab: grouped lists like the phone's own settings; each value opens a dialog.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -20,31 +21,20 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen>
     with WidgetsBindingObserver {
-  final _formKey = GlobalKey<FormState>();
-  final _name = TextEditingController();
-  final _password = TextEditingController();
-  final _port = TextEditingController();
-
   ShareSettingsData? _settings;
-  String _language = 'system';
   bool? _batteryUnrestricted;
-  bool _obscurePassword = true;
-  bool _saving = false;
+  String _version = '';
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _name.addListener(() => setState(() {}));
     _load();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _name.dispose();
-    _password.dispose();
-    _port.dispose();
     super.dispose();
   }
 
@@ -56,13 +46,11 @@ class _SettingsScreenState extends State<SettingsScreen>
 
   Future<void> _load() async {
     final settings = await ShareChannel.getSettings();
+    final info = await ShareChannel.getAppInfo();
     if (!mounted) return;
-    _name.text = settings.networkName;
-    _password.text = settings.passphrase;
-    _port.text = '${settings.port}';
     setState(() {
       _settings = settings;
-      _language = settings.language;
+      _version = '${info.version} (${info.build})';
     });
     await _refreshBattery();
   }
@@ -72,15 +60,15 @@ class _SettingsScreenState extends State<SettingsScreen>
     if (mounted) setState(() => _batteryUnrestricted = unrestricted);
   }
 
-  Future<void> _save() async {
+  /// Saves one changed value together with the current others.
+  Future<void> _save({String? name, String? password, int? port}) async {
     final l = AppLocalizations.of(context);
-    if (!_formKey.currentState!.validate()) return;
-    setState(() => _saving = true);
+    final current = _settings!;
     try {
       final saved = await ShareChannel.saveSettings(
-        networkName: _name.text.trim(),
-        passphrase: _password.text,
-        port: int.parse(_port.text),
+        networkName: name ?? current.networkName,
+        passphrase: password ?? current.passphrase,
+        port: port ?? current.port,
       );
       final running = (await ShareChannel.getStatus()).isActive;
       if (!mounted) return;
@@ -93,9 +81,81 @@ class _SettingsScreenState extends State<SettingsScreen>
       );
     } on PlatformException catch (e) {
       if (mounted) _showSnack(settingsErrorMessage(l, e.code));
-    } finally {
-      if (mounted) setState(() => _saving = false);
     }
+  }
+
+  Future<void> _editName() async {
+    final l = AppLocalizations.of(context);
+    final settings = _settings!;
+    final value = await showTextSettingDialog(
+      context,
+      title: l.networkName,
+      initialValue: settings.networkName,
+      maxLength: 22,
+      helper: (value) =>
+          l.networkNameHelper(settings.ssidPrefix + value.trim()),
+      validator: _validateName,
+    );
+    if (value != null) await _save(name: value.trim());
+  }
+
+  Future<void> _editPassword() async {
+    final l = AppLocalizations.of(context);
+    final value = await showTextSettingDialog(
+      context,
+      title: l.password,
+      initialValue: _settings!.passphrase,
+      helper: (_) => l.passwordHelper,
+      password: true,
+      validator: _validatePassword,
+    );
+    if (value != null) await _save(password: value);
+  }
+
+  Future<void> _editPort() async {
+    final l = AppLocalizations.of(context);
+    final value = await showTextSettingDialog(
+      context,
+      title: l.proxyPort,
+      initialValue: '${_settings!.port}',
+      helper: (_) => l.portHelper,
+      numeric: true,
+      validator: _validatePort,
+    );
+    if (value != null) await _save(port: int.parse(value));
+  }
+
+  Future<void> _pickLanguage() async {
+    final l = AppLocalizations.of(context);
+    final code = await showChoiceDialog(
+      context,
+      title: l.sectionLanguage,
+      options: _languages(l),
+      selected: _settings!.language,
+    );
+    if (code == null) return;
+    AppLocale.notifier.value = AppLocale.fromCode(code);
+    await ShareChannel.setLanguage(code);
+    await _reload();
+  }
+
+  Future<void> _pickTheme() async {
+    final l = AppLocalizations.of(context);
+    final code = await showChoiceDialog(
+      context,
+      title: l.themeTitle,
+      options: _themes(l),
+      selected: _settings!.themeMode,
+    );
+    if (code == null) return;
+    AppThemeMode.notifier.value = AppThemeMode.fromCode(code);
+    await ShareChannel.setThemeMode(code);
+    await _reload();
+  }
+
+  Future<void> _reload() async {
+    final settings = await ShareChannel.getSettings();
+    if (mounted) setState(() => _settings = settings);
   }
 
   Future<void> _addTile() async {
@@ -111,28 +171,23 @@ class _SettingsScreenState extends State<SettingsScreen>
     _showSnack(message);
   }
 
-  Future<void> _setLanguage(String code) async {
-    setState(() => _language = code);
-    AppLocale.notifier.value = AppLocale.fromCode(code);
-    await ShareChannel.setLanguage(code);
-  }
-
-  void _generatePassword() {
-    final random = Random.secure();
-    setState(() {
-      _password.text = List.generate(
-        10,
-        (_) => kPasswordChars[random.nextInt(kPasswordChars.length)],
-      ).join();
-      _obscurePassword = false;
-    });
-  }
-
   void _showSnack(String message, {SnackBarAction? action}) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(message), action: action));
   }
+
+  static Map<String, String> _languages(AppLocalizations l) => {
+    'system': l.languageSystem,
+    'en': l.languageEnglish,
+    'ar': l.languageArabic,
+  };
+
+  static Map<String, String> _themes(AppLocalizations l) => {
+    'system': l.themeSystem,
+    'light': l.themeLight,
+    'dark': l.themeDark,
+  };
 
   // Validators mirror ShareSettings.save on the native side.
 
@@ -171,130 +226,77 @@ class _SettingsScreenState extends State<SettingsScreen>
       appBar: AppBar(title: Text(l.settingsTitle)),
       body: settings == null
           ? const Center(child: CircularProgressIndicator())
-          : Form(
-              key: _formKey,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  _SectionHeader(l.sectionNetwork),
-                  if (!settings.customNetworkSupported)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(l.customNetworkUnsupported),
-                    ),
-                  TextFormField(
-                    controller: _name,
-                    enabled: settings.customNetworkSupported,
-                    textDirection: TextDirection.ltr,
-                    maxLength: 22,
-                    decoration: InputDecoration(
-                      labelText: l.networkName,
-                      helperText: l.networkNameHelper(
-                        settings.ssidPrefix + _name.text.trim(),
-                      ),
-                      border: const OutlineInputBorder(),
-                    ),
-                    validator: settings.customNetworkSupported
-                        ? _validateName
-                        : null,
+          : ListView(
+              padding: const EdgeInsets.only(bottom: 16),
+              children: [
+                _SectionHeader(l.sectionNetwork),
+                if (!settings.customNetworkSupported)
+                  ListTile(
+                    leading: const Icon(Icons.info_outline),
+                    subtitle: Text(l.customNetworkUnsupported),
                   ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _password,
-                    enabled: settings.customNetworkSupported,
-                    obscureText: _obscurePassword,
-                    textDirection: TextDirection.ltr,
-                    decoration: InputDecoration(
-                      labelText: l.password,
-                      helperText: l.passwordHelper,
-                      border: const OutlineInputBorder(),
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            tooltip: _obscurePassword
-                                ? l.showPassword
-                                : l.hidePassword,
-                            onPressed: () => setState(
-                              () => _obscurePassword = !_obscurePassword,
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.autorenew),
-                            tooltip: l.generatePassword,
-                            onPressed: settings.customNetworkSupported
-                                ? _generatePassword
-                                : null,
-                          ),
-                        ],
-                      ),
-                    ),
-                    validator: settings.customNetworkSupported
-                        ? _validatePassword
-                        : null,
+                _ValueTile(
+                  icon: Icons.wifi,
+                  title: l.networkName,
+                  value: settings.fullSsid,
+                  onTap: settings.customNetworkSupported ? _editName : null,
+                ),
+                _ValueTile(
+                  icon: Icons.key,
+                  title: l.password,
+                  value: settings.passphrase,
+                  onTap: settings.customNetworkSupported ? _editPassword : null,
+                ),
+                _ValueTile(
+                  icon: Icons.numbers,
+                  title: l.proxyPort,
+                  value: '${settings.port}',
+                  onTap: _editPort,
+                ),
+                _SectionHeader(l.sectionAppearance),
+                ListTile(
+                  leading: const Icon(Icons.language),
+                  title: Text(l.sectionLanguage),
+                  subtitle: Text(_languages(l)[settings.language] ?? ''),
+                  onTap: _pickLanguage,
+                ),
+                ListTile(
+                  leading: const Icon(Icons.dark_mode_outlined),
+                  title: Text(l.themeTitle),
+                  subtitle: Text(_themes(l)[settings.themeMode] ?? ''),
+                  onTap: _pickTheme,
+                ),
+                _SectionHeader(l.sectionDevice),
+                _BatteryTile(
+                  unrestricted: _batteryUnrestricted,
+                  onAllow: ShareChannel.requestIgnoreBatteryOptimizations,
+                ),
+                // Android 13+ can add the tile with one prompt; older
+                // versions need the Quick Settings editor.
+                ListTile(
+                  leading: const Icon(Icons.dashboard_customize_outlined),
+                  title: Text(l.sectionTile),
+                  subtitle: Text(
+                    settings.apiLevel >= 33 ? l.tileAddButton : l.tileAddHint,
                   ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _port,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    textDirection: TextDirection.ltr,
-                    decoration: InputDecoration(
-                      labelText: l.proxyPort,
-                      helperText: l.portHelper,
-                      border: const OutlineInputBorder(),
-                    ),
-                    validator: _validatePort,
+                  onTap: settings.apiLevel >= 33 ? _addTile : null,
+                ),
+                _SectionHeader(l.sectionAbout),
+                ListTile(
+                  leading: const Icon(Icons.info_outline),
+                  title: Text(l.version),
+                  subtitle: Text(_version, textDirection: TextDirection.ltr),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.description_outlined),
+                  title: Text(l.licenses),
+                  onTap: () => showLicensePage(
+                    context: context,
+                    applicationName: l.appTitle,
+                    applicationVersion: _version,
                   ),
-                  const SizedBox(height: 16),
-                  FilledButton.icon(
-                    onPressed: _saving ? null : _save,
-                    icon: const Icon(Icons.save),
-                    label: Text(l.save),
-                  ),
-                  const SizedBox(height: 24),
-                  _SectionHeader(l.sectionLanguage),
-                  SegmentedButton<String>(
-                    segments: [
-                      ButtonSegment(
-                        value: 'system',
-                        label: Text(l.languageSystem),
-                      ),
-                      ButtonSegment(
-                        value: 'en',
-                        label: Text(l.languageEnglish),
-                      ),
-                      ButtonSegment(value: 'ar', label: Text(l.languageArabic)),
-                    ],
-                    selected: {_language},
-                    onSelectionChanged: (selection) =>
-                        _setLanguage(selection.first),
-                  ),
-                  const SizedBox(height: 24),
-                  _SectionHeader(l.sectionBattery),
-                  _BatteryTile(
-                    unrestricted: _batteryUnrestricted,
-                    onAllow: ShareChannel.requestIgnoreBatteryOptimizations,
-                  ),
-                  const SizedBox(height: 24),
-                  _SectionHeader(l.sectionTile),
-                  // Android 13+ can add the tile with one prompt; older
-                  // versions need the Quick Settings editor.
-                  if (settings.apiLevel >= 33)
-                    OutlinedButton.icon(
-                      onPressed: _addTile,
-                      icon: const Icon(Icons.add_to_home_screen),
-                      label: Text(l.tileAddButton),
-                    )
-                  else
-                    Text(l.tileAddHint),
-                ],
-              ),
+                ),
+              ],
             ),
     );
   }
@@ -309,13 +311,40 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 24, 16, 8),
       child: Text(
         title,
         style: theme.textTheme.titleSmall?.copyWith(
           color: theme.colorScheme.primary,
         ),
       ),
+    );
+  }
+}
+
+/// A setting with its current value underneath (always LTR); disabled when [onTap] is null.
+class _ValueTile extends StatelessWidget {
+  const _ValueTile({
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String value;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: Text(value, textDirection: TextDirection.ltr),
+      trailing: onTap == null ? null : const Icon(Icons.edit_outlined),
+      enabled: onTap != null,
+      onTap: onTap,
     );
   }
 }
@@ -329,27 +358,21 @@ class _BatteryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    if (unrestricted == null) return const LinearProgressIndicator();
+    final scheme = Theme.of(context).colorScheme;
+    if (unrestricted == null) {
+      return const ListTile(leading: Icon(Icons.battery_unknown));
+    }
     final ok = unrestricted!;
-    return Card(
-      child: ListTile(
-        leading: Icon(
-          ok ? Icons.battery_full : Icons.battery_alert,
-          color: ok
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.error,
-        ),
-        title: Text(ok ? l.batteryUnrestricted : l.batteryRestricted),
-        subtitle: Text(
-          ok ? l.batteryUnrestrictedBody : l.batteryRestrictedBody,
-        ),
-        trailing: ok
-            ? null
-            : FilledButton.tonal(
-                onPressed: onAllow,
-                child: Text(l.batteryAllow),
-              ),
+    return ListTile(
+      leading: Icon(
+        ok ? Icons.battery_full : Icons.battery_alert,
+        color: ok ? scheme.primary : scheme.error,
       ),
+      title: Text(ok ? l.batteryUnrestricted : l.batteryRestricted),
+      subtitle: Text(ok ? l.batteryUnrestrictedBody : l.batteryRestrictedBody),
+      trailing: ok
+          ? null
+          : FilledButton.tonal(onPressed: onAllow, child: Text(l.batteryAllow)),
     );
   }
 }

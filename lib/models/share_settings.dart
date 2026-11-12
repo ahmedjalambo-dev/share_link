@@ -8,6 +8,7 @@ class ShareSettingsData {
     required this.passphrase,
     required this.port,
     required this.language,
+    required this.themeMode,
     required this.mode,
     required this.clientPort,
     required this.clientSsid,
@@ -24,6 +25,7 @@ class ShareSettingsData {
       passphrase: map['passphrase'] as String? ?? '',
       port: map['port'] as int? ?? kDefaultPort,
       language: map['language'] as String? ?? 'system',
+      themeMode: map['themeMode'] as String? ?? 'system',
       mode: map['mode'] as String? ?? 'share',
       clientPort: map['clientPort'] as int? ?? kDefaultPort,
       clientSsid: map['clientSsid'] as String? ?? '',
@@ -43,7 +45,10 @@ class ShareSettingsData {
   /// `system`, `en` or `ar`.
   final String language;
 
-  /// Home screen mode: `share` (Phone A) or `connect` (Phone B).
+  /// `system`, `light` or `dark`.
+  final String themeMode;
+
+  /// Last thing started: `share` (Phone A) or `connect` (Phone B); the Quick Settings tile follows it.
   final String mode;
 
   /// Phone A's proxy port, as last entered on Phone B.

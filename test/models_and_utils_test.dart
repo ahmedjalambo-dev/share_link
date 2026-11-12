@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:share_link/app_theme_mode.dart';
 import 'package:share_link/models/client_status.dart';
 import 'package:share_link/models/share_settings.dart';
 import 'package:share_link/utils/constants.dart';
@@ -133,5 +135,17 @@ void main() {
       wifiQrPayload(r'a;b,c:d"e\f', 'p;w'),
       r'WIFI:T:WPA;S:a\;b\,c\:d\"e\\f;P:p\;w;;',
     );
+  });
+
+  test('AppThemeMode maps stored codes, defaulting to system', () {
+    expect(AppThemeMode.fromCode('light'), ThemeMode.light);
+    expect(AppThemeMode.fromCode('dark'), ThemeMode.dark);
+    expect(AppThemeMode.fromCode('system'), ThemeMode.system);
+    expect(AppThemeMode.fromCode('bogus'), ThemeMode.system);
+  });
+
+  test('ShareSettingsData reads the theme mode, defaulting to system', () {
+    expect(ShareSettingsData.fromMap({'themeMode': 'dark'}).themeMode, 'dark');
+    expect(ShareSettingsData.fromMap({}).themeMode, 'system');
   });
 }

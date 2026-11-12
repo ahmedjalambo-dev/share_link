@@ -452,12 +452,6 @@ abstract class AppLocalizations {
   /// **'العربية'**
   String get languageArabic;
 
-  /// No description provided for @sectionBattery.
-  ///
-  /// In en, this message translates to:
-  /// **'Battery'**
-  String get sectionBattery;
-
   /// No description provided for @batteryRestricted.
   ///
   /// In en, this message translates to:
@@ -991,6 +985,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Go to Home'**
   String get goToHome;
+
+  /// No description provided for @sectionAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get sectionAppearance;
+
+  /// No description provided for @themeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get themeTitle;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @sectionDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Device'**
+  String get sectionDevice;
+
+  /// No description provided for @sectionAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get sectionAbout;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
+
+  /// No description provided for @licenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Open-source licences'**
+  String get licenses;
 }
 
 class _AppLocalizationsDelegate

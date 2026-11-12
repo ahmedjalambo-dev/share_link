@@ -7,6 +7,7 @@ import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.graphics.drawable.Icon
 import android.net.VpnService
@@ -16,6 +17,7 @@ import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
+import androidx.core.content.pm.PackageInfoCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
@@ -102,6 +104,16 @@ class MainActivity : FlutterActivity() {
                     result.error("invalid_language", null, null)
                 }
             }
+            "setThemeMode" -> {
+                val themeMode = call.argument<String>("themeMode") ?: ""
+                if (themeMode in ShareSettings.THEME_MODES) {
+                    settings.themeMode = themeMode
+                    result.success(null)
+                } else {
+                    result.error("invalid_theme_mode", null, null)
+                }
+            }
+            "getAppInfo" -> result.success(appInfo())
             "isIgnoringBatteryOptimizations" -> result.success(isIgnoringBatteryOptimizations())
             "requestIgnoreBatteryOptimizations" -> {
                 requestIgnoreBatteryOptimizations()
@@ -229,6 +241,20 @@ class MainActivity : FlutterActivity() {
     }
 
     // endregion
+
+    /** Version name and build number, shown in Settings → About. */
+    private fun appInfo(): Map<String, Any> {
+        val info = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
+        } else {
+            @Suppress("DEPRECATION")
+            packageManager.getPackageInfo(packageName, 0)
+        }
+        return mapOf(
+            "version" to (info.versionName ?: ""),
+            "build" to PackageInfoCompat.getLongVersionCode(info),
+        )
+    }
 
     private fun isIgnoringBatteryOptimizations(): Boolean {
         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager

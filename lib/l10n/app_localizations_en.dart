@@ -210,9 +210,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageArabic => 'العربية';
 
   @override
-  String get sectionBattery => 'Battery';
-
-  @override
   String get batteryRestricted => 'Battery optimization is on';
 
   @override
@@ -514,4 +511,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get goToHome => 'Go to Home';
+
+  @override
+  String get sectionAppearance => 'Appearance';
+
+  @override
+  String get themeTitle => 'Theme';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get sectionDevice => 'Device';
+
+  @override
+  String get sectionAbout => 'About';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get licenses => 'Open-source licences';
 }

@@ -59,7 +59,6 @@
   "languageSystem": "لغة النظام",
   "languageEnglish": "English",
   "languageArabic": "العربية",
-  "sectionBattery": "البطارية",
   "batteryRestricted": "تحسين البطارية مفعّل",
   "batteryRestrictedBody": "قد يوقف أندرويد المشاركة عند إطفاء الشاشة. اسمح للتطبيق بالعمل في الخلفية.",
   "batteryAllow": "السماح",
@@ -148,5 +147,14 @@
   "chipDns1": "DNS 1",
   "chipDns2": "DNS 2",
   "qrPlaceholder": "ابدأ المشاركة ليظهر رمز QR لهذه الشبكة.",
-  "goToHome": "الذهاب إلى الرئيسية"
+  "goToHome": "الذهاب إلى الرئيسية",
+  "sectionAppearance": "المظهر",
+  "themeTitle": "السمة",
+  "themeSystem": "حسب النظام",
+  "themeLight": "فاتح",
+  "themeDark": "داكن",
+  "sectionDevice": "الجهاز",
+  "sectionAbout": "حول التطبيق",
+  "version": "الإصدار",
+  "licenses": "تراخيص المصادر المفتوحة"
 }

@@ -208,9 +208,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get languageArabic => 'العربية';
 
   @override
-  String get sectionBattery => 'البطارية';
-
-  @override
   String get batteryRestricted => 'تحسين البطارية مفعّل';
 
   @override
@@ -512,4 +509,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get goToHome => 'الذهاب إلى الرئيسية';
+
+  @override
+  String get sectionAppearance => 'المظهر';
+
+  @override
+  String get themeTitle => 'السمة';
+
+  @override
+  String get themeSystem => 'حسب النظام';
+
+  @override
+  String get themeLight => 'فاتح';
+
+  @override
+  String get themeDark => 'داكن';
+
+  @override
+  String get sectionDevice => 'الجهاز';
+
+  @override
+  String get sectionAbout => 'حول التطبيق';
+
+  @override
+  String get version => 'الإصدار';
+
+  @override
+  String get licenses => 'تراخيص المصادر المفتوحة';
 }

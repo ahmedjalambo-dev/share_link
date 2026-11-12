@@ -97,7 +97,6 @@
   "languageSystem": "System",
   "languageEnglish": "English",
   "languageArabic": "العربية",
-  "sectionBattery": "Battery",
   "batteryRestricted": "Battery optimization is on",
   "batteryRestrictedBody": "Android may stop sharing while the screen is off. Allow the app to run in the background.",
   "batteryAllow": "Allow",
@@ -217,5 +216,14 @@
   "chipDns1": "DNS 1",
   "chipDns2": "DNS 2",
   "qrPlaceholder": "Start sharing to show the QR code for this network.",
-  "goToHome": "Go to Home"
+  "goToHome": "Go to Home",
+  "sectionAppearance": "Appearance",
+  "themeTitle": "Theme",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "sectionDevice": "Device",
+  "sectionAbout": "About",
+  "version": "Version",
+  "licenses": "Open-source licences"
 }

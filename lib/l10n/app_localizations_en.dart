@@ -129,9 +129,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'On the other phone, open Share Link → Connect a device → Receive mode → \"Scan Phone A\'s QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.';
 
   @override
-  String get guideTitle => 'How to connect the other phone';
-
-  @override
   String guideStep1(String ssid) {
     return 'Open Wi-Fi settings and join \"$ssid\", or scan the QR code.';
   }
@@ -156,7 +153,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guideNote =>
-      'Browsers and most apps use the manual proxy, and Telegram can use its own SOCKS5 setting above. WhatsApp and calls ignore both: for them, install Share Link on the other phone and use Connect.';
+      'Browsers and most apps use the manual proxy, and Telegram can use its own SOCKS5 setting. WhatsApp and calls ignore both: for them, install Share Link on the other phone and use Receive mode.';
 
   @override
   String get settingsTitle => 'Settings';
@@ -312,14 +309,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'The connection to Phone A was lost. Rejoin its Wi-Fi network and connect again.';
 
   @override
-  String get guideRecommended =>
-      'Or without installing anything on the other phone, using the steps below.';
-
-  @override
-  String get guideManualTitle =>
-      'Without the app (browsers and some apps only):';
-
-  @override
   String get clientNetworkTitle => 'Phone A\'s network';
 
   @override
@@ -415,7 +404,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter Phone A\'s password or scan its QR code first, then tap CONNECT.';
 
   @override
-  String get guideTelegramTitle => 'Telegram without the app';
+  String get guideTelegramTitle => 'Telegram';
 
   @override
   String guideTelegram(String host, String port) {
@@ -423,7 +412,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get guideWhatsAppTitle => 'WhatsApp without the app';
+  String get guideWhatsAppTitle => 'WhatsApp';
 
   @override
   String guideWhatsApp(String host) {
@@ -432,7 +421,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guideNoteWithWhatsApp =>
-      'Browsers and most apps use the manual proxy, and Telegram and WhatsApp can use their own proxy settings above. For calls, install Share Link on the other phone and use Connect.';
+      'Browsers and most apps use the manual proxy, and Telegram and WhatsApp can use their own proxy settings. For calls, install Share Link on the other phone and use Receive mode.';
 
   @override
   String get guideDnsTitle => 'If an app says it isn\'t connected';
@@ -478,4 +467,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get howToConnect => 'How to connect';
+
+  @override
+  String get withoutAppTitle => 'Without installing the app';
+
+  @override
+  String get withoutAppSubtitle =>
+      'Works on any phone, including iPhone. Tap a method to see its steps.';
+
+  @override
+  String get guideProxyTitle => 'Wi-Fi + manual proxy';
+
+  @override
+  String get guideProxySubtitle => 'Browsers and most apps';
+
+  @override
+  String get guideTelegramSubtitle => 'SOCKS5 proxy in Telegram\'s settings';
+
+  @override
+  String get guideWhatsAppSubtitle => 'Messages and media (no calls)';
+
+  @override
+  String get guideDnsSubtitle => 'Wallets and bank apps';
+
+  @override
+  String get chipHost => 'Host';
+
+  @override
+  String get chipPort => 'Port';
+
+  @override
+  String get chipChatPort => 'Chat port';
+
+  @override
+  String get chipMediaPort => 'Media port';
+
+  @override
+  String get chipDns1 => 'DNS 1';
+
+  @override
+  String get chipDns2 => 'DNS 2';
+
+  @override
+  String get qrPlaceholder =>
+      'Start sharing to show the QR code for this network.';
+
+  @override
+  String get goToHome => 'Go to Home';
 }

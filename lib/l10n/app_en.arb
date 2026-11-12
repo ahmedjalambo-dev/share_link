@@ -43,7 +43,6 @@
   "openWifiSettings": "Wi-Fi settings",
   "qrTitle": "Scan to join",
   "qrCaption": "On the other phone, open Share Link → Connect a device → Receive mode → \"Scan Phone A's QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.",
-  "guideTitle": "How to connect the other phone",
   "guideStep1": "Open Wi-Fi settings and join \"{ssid}\", or scan the QR code.",
   "@guideStep1": {
     "placeholders": {
@@ -73,7 +72,7 @@
     }
   },
   "guideStep5": "If the phone says \"No internet\", choose to stay connected. Browsing still works.",
-  "guideNote": "Browsers and most apps use the manual proxy, and Telegram can use its own SOCKS5 setting above. WhatsApp and calls ignore both: for them, install Share Link on the other phone and use Connect.",
+  "guideNote": "Browsers and most apps use the manual proxy, and Telegram can use its own SOCKS5 setting. WhatsApp and calls ignore both: for them, install Share Link on the other phone and use Receive mode.",
   "settingsTitle": "Settings",
   "sectionNetwork": "Wi-Fi Direct network",
   "networkNameHelper": "Full name: {fullName}",
@@ -127,8 +126,6 @@
   "errorHostUnreachable": "Can't reach Phone A. Make sure sharing is running on Phone A and the port matches.",
   "errorVpnFailed": "Could not start the VPN tunnel.",
   "errorConnectionLost": "The connection to Phone A was lost. Rejoin its Wi-Fi network and connect again.",
-  "guideRecommended": "Or without installing anything on the other phone, using the steps below.",
-  "guideManualTitle": "Without the app (browsers and some apps only):",
   "clientNetworkTitle": "Phone A's network",
   "clientAutoJoin": "Join automatically",
   "clientAutoJoinHelp": "The app joins Phone A's Wi-Fi when you tap CONNECT and leaves it when you disconnect.",
@@ -163,7 +160,7 @@
   "tileAlreadyAdded": "The tile is already in your Quick Settings.",
   "tileNotAdded": "The tile wasn't added.",
   "errorSetupNeeded": "Enter Phone A's password or scan its QR code first, then tap CONNECT.",
-  "guideTelegramTitle": "Telegram without the app",
+  "guideTelegramTitle": "Telegram",
   "guideTelegram": "In Telegram: Settings → Data and Storage → Proxy Settings → Add proxy → SOCKS5. Server {host}, port {port}, leave username and password empty.",
   "@guideTelegram": {
     "placeholders": {
@@ -175,7 +172,7 @@
       }
     }
   },
-  "guideWhatsAppTitle": "WhatsApp without the app",
+  "guideWhatsAppTitle": "WhatsApp",
   "guideWhatsApp": "In WhatsApp: Settings → Storage and data → Proxy → Use proxy. Proxy host {host}, chat port 5222, media port 7777. Messages and media work; calls don't go through the proxy.",
   "@guideWhatsApp": {
     "placeholders": {
@@ -184,7 +181,7 @@
       }
     }
   },
-  "guideNoteWithWhatsApp": "Browsers and most apps use the manual proxy, and Telegram and WhatsApp can use their own proxy settings above. For calls, install Share Link on the other phone and use Connect.",
+  "guideNoteWithWhatsApp": "Browsers and most apps use the manual proxy, and Telegram and WhatsApp can use their own proxy settings. For calls, install Share Link on the other phone and use Receive mode.",
   "guideDnsTitle": "If an app says it isn't connected",
   "guideDnsTip": "Some apps (e.g. wallets) check the internet themselves. In the other phone's Wi-Fi settings for this network, set DNS to Manual, keep {host} and add 1.1.1.1. On iPhone: Settings → Wi-Fi → ⓘ → Configure DNS → Manual → Add Server.",
   "@guideDnsTip": {
@@ -205,5 +202,20 @@
   "stopReceivingFirst": "Disconnect Receive mode first.",
   "stopSharingFirst": "Stop sharing on this phone first.",
   "showQr": "QR code",
-  "howToConnect": "How to connect"
+  "howToConnect": "How to connect",
+  "withoutAppTitle": "Without installing the app",
+  "withoutAppSubtitle": "Works on any phone, including iPhone. Tap a method to see its steps.",
+  "guideProxyTitle": "Wi-Fi + manual proxy",
+  "guideProxySubtitle": "Browsers and most apps",
+  "guideTelegramSubtitle": "SOCKS5 proxy in Telegram's settings",
+  "guideWhatsAppSubtitle": "Messages and media (no calls)",
+  "guideDnsSubtitle": "Wallets and bank apps",
+  "chipHost": "Host",
+  "chipPort": "Port",
+  "chipChatPort": "Chat port",
+  "chipMediaPort": "Media port",
+  "chipDns1": "DNS 1",
+  "chipDns2": "DNS 2",
+  "qrPlaceholder": "Start sharing to show the QR code for this network.",
+  "goToHome": "Go to Home"
 }

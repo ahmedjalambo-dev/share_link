@@ -30,8 +30,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get statusError => 'خطأ';
 
   @override
-  String get hintStopped =>
-      'اتصل بشبكة واي فاي من هذا الهاتف، ثم اضغط تشغيل لمشاركتها.';
+  String get hintStopped => 'اتصل بالواي فاي، ثم اضغط تشغيل.';
 
   @override
   String get networkName => 'اسم الشبكة';
@@ -63,36 +62,34 @@ class AppLocalizationsAr extends AppLocalizations {
   String get download => 'التنزيل';
 
   @override
-  String get wifiLost =>
-      'فقد هذا الهاتف اتصال الواي فاي. ستُستأنف المشاركة عند عودة الاتصال.';
+  String get wifiLost => 'انقطع الواي فاي. ستُستأنف المشاركة عند عودته.';
 
   @override
-  String get permissionRequired => 'يلزم منح إذن Wi-Fi Direct لمشاركة الاتصال.';
+  String get permissionRequired => 'المشاركة تحتاج إذن Wi-Fi Direct.';
 
   @override
   String get settingsAction => 'الإعدادات';
 
   @override
   String get errorPermissionDenied =>
-      'تم رفض إذن Wi-Fi Direct. اسمح به من إعدادات التطبيق.';
+      'رُفض إذن Wi-Fi Direct. اسمح به من إعدادات التطبيق.';
 
   @override
   String get errorLocationDisabled =>
-      'خدمة الموقع متوقفة. يحتاجها أندرويد لتشغيل Wi-Fi Direct.';
+      'شغّل الموقع، فأندرويد يحتاجه لـ Wi-Fi Direct.';
 
   @override
-  String get errorWifiDisabled => 'الواي فاي متوقف. شغّله واتصل بشبكة.';
+  String get errorWifiDisabled => 'شغّل الواي فاي واتصل بشبكة.';
 
   @override
-  String get errorWifiNotConnected =>
-      'هذا الهاتف غير متصل بشبكة واي فاي فيها إنترنت.';
+  String get errorWifiNotConnected => 'اتصل بشبكة واي فاي فيها إنترنت.';
 
   @override
   String get errorP2pUnsupported => 'هذا الهاتف لا يدعم Wi-Fi Direct.';
 
   @override
   String get errorP2pBusy =>
-      'Wi-Fi Direct مشغول. أطفئ الواي فاي ثم شغّله وحاول مجددًا.';
+      'Wi-Fi Direct مشغول. أطفئ الواي فاي وشغّله، ثم حاول مجددًا.';
 
   @override
   String get errorInvalidSettings => 'اسم الشبكة أو كلمة المرور غير صالحة.';
@@ -102,7 +99,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorPortInUse =>
-      'منفذ البروكسي مستخدم من تطبيق آخر. اختر منفذًا مختلفًا من الإعدادات.';
+      'تطبيق آخر يستخدم هذا المنفذ. اختر غيره من الإعدادات.';
 
   @override
   String get errorProxyFailed => 'تعذّر تشغيل خادم البروكسي.';
@@ -124,34 +121,32 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get qrCaption =>
-      'على الهاتف الآخر افتح شير لينك ← توصيل جهاز ← وضع الاستقبال ← \"امسح رمز QR للهاتف (أ)\" للانضمام والاتصال بخطوة واحدة. يمكن لتطبيق الكاميرا أيضًا مسحه، لكنه عندها ينضم إلى الواي فاي فقط.';
+      'امسحه بشير لينك على الهاتف الآخر للاتصال بخطوة واحدة.';
 
   @override
   String guideStep1(String ssid) {
-    return 'افتح إعدادات الواي فاي وانضم إلى الشبكة \"$ssid\"، أو امسح رمز QR.';
+    return 'انضم إلى \"$ssid\" من إعدادات الواي فاي، أو امسح رمز QR.';
   }
 
   @override
   String guideStep2(String password) {
-    return 'أدخل كلمة المرور: $password';
+    return 'كلمة المرور: $password';
   }
 
   @override
   String get guideStep3 =>
-      'اضغط على أيقونة الترس (أو اضغط مطولًا على الشبكة)، ثم تعديل / الخيارات المتقدمة.';
+      'افتح إعدادات الشبكة (الترس أو الضغط المطوّل) ← الخيارات المتقدمة.';
 
   @override
   String guideStep4(String host, String port) {
-    return 'اجعل البروكسي يدويًا: المضيف $host والمنفذ $port. اترك قائمة التجاوز فارغة واحفظ.';
+    return 'البروكسي: يدوي، المضيف $host، المنفذ $port. ثم احفظ.';
   }
 
   @override
-  String get guideStep5 =>
-      'إذا ظهرت رسالة \"لا يوجد اتصال بالإنترنت\"، اختر البقاء متصلًا. التصفح يعمل رغم ذلك.';
+  String get guideStep5 => 'إذا ظهر \"لا يوجد إنترنت\"، ابقَ متصلًا.';
 
   @override
-  String get guideNote =>
-      'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام استخدام إعداد SOCKS5 الخاص به. أما واتساب والمكالمات فتتجاهلهما: لها ثبّت شير لينك على الهاتف الآخر واستخدم وضع الاستقبال.';
+  String get guideNote => 'واتساب والمكالمات تحتاج شير لينك على الهاتف الآخر.';
 
   @override
   String get settingsTitle => 'الإعدادات';
@@ -166,7 +161,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get customNetworkUnsupported =>
-      'في هذا الإصدار من أندرويد يختار النظام اسم الشبكة وكلمة المرور تلقائيًا. يمكن تغيير المنفذ فقط.';
+      'في هذا الإصدار من أندرويد يُختار الاسم وكلمة المرور تلقائيًا. يمكن تغيير المنفذ فقط.';
 
   @override
   String get passwordHelper => 'من 8 إلى 63 حرفًا';
@@ -190,7 +185,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get saved => 'تم حفظ الإعدادات';
 
   @override
-  String get restartToApply => 'تم الحفظ. أعد تشغيل المشاركة لتطبيق الإعدادات.';
+  String get restartToApply => 'تم الحفظ. أعد تشغيل المشاركة لتطبيق التغييرات.';
 
   @override
   String get restart => 'إعادة التشغيل';
@@ -212,7 +207,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get batteryRestrictedBody =>
-      'قد يوقف أندرويد المشاركة عند إطفاء الشاشة. اسمح للتطبيق بالعمل في الخلفية.';
+      'قد يوقف أندرويد المشاركة عند إطفاء الشاشة.';
 
   @override
   String get batteryAllow => 'السماح';
@@ -221,15 +216,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get batteryUnrestricted => 'تحسين البطارية متوقف';
 
   @override
-  String get batteryUnrestrictedBody =>
-      'يمكن أن تستمر المشاركة في العمل في الخلفية.';
+  String get batteryUnrestrictedBody => 'تستمر المشاركة في الخلفية.';
 
   @override
   String get errorInvalidName => 'أدخل اسمًا للشبكة.';
 
   @override
-  String get errorNameTooLong =>
-      'الاسم طويل جدًا (يجب ألا يتجاوز الاسم الكامل 32 بايت).';
+  String get errorNameTooLong => 'الاسم طويل جدًا.';
 
   @override
   String get errorInvalidPassword =>
@@ -260,81 +253,74 @@ class AppLocalizationsAr extends AppLocalizations {
   String get clientConnected => 'متصل';
 
   @override
-  String get clientPhoneA => 'متصل بالهاتف (أ)';
+  String get clientPhoneA => 'الهاتف المُشارِك';
 
   @override
   String get clientPortHelper =>
-      'المنفذ الظاهر على الهاتف (أ) (الافتراضي 8282)';
+      'كما يظهر على الهاتف المُشارِك (الافتراضي 8282)';
 
   @override
-  String get clientStepsTitle => 'استخدم إنترنت الهاتف (أ) على هذا الهاتف';
+  String get clientStepsTitle => 'استقبال الإنترنت من الهاتف المُشارِك';
 
   @override
-  String get clientStep1 =>
-      'من إعدادات الواي فاي، انضم إلى الشبكة \"DIRECT-…\" الظاهرة على الهاتف (أ) (بكلمة المرور أو رمز QR).';
+  String get clientStep1 => 'انضم إلى شبكة \"DIRECT-…\" من إعدادات الواي فاي.';
 
   @override
-  String get clientStep2 =>
-      'إذا كنت قد ضبطت بروكسي يدويًا على تلك الشبكة من قبل، فأعد البروكسي إلى \"بلا\".';
+  String get clientStep2 => 'إذا كان على الشبكة بروكسي يدوي، فاجعله \"بلا\".';
 
   @override
-  String get clientStep3 =>
-      'اضغط اتصال ووافق على طلب VPN. بعدها تستخدم كل التطبيقات (واتساب، تيليجرام، البنوك) إنترنت الهاتف (أ).';
+  String get clientStep3 => 'اضغط اتصال ووافق على طلب VPN.';
 
   @override
   String get clientBankNote =>
-      'بعض تطبيقات البنوك ترفض العمل أثناء تشغيل أي VPN. هذه سياسة أمان البنك ولا يمكن لهذا التطبيق تغييرها.';
+      'بعض تطبيقات البنوك لا تعمل مع أي VPN، وهذا قرار البنك.';
 
   @override
-  String get errorVpnDenied =>
-      'لم يتم منح إذن VPN. اضغط اتصال مرة أخرى واختر موافق.';
+  String get errorVpnDenied => 'لم يُمنح إذن VPN. اضغط اتصال واختر موافق.';
 
   @override
-  String get errorNotOnDirect =>
-      'هذا الهاتف غير متصل بشبكة \"DIRECT-…\" الخاصة بالهاتف (أ). انضم إليها من إعدادات الواي فاي أولًا.';
+  String get errorNotOnDirect => 'انضم أولًا إلى شبكة \"DIRECT-…\" المُشارَكة.';
 
   @override
   String get errorHostUnreachable =>
-      'تعذّر الوصول إلى الهاتف (أ). تأكد أن المشاركة تعمل عليه وأن المنفذ مطابق.';
+      'تعذّر الوصول إلى الهاتف المُشارِك. تأكد أن المشاركة تعمل.';
 
   @override
   String get errorVpnFailed => 'تعذّر تشغيل نفق VPN.';
 
   @override
   String get errorConnectionLost =>
-      'انقطع الاتصال بالهاتف (أ). انضم إلى شبكته مجددًا ثم اتصل.';
+      'انقطع الاتصال. انضم إلى الشبكة مجددًا ثم اتصل.';
 
   @override
-  String get clientNetworkTitle => 'شبكة الهاتف (أ)';
+  String get clientNetworkTitle => 'الشبكة المُشارَكة';
 
   @override
   String get clientAutoJoin => 'الانضمام تلقائيًا';
 
   @override
   String get clientAutoJoinHelp =>
-      'ينضم التطبيق إلى شبكة الهاتف (أ) عند الضغط على اتصال، ويغادرها عند قطع الاتصال.';
+      'ينضم إلى الشبكة عند الاتصال ويغادرها عند قطعه.';
 
   @override
-  String get clientSsidHintAny =>
-      'اختياري. اتركه فارغًا لاختيار شبكة الهاتف (أ) من قائمة.';
+  String get clientSsidHintAny => 'اختياري. اتركه فارغًا لتختار من قائمة.';
 
   @override
-  String get clientSsidHintExact => 'كما يظهر تمامًا على الهاتف (أ).';
+  String get clientSsidHintExact => 'كما يظهر على الهاتف المُشارِك تمامًا.';
 
   @override
-  String get clientJoining => 'جارٍ الانضمام إلى شبكة الهاتف (أ)…';
+  String get clientJoining => 'جارٍ الانضمام إلى الشبكة…';
 
   @override
   String get clientAutoStep1 =>
-      'أدخل كلمة المرور الظاهرة على الهاتف (أ) (تُحفظ للمرات القادمة).';
+      'أدخل كلمة المرور الظاهرة على الهاتف المُشارِك، أو امسح رمز QR.';
 
   @override
-  String get clientAutoStep2 =>
-      'اضغط اتصال. إذا سألك أندرويد فاختر شبكة الهاتف (أ) واسمح بالاتصال، ثم وافق على طلب VPN.';
+  String get clientAutoStep2 => 'اضغط اتصال ووافق على الطلبات.';
 
   @override
   String get errorJoinFailed =>
-      'تعذّر الانضمام إلى شبكة الهاتف (أ). تأكد أن المشاركة تعمل عليه وأن كلمة المرور صحيحة.';
+      'تعذّر الانضمام. تأكد أن المشاركة تعمل وأن كلمة المرور صحيحة.';
 
   @override
   String clientReconnecting(int attempt) {
@@ -343,16 +329,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get clientReconnectingHelp =>
-      'تعذّر الوصول إلى الهاتف (أ). تتم إعادة الاتصال تلقائيًا وستعود التطبيقات للعمل وحدها. اضغط قطع الاتصال للإيقاف.';
+      'تعذّر الوصول إلى الهاتف المُشارِك. تتم إعادة المحاولة تلقائيًا.';
 
   @override
-  String get scanQr => 'امسح رمز QR للهاتف (أ)';
+  String get scanQr => 'امسح رمز QR';
 
   @override
-  String get scanTitle => 'امسح رمز QR للهاتف (أ)';
+  String get scanTitle => 'امسح رمز QR';
 
   @override
-  String get scanHint => 'وجّه الكاميرا نحو رمز QR الظاهر على شاشة الهاتف (أ).';
+  String get scanHint => 'وجّه الكاميرا نحو رمز QR على الهاتف المُشارِك.';
 
   @override
   String get scanFromPhoto => 'اختر صورة';
@@ -361,19 +347,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scanTorch => 'الفلاش';
 
   @override
-  String get scanNotShareLink =>
-      'هذا ليس رمز QR الخاص بـ شير لينك على الهاتف (أ).';
+  String get scanNotShareLink => 'هذا ليس رمز QR من شير لينك.';
 
   @override
   String get scanNoCodeInImage => 'لم يُعثر على رمز QR في هذه الصورة.';
 
   @override
   String get scanCameraDenied =>
-      'يلزم إذن الكاميرا للمسح. اسمح به من إعدادات التطبيق، أو اختر صورة لرمز QR بدلًا من ذلك.';
+      'اسمح بالكاميرا من إعدادات التطبيق، أو اختر صورة.';
 
   @override
   String get scanCameraUnavailable =>
-      'لا يمكن استخدام الكاميرا الآن. يمكنك اختيار صورة لرمز QR بدلًا من ذلك.';
+      'الكاميرا غير متاحة. اختر صورة بدلًا منها.';
 
   @override
   String get sectionTile => 'مربع الإعدادات السريعة';
@@ -383,28 +368,26 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get tileAddHint =>
-      'اسحب من أعلى الشاشة إلى الأسفل مرتين، واضغط زر التعديل (القلم)، ثم اسحب مربع شير لينك إلى مربعاتك.';
+      'افتح الإعدادات السريعة، واضغط القلم، ثم اسحب مربع شير لينك إلى مربعاتك.';
 
   @override
-  String get tileAdded =>
-      'تمت إضافة المربع. اسحب للأسفل للتشغيل أو الإيقاف من أي مكان.';
+  String get tileAdded => 'تمت إضافة المربع.';
 
   @override
-  String get tileAlreadyAdded => 'المربع موجود بالفعل في الإعدادات السريعة.';
+  String get tileAlreadyAdded => 'المربع مضاف بالفعل.';
 
   @override
   String get tileNotAdded => 'لم تتم إضافة المربع.';
 
   @override
-  String get errorSetupNeeded =>
-      'أدخل كلمة مرور الهاتف (أ) أو امسح رمز QR الخاص به أولًا، ثم اضغط اتصال.';
+  String get errorSetupNeeded => 'أدخل كلمة المرور أو امسح رمز QR أولًا.';
 
   @override
   String get guideTelegramTitle => 'تيليجرام';
 
   @override
   String guideTelegram(String host, String port) {
-    return 'في تيليجرام: الإعدادات ← البيانات والتخزين ← إعدادات البروكسي ← إضافة بروكسي ← SOCKS5. الخادم $host والمنفذ $port، واترك اسم المستخدم وكلمة المرور فارغين.';
+    return 'الإعدادات ← البيانات والتخزين ← إعدادات البروكسي ← إضافة بروكسي ← SOCKS5، بالخادم $host والمنفذ $port.';
   }
 
   @override
@@ -412,19 +395,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String guideWhatsApp(String host) {
-    return 'في واتساب: الإعدادات ← التخزين والبيانات ← البروكسي ← استخدام البروكسي. مضيف البروكسي $host، منفذ الدردشة 5222، منفذ الوسائط 7777. الرسائل والوسائط تعمل؛ المكالمات لا تمر عبر البروكسي.';
+    return 'الإعدادات ← التخزين والبيانات ← البروكسي ← استخدام البروكسي. المضيف $host، منفذ الدردشة 5222، منفذ الوسائط 7777. المكالمات لا تعمل.';
   }
 
   @override
   String get guideNoteWithWhatsApp =>
-      'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام وواتساب استخدام إعدادات البروكسي الخاصة بهما. للمكالمات، ثبّت شير لينك على الهاتف الآخر واستخدم وضع الاستقبال.';
+      'للمكالمات، ثبّت شير لينك على الهاتف الآخر.';
 
   @override
   String get guideDnsTitle => 'إذا قال تطبيق إنه غير متصل';
 
   @override
   String guideDnsTip(String host) {
-    return 'بعض التطبيقات (مثل المحافظ) تفحص الإنترنت بنفسها. في إعدادات الواي فاي على الهاتف الآخر لهذه الشبكة، اجعل DNS يدويًا، أبقِ $host وأضف 1.1.1.1. على الآيفون: الإعدادات ← Wi-Fi ← ⓘ ← تكوين DNS ← يدوي ← إضافة خادم.';
+    return 'في إعدادات هذه الشبكة اجعل DNS يدويًا: أبقِ $host وأضف 1.1.1.1. على الآيفون: Wi-Fi ← ⓘ ← تكوين DNS.';
   }
 
   @override
@@ -437,17 +420,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get receiveTitle => 'استقبال الإنترنت';
 
   @override
-  String get receiveCardTitle => 'الأفضل: ثبّت شير لينك على الهاتف الآخر';
+  String get receiveCardTitle => 'الأفضل: شير لينك على الهاتفين';
 
   @override
-  String get receiveCardBody =>
-      'مع التطبيق على الهاتف الآخر تعمل عليه كل التطبيقات، ومنها المكالمات. على ذلك الهاتف افتح «توصيل جهاز» واضغط الزر بالأسفل.';
+  String get receiveCardBody => 'تعمل كل التطبيقات، ومنها المكالمات.';
 
   @override
-  String get receiveButton => 'هذا الهاتف يحتاج إنترنت؟ افتح وضع الاستقبال';
+  String get receiveButton => 'استقبال الإنترنت على هذا الهاتف';
 
   @override
-  String get receivingBanner => 'يستقبل هذا الهاتف الإنترنت من الهاتف (أ)';
+  String get receivingBanner => 'هذا الهاتف يستقبل الإنترنت';
 
   @override
   String get open => 'فتح';
@@ -468,8 +450,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get withoutAppTitle => 'بدون تثبيت التطبيق';
 
   @override
-  String get withoutAppSubtitle =>
-      'تعمل على أي هاتف، ومنه الآيفون. اضغط على طريقة لترى خطواتها.';
+  String get withoutAppSubtitle => 'تعمل على أي هاتف، ومنه الآيفون.';
 
   @override
   String get guideProxyTitle => 'الواي فاي + بروكسي يدوي';
@@ -505,7 +486,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chipDns2 => 'DNS 2';
 
   @override
-  String get qrPlaceholder => 'ابدأ المشاركة ليظهر رمز QR لهذه الشبكة.';
+  String get qrPlaceholder => 'شغّل المشاركة ليظهر رمز QR.';
 
   @override
   String get goToHome => 'الذهاب إلى الرئيسية';

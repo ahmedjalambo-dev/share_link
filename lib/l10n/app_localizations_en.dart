@@ -30,8 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusError => 'Error';
 
   @override
-  String get hintStopped =>
-      'Connect this phone to Wi-Fi, then tap Start to share it.';
+  String get hintStopped => 'Connect to Wi-Fi, then tap Start.';
 
   @override
   String get networkName => 'Network name';
@@ -63,31 +62,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get download => 'Download';
 
   @override
-  String get wifiLost =>
-      'This phone lost its Wi-Fi connection. Sharing resumes when it reconnects.';
+  String get wifiLost => 'Wi-Fi lost. Sharing resumes when it\'s back.';
 
   @override
-  String get permissionRequired =>
-      'Wi-Fi Direct permission is required to share the connection.';
+  String get permissionRequired => 'Sharing needs the Wi-Fi Direct permission.';
 
   @override
   String get settingsAction => 'Settings';
 
   @override
   String get errorPermissionDenied =>
-      'Wi-Fi Direct permission was denied. Allow it in the app settings.';
+      'Wi-Fi Direct permission denied. Allow it in the app settings.';
 
   @override
   String get errorLocationDisabled =>
-      'Location is turned off. Android needs it on for Wi-Fi Direct.';
+      'Turn on Location. Android needs it for Wi-Fi Direct.';
 
   @override
-  String get errorWifiDisabled =>
-      'Wi-Fi is turned off. Turn it on and connect to a network.';
+  String get errorWifiDisabled => 'Turn on Wi-Fi and connect to a network.';
 
   @override
   String get errorWifiNotConnected =>
-      'This phone is not connected to a Wi-Fi network with internet.';
+      'Connect this phone to a Wi-Fi network with internet.';
 
   @override
   String get errorP2pUnsupported => 'This phone does not support Wi-Fi Direct.';
@@ -104,7 +100,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorPortInUse =>
-      'The proxy port is already used by another app. Choose a different port in Settings.';
+      'Another app uses this port. Choose another one in Settings.';
 
   @override
   String get errorProxyFailed => 'Could not start the proxy server.';
@@ -126,34 +122,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrCaption =>
-      'On the other phone, open Share Link → Connect a device → Receive mode → \"Scan Phone A\'s QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.';
+      'Scan it with Share Link on the other phone to connect in one step.';
 
   @override
   String guideStep1(String ssid) {
-    return 'Open Wi-Fi settings and join \"$ssid\", or scan the QR code.';
+    return 'Join \"$ssid\" in Wi-Fi settings, or scan the QR code.';
   }
 
   @override
   String guideStep2(String password) {
-    return 'Enter the password: $password';
+    return 'Password: $password';
   }
 
   @override
   String get guideStep3 =>
-      'Tap the gear icon (or long-press the network), then Modify / Advanced options.';
+      'Open the network\'s settings (gear icon or long-press) → Advanced.';
 
   @override
   String guideStep4(String host, String port) {
-    return 'Set Proxy to Manual: host $host, port $port. Leave the bypass list empty and save.';
+    return 'Proxy: Manual, host $host, port $port. Save.';
   }
 
   @override
-  String get guideStep5 =>
-      'If the phone says \"No internet\", choose to stay connected. Browsing still works.';
+  String get guideStep5 => 'If it says \"No internet\", stay connected anyway.';
 
   @override
   String get guideNote =>
-      'Browsers and most apps use the manual proxy, and Telegram can use its own SOCKS5 setting. WhatsApp and calls ignore both: for them, install Share Link on the other phone and use Receive mode.';
+      'WhatsApp and calls need Share Link on the other phone.';
 
   @override
   String get settingsTitle => 'Settings';
@@ -168,7 +163,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customNetworkUnsupported =>
-      'On this Android version the system picks the network name and password automatically. Only the port can be changed.';
+      'On this Android version the name and password are set automatically. Only the port can change.';
 
   @override
   String get passwordHelper => '8–63 characters';
@@ -192,7 +187,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saved => 'Settings saved';
 
   @override
-  String get restartToApply => 'Settings saved. Restart sharing to apply them.';
+  String get restartToApply => 'Saved. Restart sharing to apply.';
 
   @override
   String get restart => 'Restart';
@@ -214,7 +209,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get batteryRestrictedBody =>
-      'Android may stop sharing while the screen is off. Allow the app to run in the background.';
+      'Android may stop sharing when the screen is off.';
 
   @override
   String get batteryAllow => 'Allow';
@@ -224,14 +219,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get batteryUnrestrictedBody =>
-      'Sharing can keep running in the background.';
+      'Sharing keeps running in the background.';
 
   @override
   String get errorInvalidName => 'Enter a network name.';
 
   @override
-  String get errorNameTooLong =>
-      'The name is too long (the full name must fit in 32 bytes).';
+  String get errorNameTooLong => 'The name is too long.';
 
   @override
   String get errorInvalidPassword =>
@@ -262,80 +256,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clientConnected => 'Connected';
 
   @override
-  String get clientPhoneA => 'Connected to Phone A';
+  String get clientPhoneA => 'Sharing phone';
 
   @override
-  String get clientPortHelper => 'The port shown on Phone A (default 8282)';
+  String get clientPortHelper => 'As shown on the sharing phone (default 8282)';
 
   @override
-  String get clientStepsTitle => 'Use this phone with Phone A\'s internet';
+  String get clientStepsTitle => 'Get internet from the sharing phone';
 
   @override
-  String get clientStep1 =>
-      'In Wi-Fi settings, join the \"DIRECT-…\" network shown on Phone A (password or QR code).';
+  String get clientStep1 => 'Join the \"DIRECT-…\" network in Wi-Fi settings.';
 
   @override
   String get clientStep2 =>
-      'If you set a manual proxy on that network before, set Proxy back to None.';
+      'If that network has a manual proxy, set it to None.';
 
   @override
-  String get clientStep3 =>
-      'Tap CONNECT and accept the VPN request. All apps (WhatsApp, Telegram, banking) then use Phone A\'s internet.';
+  String get clientStep3 => 'Tap CONNECT and accept the VPN request.';
 
   @override
   String get clientBankNote =>
-      'A few banking apps refuse to open while any VPN is on. That is the bank\'s security policy and can\'t be changed by this app.';
+      'Some bank apps won\'t open while a VPN is on. That\'s the bank\'s choice.';
 
   @override
-  String get errorVpnDenied =>
-      'VPN permission was not given. Tap CONNECT again and choose OK.';
+  String get errorVpnDenied => 'VPN not allowed. Tap CONNECT and choose OK.';
 
   @override
-  String get errorNotOnDirect =>
-      'This phone isn\'t connected to Phone A\'s \"DIRECT-…\" network. Join it in Wi-Fi settings first.';
+  String get errorNotOnDirect => 'Join the shared \"DIRECT-…\" network first.';
 
   @override
   String get errorHostUnreachable =>
-      'Can\'t reach Phone A. Make sure sharing is running on Phone A and the port matches.';
+      'Can\'t reach the sharing phone. Make sure sharing is on.';
 
   @override
   String get errorVpnFailed => 'Could not start the VPN tunnel.';
 
   @override
   String get errorConnectionLost =>
-      'The connection to Phone A was lost. Rejoin its Wi-Fi network and connect again.';
+      'Connection lost. Rejoin the network and connect again.';
 
   @override
-  String get clientNetworkTitle => 'Phone A\'s network';
+  String get clientNetworkTitle => 'Shared network';
 
   @override
   String get clientAutoJoin => 'Join automatically';
 
   @override
   String get clientAutoJoinHelp =>
-      'The app joins Phone A\'s Wi-Fi when you tap CONNECT and leaves it when you disconnect.';
+      'Joins the network when you connect and leaves it when you disconnect.';
 
   @override
-  String get clientSsidHintAny =>
-      'Optional. Leave empty to choose Phone A\'s network from a list.';
+  String get clientSsidHintAny => 'Optional. Leave empty to pick from a list.';
 
   @override
-  String get clientSsidHintExact => 'Exactly as shown on Phone A.';
+  String get clientSsidHintExact => 'Exactly as shown on the sharing phone.';
 
   @override
-  String get clientJoining => 'Joining Phone A\'s Wi-Fi…';
+  String get clientJoining => 'Joining the network…';
 
   @override
   String get clientAutoStep1 =>
-      'Enter the password shown on Phone A (it\'s saved for next time).';
+      'Enter the password shown on the sharing phone, or scan its QR code.';
 
   @override
-  String get clientAutoStep2 =>
-      'Tap CONNECT. If Android asks, choose Phone A\'s network and allow the connection, then accept the VPN request.';
+  String get clientAutoStep2 => 'Tap CONNECT and accept the requests.';
 
   @override
   String get errorJoinFailed =>
-      'Couldn\'t join Phone A\'s Wi-Fi. Make sure sharing is running on Phone A and the password is correct.';
+      'Couldn\'t join. Make sure sharing is on and the password is right.';
 
   @override
   String clientReconnecting(int attempt) {
@@ -344,17 +332,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clientReconnectingHelp =>
-      'Phone A can\'t be reached. Reconnecting automatically; apps resume by themselves. Tap DISCONNECT to stop.';
+      'Can\'t reach the sharing phone. Retrying automatically.';
 
   @override
-  String get scanQr => 'Scan Phone A\'s QR code';
+  String get scanQr => 'Scan QR code';
 
   @override
-  String get scanTitle => 'Scan Phone A\'s QR code';
+  String get scanTitle => 'Scan QR code';
 
   @override
   String get scanHint =>
-      'Point the camera at the QR code on Phone A\'s screen.';
+      'Point the camera at the QR code on the sharing phone.';
 
   @override
   String get scanFromPhoto => 'Choose a photo';
@@ -363,18 +351,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanTorch => 'Flashlight';
 
   @override
-  String get scanNotShareLink => 'This isn\'t Phone A\'s Share Link QR code.';
+  String get scanNotShareLink => 'This isn\'t a Share Link QR code.';
 
   @override
   String get scanNoCodeInImage => 'No QR code found in this picture.';
 
   @override
   String get scanCameraDenied =>
-      'Camera permission is needed to scan. Allow it in the app settings, or choose a photo of the QR code instead.';
+      'Allow the camera in the app settings, or choose a photo.';
 
   @override
   String get scanCameraUnavailable =>
-      'The camera can\'t be used right now. You can choose a photo of the QR code instead.';
+      'The camera isn\'t available. Choose a photo instead.';
 
   @override
   String get sectionTile => 'Quick Settings tile';
@@ -384,28 +372,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tileAddHint =>
-      'Swipe down twice from the top of the screen, tap the edit (pencil) button, and drag the Share Link tile into your tiles.';
+      'Open Quick Settings, tap the pencil, and drag the Share Link tile in.';
 
   @override
-  String get tileAdded =>
-      'Tile added. Swipe down to start or stop from anywhere.';
+  String get tileAdded => 'Tile added.';
 
   @override
-  String get tileAlreadyAdded => 'The tile is already in your Quick Settings.';
+  String get tileAlreadyAdded => 'The tile is already added.';
 
   @override
   String get tileNotAdded => 'The tile wasn\'t added.';
 
   @override
   String get errorSetupNeeded =>
-      'Enter Phone A\'s password or scan its QR code first, then tap CONNECT.';
+      'Enter the password or scan the QR code first.';
 
   @override
   String get guideTelegramTitle => 'Telegram';
 
   @override
   String guideTelegram(String host, String port) {
-    return 'In Telegram: Settings → Data and Storage → Proxy Settings → Add proxy → SOCKS5. Server $host, port $port, leave username and password empty.';
+    return 'Settings → Data and Storage → Proxy Settings → Add Proxy → SOCKS5, with server $host and port $port.';
   }
 
   @override
@@ -413,19 +400,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String guideWhatsApp(String host) {
-    return 'In WhatsApp: Settings → Storage and data → Proxy → Use proxy. Proxy host $host, chat port 5222, media port 7777. Messages and media work; calls don\'t go through the proxy.';
+    return 'Settings → Storage and data → Proxy → Use proxy. Host $host, chat port 5222, media port 7777. Calls won\'t work.';
   }
 
   @override
   String get guideNoteWithWhatsApp =>
-      'Browsers and most apps use the manual proxy, and Telegram and WhatsApp can use their own proxy settings. For calls, install Share Link on the other phone and use Receive mode.';
+      'For calls, install Share Link on the other phone.';
 
   @override
   String get guideDnsTitle => 'If an app says it isn\'t connected';
 
   @override
   String guideDnsTip(String host) {
-    return 'Some apps (e.g. wallets) check the internet themselves. In the other phone\'s Wi-Fi settings for this network, set DNS to Manual, keep $host and add 1.1.1.1. On iPhone: Settings → Wi-Fi → ⓘ → Configure DNS → Manual → Add Server.';
+    return 'In this network\'s Wi-Fi settings, set DNS to Manual: keep $host and add 1.1.1.1. On iPhone: Wi-Fi → ⓘ → Configure DNS.';
   }
 
   @override
@@ -438,17 +425,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get receiveTitle => 'Receive internet';
 
   @override
-  String get receiveCardTitle => 'Best: install Share Link on the other phone';
+  String get receiveCardTitle => 'Best: Share Link on both phones';
 
   @override
-  String get receiveCardBody =>
-      'With the app on the other phone, every app works there, including calls. On that phone open \"Connect a device\" and tap the button below.';
+  String get receiveCardBody => 'Every app works, including calls.';
 
   @override
-  String get receiveButton => 'This phone needs internet? Open Receive mode';
+  String get receiveButton => 'Receive internet on this phone';
 
   @override
-  String get receivingBanner => 'Receiving internet from Phone A';
+  String get receivingBanner => 'This phone is receiving internet';
 
   @override
   String get open => 'Open';
@@ -469,8 +455,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get withoutAppTitle => 'Without installing the app';
 
   @override
-  String get withoutAppSubtitle =>
-      'Works on any phone, including iPhone. Tap a method to see its steps.';
+  String get withoutAppSubtitle => 'Works on any phone, including iPhone.';
 
   @override
   String get guideProxyTitle => 'Wi-Fi + manual proxy';
@@ -506,8 +491,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chipDns2 => 'DNS 2';
 
   @override
-  String get qrPlaceholder =>
-      'Start sharing to show the QR code for this network.';
+  String get qrPlaceholder => 'Start sharing to show the QR code.';
 
   @override
   String get goToHome => 'Go to Home';

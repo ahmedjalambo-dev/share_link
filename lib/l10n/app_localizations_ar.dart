@@ -124,7 +124,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get qrCaption =>
-      'على الهاتف الآخر افتح Share Link ← اتصال ← \"امسح رمز QR للهاتف (أ)\" للانضمام والاتصال بخطوة واحدة. يمكن لتطبيق الكاميرا أيضًا مسحه، لكنه عندها ينضم إلى الواي فاي فقط.';
+      'على الهاتف الآخر افتح Share Link ← توصيل جهاز ← وضع الاستقبال ← \"امسح رمز QR للهاتف (أ)\" للانضمام والاتصال بخطوة واحدة. يمكن لتطبيق الكاميرا أيضًا مسحه، لكنه عندها ينضم إلى الواي فاي فقط.';
 
   @override
   String get guideTitle => 'طريقة توصيل الهاتف الآخر';
@@ -470,4 +470,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get stopSharingFirst => 'أوقف المشاركة على هذا الهاتف أولًا.';
+
+  @override
+  String get showQr => 'رمز QR';
+
+  @override
+  String get howToConnect => 'طريقة الاتصال';
 }

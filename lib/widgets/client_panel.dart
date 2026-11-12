@@ -200,8 +200,10 @@ class _ClientPanelState extends State<ClientPanel> {
           child: StatusChip(state: state, label: statusLabel),
         ),
         const SizedBox(height: 24),
-        if (_status.kind == ClientStatusKind.error)
+        if (_status.kind == ClientStatusKind.error) ...[
           ErrorCard(code: _status.errorCode, detail: _status.errorDetail),
+          const SizedBox(height: 8),
+        ],
         if (reconnecting) ...[
           _ReconnectingCard(errorCode: _status.errorCode),
           const SizedBox(height: 8),

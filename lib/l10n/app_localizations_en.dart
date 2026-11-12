@@ -126,7 +126,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrCaption =>
-      'On the other phone, open Share Link → Connect → \"Scan Phone A\'s QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.';
+      'On the other phone, open Share Link → Connect a device → Receive mode → \"Scan Phone A\'s QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.';
 
   @override
   String get guideTitle => 'How to connect the other phone';
@@ -472,4 +472,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stopSharingFirst => 'Stop sharing on this phone first.';
+
+  @override
+  String get showQr => 'QR code';
+
+  @override
+  String get howToConnect => 'How to connect';
 }

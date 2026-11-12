@@ -311,7 +311,7 @@ abstract class AppLocalizations {
   /// No description provided for @qrCaption.
   ///
   /// In en, this message translates to:
-  /// **'On the other phone, open Share Link → Connect → \"Scan Phone A\'s QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.'**
+  /// **'On the other phone, open Share Link → Connect a device → Receive mode → \"Scan Phone A\'s QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.'**
   String get qrCaption;
 
   /// No description provided for @guideTitle.
@@ -907,6 +907,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stop sharing on this phone first.'**
   String get stopSharingFirst;
+
+  /// No description provided for @showQr.
+  ///
+  /// In en, this message translates to:
+  /// **'QR code'**
+  String get showQr;
+
+  /// No description provided for @howToConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'How to connect'**
+  String get howToConnect;
 }
 
 class _AppLocalizationsDelegate

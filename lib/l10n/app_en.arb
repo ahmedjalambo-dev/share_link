@@ -42,7 +42,7 @@
   "openLocationSettings": "Location settings",
   "openWifiSettings": "Wi-Fi settings",
   "qrTitle": "Scan to join",
-  "qrCaption": "On the other phone, open Share Link → Connect → \"Scan Phone A's QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.",
+  "qrCaption": "On the other phone, open Share Link → Connect a device → Receive mode → \"Scan Phone A's QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.",
   "guideTitle": "How to connect the other phone",
   "guideStep1": "Open Wi-Fi settings and join \"{ssid}\", or scan the QR code.",
   "@guideStep1": {
@@ -203,5 +203,7 @@
   "receivingBanner": "Receiving internet from Phone A",
   "open": "Open",
   "stopReceivingFirst": "Disconnect Receive mode first.",
-  "stopSharingFirst": "Stop sharing on this phone first."
+  "stopSharingFirst": "Stop sharing on this phone first.",
+  "showQr": "QR code",
+  "howToConnect": "How to connect"
 }

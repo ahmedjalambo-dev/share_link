@@ -127,9 +127,6 @@ class AppLocalizationsAr extends AppLocalizations {
       'على الهاتف الآخر افتح Share Link ← توصيل جهاز ← وضع الاستقبال ← \"امسح رمز QR للهاتف (أ)\" للانضمام والاتصال بخطوة واحدة. يمكن لتطبيق الكاميرا أيضًا مسحه، لكنه عندها ينضم إلى الواي فاي فقط.';
 
   @override
-  String get guideTitle => 'طريقة توصيل الهاتف الآخر';
-
-  @override
   String guideStep1(String ssid) {
     return 'افتح إعدادات الواي فاي وانضم إلى الشبكة \"$ssid\"، أو امسح رمز QR.';
   }
@@ -154,7 +151,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get guideNote =>
-      'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام استخدام إعداد SOCKS5 الخاص به أعلاه. أما واتساب والمكالمات فتتجاهلهما: لها ثبّت Share Link على الهاتف الآخر واستخدم وضع «اتصال».';
+      'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام استخدام إعداد SOCKS5 الخاص به. أما واتساب والمكالمات فتتجاهلهما: لها ثبّت Share Link على الهاتف الآخر واستخدم وضع الاستقبال.';
 
   @override
   String get settingsTitle => 'الإعدادات';
@@ -311,13 +308,6 @@ class AppLocalizationsAr extends AppLocalizations {
       'انقطع الاتصال بالهاتف (أ). انضم إلى شبكته مجددًا ثم اتصل.';
 
   @override
-  String get guideRecommended =>
-      'أو بدون تثبيت أي شيء على الهاتف الآخر، بالخطوات التالية.';
-
-  @override
-  String get guideManualTitle => 'بدون التطبيق (المتصفحات وبعض التطبيقات فقط):';
-
-  @override
   String get clientNetworkTitle => 'شبكة الهاتف (أ)';
 
   @override
@@ -413,7 +403,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'أدخل كلمة مرور الهاتف (أ) أو امسح رمز QR الخاص به أولًا، ثم اضغط اتصال.';
 
   @override
-  String get guideTelegramTitle => 'تيليجرام بدون التطبيق';
+  String get guideTelegramTitle => 'تيليجرام';
 
   @override
   String guideTelegram(String host, String port) {
@@ -421,7 +411,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get guideWhatsAppTitle => 'واتساب بدون التطبيق';
+  String get guideWhatsAppTitle => 'واتساب';
 
   @override
   String guideWhatsApp(String host) {
@@ -430,7 +420,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get guideNoteWithWhatsApp =>
-      'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام وواتساب استخدام إعدادات البروكسي الخاصة بهما أعلاه. للمكالمات، ثبّت Share Link على الهاتف الآخر واستخدم وضع «اتصال».';
+      'المتصفحات ومعظم التطبيقات تستخدم البروكسي اليدوي، ويمكن لتيليجرام وواتساب استخدام إعدادات البروكسي الخاصة بهما. للمكالمات، ثبّت Share Link على الهاتف الآخر واستخدم وضع الاستقبال.';
 
   @override
   String get guideDnsTitle => 'إذا قال تطبيق إنه غير متصل';
@@ -476,4 +466,50 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get howToConnect => 'طريقة الاتصال';
+
+  @override
+  String get withoutAppTitle => 'بدون تثبيت التطبيق';
+
+  @override
+  String get withoutAppSubtitle =>
+      'تعمل على أي هاتف، ومنه الآيفون. اضغط على طريقة لترى خطواتها.';
+
+  @override
+  String get guideProxyTitle => 'الواي فاي + بروكسي يدوي';
+
+  @override
+  String get guideProxySubtitle => 'المتصفحات ومعظم التطبيقات';
+
+  @override
+  String get guideTelegramSubtitle => 'بروكسي SOCKS5 من إعدادات تيليجرام';
+
+  @override
+  String get guideWhatsAppSubtitle => 'الرسائل والوسائط (بدون مكالمات)';
+
+  @override
+  String get guideDnsSubtitle => 'المحافظ وتطبيقات البنوك';
+
+  @override
+  String get chipHost => 'العنوان';
+
+  @override
+  String get chipPort => 'المنفذ';
+
+  @override
+  String get chipChatPort => 'منفذ الدردشة';
+
+  @override
+  String get chipMediaPort => 'منفذ الوسائط';
+
+  @override
+  String get chipDns1 => 'DNS 1';
+
+  @override
+  String get chipDns2 => 'DNS 2';
+
+  @override
+  String get qrPlaceholder => 'ابدأ المشاركة ليظهر رمز QR لهذه الشبكة.';
+
+  @override
+  String get goToHome => 'الذهاب إلى الرئيسية';
 }

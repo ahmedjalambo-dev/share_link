@@ -21,6 +21,7 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
+  static const _homeTab = 0;
   static const _connectTab = 1;
   static const _settingsTab = 2;
 
@@ -84,7 +85,11 @@ class _AppShellState extends State<AppShell> {
                   onOpenReceive: _openReceive,
                   onShowGuide: () => _select(_connectTab),
                 ),
-                ConnectTab(settings: settings, onOpenReceive: _openReceive),
+                ConnectTab(
+                  settings: settings,
+                  onOpenReceive: _openReceive,
+                  onGoHome: () => _select(_homeTab),
+                ),
                 const SettingsScreen(),
               ],
             ),

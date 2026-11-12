@@ -314,12 +314,6 @@ abstract class AppLocalizations {
   /// **'On the other phone, open Share Link → Connect a device → Receive mode → \"Scan Phone A\'s QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.'**
   String get qrCaption;
 
-  /// No description provided for @guideTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'How to connect the other phone'**
-  String get guideTitle;
-
   /// No description provided for @guideStep1.
   ///
   /// In en, this message translates to:
@@ -353,7 +347,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideNote.
   ///
   /// In en, this message translates to:
-  /// **'Browsers and most apps use the manual proxy, and Telegram can use its own SOCKS5 setting above. WhatsApp and calls ignore both: for them, install Share Link on the other phone and use Connect.'**
+  /// **'Browsers and most apps use the manual proxy, and Telegram can use its own SOCKS5 setting. WhatsApp and calls ignore both: for them, install Share Link on the other phone and use Receive mode.'**
   String get guideNote;
 
   /// No description provided for @settingsTitle.
@@ -632,18 +626,6 @@ abstract class AppLocalizations {
   /// **'The connection to Phone A was lost. Rejoin its Wi-Fi network and connect again.'**
   String get errorConnectionLost;
 
-  /// No description provided for @guideRecommended.
-  ///
-  /// In en, this message translates to:
-  /// **'Or without installing anything on the other phone, using the steps below.'**
-  String get guideRecommended;
-
-  /// No description provided for @guideManualTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Without the app (browsers and some apps only):'**
-  String get guideManualTitle;
-
   /// No description provided for @clientNetworkTitle.
   ///
   /// In en, this message translates to:
@@ -809,7 +791,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideTelegramTitle.
   ///
   /// In en, this message translates to:
-  /// **'Telegram without the app'**
+  /// **'Telegram'**
   String get guideTelegramTitle;
 
   /// No description provided for @guideTelegram.
@@ -821,7 +803,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideWhatsAppTitle.
   ///
   /// In en, this message translates to:
-  /// **'WhatsApp without the app'**
+  /// **'WhatsApp'**
   String get guideWhatsAppTitle;
 
   /// No description provided for @guideWhatsApp.
@@ -833,7 +815,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideNoteWithWhatsApp.
   ///
   /// In en, this message translates to:
-  /// **'Browsers and most apps use the manual proxy, and Telegram and WhatsApp can use their own proxy settings above. For calls, install Share Link on the other phone and use Connect.'**
+  /// **'Browsers and most apps use the manual proxy, and Telegram and WhatsApp can use their own proxy settings. For calls, install Share Link on the other phone and use Receive mode.'**
   String get guideNoteWithWhatsApp;
 
   /// No description provided for @guideDnsTitle.
@@ -919,6 +901,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'How to connect'**
   String get howToConnect;
+
+  /// No description provided for @withoutAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Without installing the app'**
+  String get withoutAppTitle;
+
+  /// No description provided for @withoutAppSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Works on any phone, including iPhone. Tap a method to see its steps.'**
+  String get withoutAppSubtitle;
+
+  /// No description provided for @guideProxyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wi-Fi + manual proxy'**
+  String get guideProxyTitle;
+
+  /// No description provided for @guideProxySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browsers and most apps'**
+  String get guideProxySubtitle;
+
+  /// No description provided for @guideTelegramSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SOCKS5 proxy in Telegram\'s settings'**
+  String get guideTelegramSubtitle;
+
+  /// No description provided for @guideWhatsAppSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages and media (no calls)'**
+  String get guideWhatsAppSubtitle;
+
+  /// No description provided for @guideDnsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallets and bank apps'**
+  String get guideDnsSubtitle;
+
+  /// No description provided for @chipHost.
+  ///
+  /// In en, this message translates to:
+  /// **'Host'**
+  String get chipHost;
+
+  /// No description provided for @chipPort.
+  ///
+  /// In en, this message translates to:
+  /// **'Port'**
+  String get chipPort;
+
+  /// No description provided for @chipChatPort.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat port'**
+  String get chipChatPort;
+
+  /// No description provided for @chipMediaPort.
+  ///
+  /// In en, this message translates to:
+  /// **'Media port'**
+  String get chipMediaPort;
+
+  /// No description provided for @chipDns1.
+  ///
+  /// In en, this message translates to:
+  /// **'DNS 1'**
+  String get chipDns1;
+
+  /// No description provided for @chipDns2.
+  ///
+  /// In en, this message translates to:
+  /// **'DNS 2'**
+  String get chipDns2;
+
+  /// No description provided for @qrPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Start sharing to show the QR code for this network.'**
+  String get qrPlaceholder;
+
+  /// No description provided for @goToHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Home'**
+  String get goToHome;
 }
 
 class _AppLocalizationsDelegate

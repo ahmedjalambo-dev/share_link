@@ -6,15 +6,24 @@ import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../models/share_status.dart';
 import '../services/share_channel.dart';
-import 'credential_tile.dart';
 import 'error_card.dart';
+import 'network_card.dart';
 import 'power_button.dart';
+import 'qr_sheet.dart';
 import 'stats_card.dart';
-import 'wifi_qr_card.dart';
+import 'status_banner.dart';
 
-/// Share mode (Phone A): Wi-Fi Direct group + proxy, with credentials, QR and stats.
+/// Share mode (Phone A): the power button, then the network and live stats while running.
+/// The QR opens in a bottom sheet and the full guide lives in the Connect a device tab.
 class SharePanel extends StatefulWidget {
-  const SharePanel({super.key, this.receiving = false});
+  const SharePanel({
+    super.key,
+    required this.onShowGuide,
+    this.receiving = false,
+  });
+
+  /// Switches to the Connect a device tab.
+  final VoidCallback onShowGuide;
 
   /// Receive mode is active on this phone; sharing can't start until it's disconnected.
   final bool receiving;
@@ -89,7 +98,6 @@ class _SharePanelState extends State<SharePanel> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final running = _status.kind == ShareStatusKind.running;
     final (state, statusLabel) = switch (_status.kind) {
       ShareStatusKind.stopped => (PowerState.idle, l.statusStopped),
       ShareStatusKind.starting => (PowerState.working, l.statusStarting),
@@ -98,6 +106,7 @@ class _SharePanelState extends State<SharePanel> {
     };
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Center(
@@ -108,83 +117,84 @@ class _SharePanelState extends State<SharePanel> {
             onPressed: _toggle,
           ),
         ),
-        const SizedBox(height: 16),
         Center(
           child: StatusChip(state: state, label: statusLabel),
         ),
-        const SizedBox(height: 24),
-        if (_status.kind == ShareStatusKind.error)
-          ErrorCard(code: _status.errorCode, detail: _status.errorDetail),
-        if (running) ...[
-          if (!_status.upstreamAvailable) const _WifiLostCard(),
-          _credentials(l),
-          const SizedBox(height: 8),
-          WifiQrCard(
-            ssid: _status.ssid ?? '',
-            password: _status.passphrase ?? '',
+        const SizedBox(height: 20),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+          alignment: Alignment.topCenter,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: KeyedSubtree(
+              key: ValueKey(_status.kind),
+              child: _details(context, l),
+            ),
           ),
-          const SizedBox(height: 8),
-          StatsCard(
-            connections: _status.activeConnections,
-            bytesUp: _status.bytesUp,
-            bytesDown: _status.bytesDown,
-          ),
-        ],
-        if (_status.kind == ShareStatusKind.stopped)
-          Text(
-            l.hintStopped,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+        ),
       ],
     );
   }
 
-  Widget _credentials(AppLocalizations l) {
-    return Card(
-      child: Column(
-        children: [
-          CredentialTile(
-            icon: Icons.wifi,
-            label: l.networkName,
-            value: _status.ssid ?? '',
+  /// What sits under the button for the current state.
+  Widget _details(BuildContext context, AppLocalizations l) {
+    switch (_status.kind) {
+      case ShareStatusKind.running:
+        final ssid = _status.ssid ?? '';
+        final password = _status.passphrase ?? '';
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (!_status.upstreamAvailable) ...[
+              const _WifiLostBanner(),
+              const SizedBox(height: 12),
+            ],
+            NetworkCard(
+              ssid: ssid,
+              password: password,
+              onShowQr: () =>
+                  showQrSheet(context, ssid: ssid, password: password),
+              onShowGuide: widget.onShowGuide,
+            ),
+            const SizedBox(height: 12),
+            StatsCard(
+              connections: _status.activeConnections,
+              bytesUp: _status.bytesUp,
+              bytesDown: _status.bytesDown,
+            ),
+          ],
+        );
+      case ShareStatusKind.error:
+        return ErrorCard(code: _status.errorCode, detail: _status.errorDetail);
+      case ShareStatusKind.stopped:
+        return Text(
+          l.hintStopped,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
-          CredentialTile(
-            icon: Icons.key,
-            label: l.password,
-            value: _status.passphrase ?? '',
-          ),
-          CredentialTile(
-            icon: Icons.dns,
-            label: l.proxyIp,
-            value: _status.ownerIp ?? '',
-          ),
-          CredentialTile(
-            icon: Icons.numbers,
-            label: l.proxyPort,
-            value: '${_status.port ?? ''}',
-          ),
-        ],
-      ),
-    );
+        );
+      case ShareStatusKind.starting:
+        return const SizedBox.shrink();
+    }
   }
 }
 
-class _WifiLostCard extends StatelessWidget {
-  const _WifiLostCard();
+class _WifiLostBanner extends StatelessWidget {
+  const _WifiLostBanner();
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
-    return Card(
-      color: scheme.tertiaryContainer,
-      child: ListTile(
-        leading: Icon(Icons.wifi_off, color: scheme.onTertiaryContainer),
-        title: Text(
-          AppLocalizations.of(context).wifiLost,
-          style: TextStyle(color: scheme.onTertiaryContainer),
-        ),
-      ),
+    return StatusBanner(
+      icon: Icons.wifi_off,
+      message: l.wifiLost,
+      background: scheme.tertiaryContainer,
+      foreground: scheme.onTertiaryContainer,
+      actionLabel: l.openWifiSettings,
+      onAction: () => ShareChannel.openSystemSettings('wifi'),
     );
   }
 }

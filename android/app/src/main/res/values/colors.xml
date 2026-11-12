@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand teal: app icon background and splash screen. -->
+    <color name="brand_teal">#00796B</color>
+    <!-- Splash screen in dark mode. -->
+    <color name="brand_teal_dark">#004D40</color>
+</resources>

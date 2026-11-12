@@ -6,6 +6,7 @@ import 'l10n/app_localizations.dart';
 import 'licenses.dart';
 import 'screens/app_shell.dart';
 import 'services/share_channel.dart';
+import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,11 +24,6 @@ Future<void> main() async {
 class ShareLinkApp extends StatelessWidget {
   const ShareLinkApp({super.key});
 
-  /// IBM Plex Sans has no Arabic letters, so Arabic text (whole Arabic UI or
-  /// mixed strings) is drawn with the matching IBM Plex Sans Arabic.
-  static const _latinFont = 'IBMPlexSans';
-  static const _arabicFallback = ['IBMPlexSansArabic'];
-
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -38,17 +34,8 @@ class ShareLinkApp extends StatelessWidget {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         themeMode: AppThemeMode.notifier.value,
-        theme: ThemeData(
-          colorSchemeSeed: Colors.teal,
-          fontFamily: _latinFont,
-          fontFamilyFallback: _arabicFallback,
-        ),
-        darkTheme: ThemeData(
-          colorSchemeSeed: Colors.teal,
-          brightness: Brightness.dark,
-          fontFamily: _latinFont,
-          fontFamilyFallback: _arabicFallback,
-        ),
+        theme: buildTheme(Brightness.light),
+        darkTheme: buildTheme(Brightness.dark),
         home: const AppShell(),
       ),
     );

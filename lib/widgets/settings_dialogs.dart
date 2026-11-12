@@ -110,7 +110,6 @@ class _TextSettingDialogState extends State<_TextSettingDialog> {
           validator: widget.validator,
           onFieldSubmitted: (_) => _submit(),
           decoration: InputDecoration(
-            border: const OutlineInputBorder(),
             helperText: widget.helper?.call(_controller.text),
             helperMaxLines: 2,
             errorMaxLines: 3,

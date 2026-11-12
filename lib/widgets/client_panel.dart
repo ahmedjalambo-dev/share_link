@@ -271,7 +271,6 @@ class _ClientPanelState extends State<ClientPanel> {
                         ? l.clientSsidHintAny
                         : l.clientSsidHintExact,
                     helperMaxLines: 2,
-                    border: const OutlineInputBorder(),
                   ),
                   validator: _validateSsid,
                 ),
@@ -283,7 +282,6 @@ class _ClientPanelState extends State<ClientPanel> {
                   textDirection: TextDirection.ltr,
                   decoration: InputDecoration(
                     labelText: l.password,
-                    border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
@@ -310,7 +308,6 @@ class _ClientPanelState extends State<ClientPanel> {
                 decoration: InputDecoration(
                   labelText: l.proxyPort,
                   helperText: l.clientPortHelper,
-                  border: const OutlineInputBorder(),
                 ),
                 validator: _validatePort,
               ),

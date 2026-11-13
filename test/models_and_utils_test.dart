@@ -123,6 +123,39 @@ void main() {
     expect(formatBytes(200 * 1024 * 1024), '200 MB');
   });
 
+  test('formatSpeed never goes below KB/s', () {
+    expect(formatSpeed(0), '0 KB/s');
+    expect(formatSpeed(512), '0.5 KB/s');
+    expect(formatSpeed(85 * 1024), '85 KB/s');
+    expect(formatSpeed(1258291), '1.2 MB/s');
+  });
+
+  test('formatDuration shows hours only when needed', () {
+    expect(formatDuration(const Duration(seconds: 5)), '0:05');
+    expect(formatDuration(const Duration(minutes: 4, seconds: 5)), '4:05');
+    expect(
+      formatDuration(const Duration(hours: 1, minutes: 2, seconds: 33)),
+      '1:02:33',
+    );
+  });
+
+  test('Statuses parse live speed and session start', () {
+    final share = ShareStatus.fromMap({
+      'speedUp': 1024,
+      'speedDown': 4096,
+      'startedAt': 1700000000000,
+    });
+    expect(share.speedUp, 1024);
+    expect(share.speedDown, 4096);
+    expect(share.startedAt, DateTime.fromMillisecondsSinceEpoch(1700000000000));
+
+    final client = ClientStatus.fromMap({'speedDown': 10, 'startedAt': 5});
+    expect(client.speedDown, 10);
+    expect(client.speedUp, 0);
+    expect(client.startedAt, DateTime.fromMillisecondsSinceEpoch(5));
+    expect(ClientStatus.fromMap({}).startedAt, isNull);
+  });
+
   test('wifiQrPayload builds a WPA QR string', () {
     expect(
       wifiQrPayload('DIRECT-ab-ShareLink', 'secret123'),

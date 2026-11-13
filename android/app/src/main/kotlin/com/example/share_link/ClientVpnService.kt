@@ -18,6 +18,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.ParcelFileDescriptor
+import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
@@ -77,11 +78,18 @@ class ClientVpnService : VpnService() {
     @Volatile
     private var pendingJoiner: DirectNetworkJoiner? = null
 
+    private val meter = TrafficMeter()
+
     private val statsTicker = object : Runnable {
         override fun run() {
             if (link == null) return
             val stats = TProxyService.TProxyGetStats()
-            ClientState.update { it.copy(bytesUp = bytesUpBase + stats[1], bytesDown = bytesDownBase + stats[3]) }
+            val up = bytesUpBase + stats[1]
+            val down = bytesDownBase + stats[3]
+            val (speedUp, speedDown) = meter.sample(up, down, SystemClock.elapsedRealtime())
+            ClientState.update {
+                it.copy(bytesUp = up, bytesDown = down, speedUp = speedUp, speedDown = speedDown)
+            }
             mainHandler.postDelayed(this, STATS_INTERVAL_MS)
         }
     }
@@ -177,6 +185,9 @@ class ClientVpnService : VpnService() {
                 errorCode = code,
                 errorDetail = detail,
                 joining = false,
+                // Nothing flows until the next link; the stats ticker is stopped.
+                speedUp = 0,
+                speedDown = 0,
             )
         }
         updateNotification()
@@ -286,9 +297,12 @@ class ClientVpnService : VpnService() {
                 errorCode = null,
                 errorDetail = null,
                 joining = false,
+                // The session clock keeps running through reconnects.
+                startedAt = it.startedAt ?: System.currentTimeMillis(),
             )
         }
         updateNotification()
+        meter.reset()
         mainHandler.removeCallbacks(statsTicker)
         mainHandler.post(statsTicker)
         mainHandler.postDelayed(healthProbe, PROBE_INTERVAL_MS)
@@ -582,7 +596,10 @@ class ClientVpnService : VpnService() {
             else -> getString(R.string.client_notif_connecting)
         }
         val text = state.host?.let { "$it:${state.port}" }
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+        // Session timer; the system ticks it, so the notification isn't redrawn.
+        state.startedAt?.let { builder.setWhen(it).setShowWhen(true).setUsesChronometer(true) }
+        return builder
             .setSmallIcon(R.drawable.ic_stat_share)
             // Fills the icon's circle in the notification shade (Android 12+).
             .setColor(ContextCompat.getColor(this, R.color.brand_teal))

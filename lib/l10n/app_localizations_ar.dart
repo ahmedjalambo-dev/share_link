@@ -517,4 +517,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get licenses => 'تراخيص المصادر المفتوحة';
+
+  @override
+  String get sessionTime => 'مدة الجلسة';
+
+  @override
+  String totalAmount(String size) {
+    return 'الإجمالي $size';
+  }
 }

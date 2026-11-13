@@ -522,4 +522,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get licenses => 'Open-source licences';
+
+  @override
+  String get sessionTime => 'Session time';
+
+  @override
+  String totalAmount(String size) {
+    return '$size total';
+  }
 }

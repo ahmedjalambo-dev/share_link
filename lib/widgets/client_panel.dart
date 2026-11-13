@@ -207,7 +207,13 @@ class _ClientPanelState extends State<ClientPanel> {
         if (reconnecting) ...[
           _ReconnectingCard(errorCode: _status.errorCode),
           const SizedBox(height: 8),
-          StatsCard(bytesUp: _status.bytesUp, bytesDown: _status.bytesDown),
+          StatsCard(
+            bytesUp: _status.bytesUp,
+            bytesDown: _status.bytesDown,
+            speedUp: _status.speedUp,
+            speedDown: _status.speedDown,
+            startedAt: _status.startedAt,
+          ),
         ] else if (connected) ...[
           Card(
             child: CredentialTile(
@@ -217,7 +223,13 @@ class _ClientPanelState extends State<ClientPanel> {
             ),
           ),
           const SizedBox(height: 8),
-          StatsCard(bytesUp: _status.bytesUp, bytesDown: _status.bytesDown),
+          StatsCard(
+            bytesUp: _status.bytesUp,
+            bytesDown: _status.bytesDown,
+            speedUp: _status.speedUp,
+            speedDown: _status.speedDown,
+            startedAt: _status.startedAt,
+          ),
         ] else ...[
           _networkCard(context, l),
           const SizedBox(height: 16),

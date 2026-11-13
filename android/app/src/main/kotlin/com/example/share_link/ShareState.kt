@@ -39,6 +39,11 @@ data class ShareSnapshot(
     val activeConnections: Int = 0,
     val bytesUp: Long = 0,
     val bytesDown: Long = 0,
+    /** Bytes per second over the last stats tick. */
+    val speedUp: Long = 0,
+    val speedDown: Long = 0,
+    /** When this session started (epoch ms); null until running. */
+    val startedAt: Long? = null,
     /** False while Phone A's Wi-Fi is down; the proxy keeps running and recovers when it returns. */
     val upstreamAvailable: Boolean = true,
     /** The WhatsApp proxy ports (WhatsAppRelay) are open. */
@@ -55,6 +60,9 @@ data class ShareSnapshot(
         "activeConnections" to activeConnections,
         "bytesUp" to bytesUp,
         "bytesDown" to bytesDown,
+        "speedUp" to speedUp,
+        "speedDown" to speedDown,
+        "startedAt" to startedAt,
         "upstreamAvailable" to upstreamAvailable,
         "whatsAppProxy" to whatsAppProxy,
     )

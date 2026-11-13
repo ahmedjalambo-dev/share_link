@@ -162,6 +162,9 @@ class _SharePanelState extends State<SharePanel> {
               connections: _status.activeConnections,
               bytesUp: _status.bytesUp,
               bytesDown: _status.bytesDown,
+              speedUp: _status.speedUp,
+              speedDown: _status.speedDown,
+              startedAt: _status.startedAt,
             ),
           ],
         );

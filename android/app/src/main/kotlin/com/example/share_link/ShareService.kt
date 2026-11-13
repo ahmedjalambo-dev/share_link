@@ -19,6 +19,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
+import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
@@ -45,14 +46,21 @@ class ShareService : Service() {
     private var upstreamNetwork: Network? = null
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
+    private val meter = TrafficMeter()
+
     private val statsTicker = object : Runnable {
         override fun run() {
             val server = proxy ?: return
+            val up = server.bytesUp.get()
+            val down = server.bytesDown.get()
+            val (speedUp, speedDown) = meter.sample(up, down, SystemClock.elapsedRealtime())
             ShareState.update {
                 it.copy(
                     activeConnections = server.activeConnections.get(),
-                    bytesUp = server.bytesUp.get(),
-                    bytesDown = server.bytesDown.get(),
+                    bytesUp = up,
+                    bytesDown = down,
+                    speedUp = speedUp,
+                    speedDown = speedDown,
                     upstreamAvailable = upstreamNetwork != null,
                 )
             }
@@ -186,8 +194,10 @@ class ShareService : Service() {
                 ownerIp = group.ownerIp,
                 port = port,
                 upstreamAvailable = upstreamNetwork != null,
+                startedAt = System.currentTimeMillis(),
             )
         }
+        meter.reset()
         updateNotification()
         mainHandler.post(statsTicker)
     }
@@ -303,7 +313,10 @@ class ShareService : Service() {
         } else {
             getString(R.string.notif_starting)
         }
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+        // Session timer; the system ticks it, so the notification isn't redrawn.
+        state.startedAt?.let { builder.setWhen(it).setShowWhen(true).setUsesChronometer(true) }
+        return builder
             .setSmallIcon(R.drawable.ic_stat_share)
             // Fills the icon's circle in the notification shade (Android 12+).
             .setColor(ContextCompat.getColor(this, R.color.brand_teal))

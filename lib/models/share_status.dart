@@ -13,6 +13,9 @@ class ShareStatus {
     this.activeConnections = 0,
     this.bytesUp = 0,
     this.bytesDown = 0,
+    this.speedUp = 0,
+    this.speedDown = 0,
+    this.startedAt,
     this.upstreamAvailable = true,
     this.whatsAppProxy = false,
   });
@@ -33,6 +36,9 @@ class ShareStatus {
       activeConnections: map['activeConnections'] as int? ?? 0,
       bytesUp: map['bytesUp'] as int? ?? 0,
       bytesDown: map['bytesDown'] as int? ?? 0,
+      speedUp: map['speedUp'] as int? ?? 0,
+      speedDown: map['speedDown'] as int? ?? 0,
+      startedAt: _time(map['startedAt']),
       upstreamAvailable: map['upstreamAvailable'] as bool? ?? true,
       whatsAppProxy: map['whatsAppProxy'] == true,
     );
@@ -49,6 +55,13 @@ class ShareStatus {
   final int bytesUp;
   final int bytesDown;
 
+  /// Bytes per second over the last native stats tick.
+  final int speedUp;
+  final int speedDown;
+
+  /// When this session started; null until running.
+  final DateTime? startedAt;
+
   /// False while Phone A's Wi-Fi is down (the proxy keeps running).
   final bool upstreamAvailable;
 
@@ -59,3 +72,6 @@ class ShareStatus {
   bool get isActive =>
       kind == ShareStatusKind.starting || kind == ShareStatusKind.running;
 }
+
+DateTime? _time(Object? epochMs) =>
+    epochMs is int ? DateTime.fromMillisecondsSinceEpoch(epochMs) : null;

@@ -156,5 +156,7 @@
   "sectionDevice": "الجهاز",
   "sectionAbout": "حول التطبيق",
   "version": "الإصدار",
-  "licenses": "تراخيص المصادر المفتوحة"
+  "licenses": "تراخيص المصادر المفتوحة",
+  "sessionTime": "مدة الجلسة",
+  "totalAmount": "الإجمالي {size}"
 }

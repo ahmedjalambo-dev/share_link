@@ -225,5 +225,14 @@
   "sectionDevice": "Device",
   "sectionAbout": "About",
   "version": "Version",
-  "licenses": "Open-source licences"
+  "licenses": "Open-source licences",
+  "sessionTime": "Session time",
+  "totalAmount": "{size} total",
+  "@totalAmount": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  }
 }

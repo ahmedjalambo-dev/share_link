@@ -30,6 +30,11 @@ data class ClientSnapshot(
     val port: Int? = null,
     val bytesUp: Long = 0,
     val bytesDown: Long = 0,
+    /** Bytes per second over the last stats tick; 0 while reconnecting. */
+    val speedUp: Long = 0,
+    val speedDown: Long = 0,
+    /** When this session first connected (epoch ms); kept through reconnects. */
+    val startedAt: Long? = null,
     val errorCode: String? = null,
     val errorDetail: String? = null,
     /** True while connecting and the app is joining Phone A's Wi-Fi itself. */
@@ -43,6 +48,9 @@ data class ClientSnapshot(
         "port" to port,
         "bytesUp" to bytesUp,
         "bytesDown" to bytesDown,
+        "speedUp" to speedUp,
+        "speedDown" to speedDown,
+        "startedAt" to startedAt,
         "errorCode" to errorCode,
         "errorDetail" to errorDetail,
         "joining" to joining,

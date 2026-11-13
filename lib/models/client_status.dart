@@ -16,6 +16,9 @@ class ClientStatus {
     this.port,
     this.bytesUp = 0,
     this.bytesDown = 0,
+    this.speedUp = 0,
+    this.speedDown = 0,
+    this.startedAt,
     this.errorCode,
     this.errorDetail,
     this.joining = false,
@@ -33,6 +36,9 @@ class ClientStatus {
       port: map['port'] as int?,
       bytesUp: map['bytesUp'] as int? ?? 0,
       bytesDown: map['bytesDown'] as int? ?? 0,
+      speedUp: map['speedUp'] as int? ?? 0,
+      speedDown: map['speedDown'] as int? ?? 0,
+      startedAt: _time(map['startedAt']),
       errorCode: map['errorCode'] as String?,
       errorDetail: map['errorDetail'] as String?,
       joining: map['joining'] == true,
@@ -47,6 +53,13 @@ class ClientStatus {
   final int? port;
   final int bytesUp;
   final int bytesDown;
+
+  /// Bytes per second over the last native stats tick.
+  final int speedUp;
+  final int speedDown;
+
+  /// When this session started; null until running.
+  final DateTime? startedAt;
   final String? errorCode;
   final String? errorDetail;
 
@@ -62,3 +75,6 @@ class ClientStatus {
       kind == ClientStatusKind.connected ||
       kind == ClientStatusKind.reconnecting;
 }
+
+DateTime? _time(Object? epochMs) =>
+    epochMs is int ? DateTime.fromMillisecondsSinceEpoch(epochMs) : null;

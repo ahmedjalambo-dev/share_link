@@ -16,6 +16,7 @@ Future<String?> showTextSettingDialog(
   int? maxLength,
   bool numeric = false,
   bool password = false,
+  bool ltr = true,
 }) {
   return showDialog<String>(
     context: context,
@@ -27,6 +28,7 @@ Future<String?> showTextSettingDialog(
       maxLength: maxLength,
       numeric: numeric,
       password: password,
+      ltr: ltr,
     ),
   );
 }
@@ -40,6 +42,7 @@ class _TextSettingDialog extends StatefulWidget {
     required this.maxLength,
     required this.numeric,
     required this.password,
+    required this.ltr,
   });
 
   final String title;
@@ -53,6 +56,10 @@ class _TextSettingDialog extends StatefulWidget {
 
   /// Adds show/hide and "generate" buttons.
   final bool password;
+
+  /// Network names and passwords are typed left to right; free text (a
+  /// device's nickname) follows the language.
+  final bool ltr;
 
   @override
   State<_TextSettingDialog> createState() => _TextSettingDialogState();
@@ -102,7 +109,7 @@ class _TextSettingDialogState extends State<_TextSettingDialog> {
           autofocus: true,
           obscureText: _obscure,
           maxLength: widget.maxLength,
-          textDirection: TextDirection.ltr,
+          textDirection: widget.ltr ? TextDirection.ltr : null,
           keyboardType: widget.numeric ? TextInputType.number : null,
           inputFormatters: widget.numeric
               ? [FilteringTextInputFormatter.digitsOnly]

@@ -127,6 +127,20 @@ class MainActivity : FlutterActivity() {
                 result.success(null)
             }
             "requestAddTile" -> requestAddTile(result)
+            "setDeviceBlocked" -> {
+                val address = call.argument<String>("address") ?: ""
+                val blocked = call.argument<Boolean>("blocked") == true
+                result.success(ShareService.setDeviceBlocked(address, blocked))
+            }
+            "renameDevice" -> {
+                val address = call.argument<String>("address") ?: ""
+                val nickname = settings.saveDeviceNickname(address, call.argument<String>("nickname") ?: "")
+                // Show it right away instead of on the next stats tick.
+                ShareState.update { state ->
+                    state.copy(devices = state.devices.map { if (it.address == address) it.copy(nickname = nickname) else it })
+                }
+                result.success(null)
+            }
             "checkPermissions" -> result.success(permissionMap(afterRequest = false))
             "requestPermissions" -> requestSharePermissions(result)
             "openSystemSettings" -> {

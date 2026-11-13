@@ -158,5 +158,15 @@
   "version": "الإصدار",
   "licenses": "تراخيص المصادر المفتوحة",
   "sessionTime": "مدة الجلسة",
-  "totalAmount": "الإجمالي {size}"
+  "totalAmount": "الإجمالي {size}",
+  "devicesTitle": "الأجهزة المتصلة",
+  "devicesEmpty": "تظهر الأجهزة هنا عندما تستخدم الإنترنت.",
+  "deviceUnnamed": "جهاز",
+  "deviceRename": "إعادة التسمية",
+  "deviceNickname": "اسم الجهاز",
+  "deviceNicknameHelper": "اتركه فارغًا لاستخدام اسمه الأصلي.",
+  "deviceDisconnect": "فصل",
+  "deviceDisconnectConfirm": "سيفقد الإنترنت حتى تسمح له أو تعيد تشغيل المشاركة.",
+  "deviceAllow": "السماح",
+  "deviceBlocked": "محظور"
 }

@@ -234,5 +234,15 @@
         "type": "String"
       }
     }
-  }
+  },
+  "devicesTitle": "Connected devices",
+  "devicesEmpty": "Devices appear here when they use the internet.",
+  "deviceUnnamed": "Device",
+  "deviceRename": "Rename",
+  "deviceNickname": "Device name",
+  "deviceNicknameHelper": "Leave empty to use its own name.",
+  "deviceDisconnect": "Disconnect",
+  "deviceDisconnectConfirm": "It loses internet until you allow it again or restart sharing.",
+  "deviceAllow": "Allow",
+  "deviceBlocked": "Blocked"
 }

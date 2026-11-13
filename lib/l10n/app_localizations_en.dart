@@ -530,4 +530,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String totalAmount(String size) {
     return '$size total';
   }
+
+  @override
+  String get devicesTitle => 'Connected devices';
+
+  @override
+  String get devicesEmpty => 'Devices appear here when they use the internet.';
+
+  @override
+  String get deviceUnnamed => 'Device';
+
+  @override
+  String get deviceRename => 'Rename';
+
+  @override
+  String get deviceNickname => 'Device name';
+
+  @override
+  String get deviceNicknameHelper => 'Leave empty to use its own name.';
+
+  @override
+  String get deviceDisconnect => 'Disconnect';
+
+  @override
+  String get deviceDisconnectConfirm =>
+      'It loses internet until you allow it again or restart sharing.';
+
+  @override
+  String get deviceAllow => 'Allow';
+
+  @override
+  String get deviceBlocked => 'Blocked';
 }

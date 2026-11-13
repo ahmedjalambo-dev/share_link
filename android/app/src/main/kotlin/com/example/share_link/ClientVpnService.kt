@@ -19,6 +19,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.ParcelFileDescriptor
 import android.os.SystemClock
+import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
@@ -306,7 +307,7 @@ class ClientVpnService : VpnService() {
         mainHandler.removeCallbacks(statsTicker)
         mainHandler.post(statsTicker)
         mainHandler.postDelayed(healthProbe, PROBE_INTERVAL_MS)
-        learnPhoneANetworkName(newLink)
+        introduceToPhoneA(newLink)
     }
 
     /** Main thread. Stops the tunnel and leaves the current link; the VPN interface stays up. */
@@ -397,28 +398,48 @@ class ClientVpnService : VpnService() {
      * When the user left the network name empty (Android's picker was used), ask Phone A for its
      * exact name and save it, so later reconnects can rejoin without the picker.
      */
-    private fun learnPhoneANetworkName(current: Link) {
+    /**
+     * Tells Phone A this phone's name (for its devices list) and, when auto-join still needs it,
+     * learns Phone A's network name. Runs after every successful link.
+     */
+    private fun introduceToPhoneA(current: Link) {
         val settings = ShareSettings(this)
-        if (!settings.clientAutoJoin || settings.clientSsid.isNotEmpty()) return
+        val learnSsid = settings.clientAutoJoin && settings.clientSsid.isEmpty()
+        val name = deviceName()
         background.execute {
             try {
                 val url = URL("http", current.host, port, PHONE_A_INFO_PATH)
                 val connection = current.network.openConnection(url, Proxy.NO_PROXY) as HttpURLConnection
                 connection.connectTimeout = PROBE_TIMEOUT_MS
                 connection.readTimeout = PROBE_TIMEOUT_MS
+                connection.setRequestProperty(DEVICE_HEADER, encodeDeviceHeader(name))
                 val body = try {
                     connection.inputStream.bufferedReader().use { it.readText() }
                 } finally {
                     connection.disconnect()
                 }
-                parseInfoSsid(body)?.let {
-                    settings.saveClientSsid(it)
-                    Log.i(TAG, "Learned Phone A's network name: $it")
+                if (learnSsid) {
+                    parseInfoSsid(body)?.let {
+                        settings.saveClientSsid(it)
+                        Log.i(TAG, "Learned Phone A's network name: $it")
+                    }
                 }
             } catch (e: IOException) {
                 // Older Phone A without the info endpoint; reconnects will use the picker.
             }
         }
+    }
+
+    /** The name the user gave this phone (e.g. "Redmi Note 14"), else its maker and model. */
+    private fun deviceName(): String {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            Settings.Global.getString(contentResolver, Settings.Global.DEVICE_NAME)
+                ?.takeIf { it.isNotBlank() }
+                ?.let { return it }
+        }
+        val model = Build.MODEL
+        val maker = Build.MANUFACTURER.replaceFirstChar { it.uppercase() }
+        return if (model.startsWith(maker, ignoreCase = true)) model else "$maker $model"
     }
 
     private fun ensureNativeTunnelLoaded() {

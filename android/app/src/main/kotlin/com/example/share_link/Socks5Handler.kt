@@ -149,7 +149,7 @@ internal class Socks5Handler(private val server: ProxyServer) {
                     replyHeaders[destination] = buffer.copyOfRange(0, headerLength)
                     val payloadLength = packet.length - headerLength
                     remote.send(DatagramPacket(buffer, headerLength, payloadLength, destination))
-                    server.bytesUp.addAndGet(payloadLength.toLong())
+                    server.countUp(clientIp, payloadLength.toLong())
                     lastActivity.set(System.currentTimeMillis())
                 }
             } catch (e: IOException) {
@@ -173,7 +173,7 @@ internal class Socks5Handler(private val server: ProxyServer) {
                     System.arraycopy(header, 0, reply, 0, header.size)
                     System.arraycopy(buffer, 0, reply, header.size, packet.length)
                     relay.send(DatagramPacket(reply, reply.size, destination))
-                    server.bytesDown.addAndGet(packet.length.toLong())
+                    server.countDown(clientIp, packet.length.toLong())
                     lastActivity.set(System.currentTimeMillis())
                 }
             } catch (e: IOException) {

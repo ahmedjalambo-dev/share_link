@@ -40,6 +40,9 @@ class ProxyServer(
     val bytesUp = AtomicLong()
     val bytesDown = AtomicLong()
 
+    /** Per-client traffic and blocking, for the devices list. */
+    internal val devices = DeviceRegistry()
+
     private val threadCounter = AtomicInteger()
     internal val executor: ExecutorService = Executors.newCachedThreadPool { runnable ->
         Thread(runnable, "proxy-${threadCounter.incrementAndGet()}").apply { isDaemon = true }
@@ -118,7 +121,7 @@ class ProxyServer(
                 if (running) Log.w(TAG, "accept failed", e)
                 break
             }
-            if (activeConnections.get() >= MAX_CONNECTIONS) {
+            if (devices.isBlocked(client.inetAddress) || activeConnections.get() >= MAX_CONNECTIONS) {
                 closeQuietly(client)
                 continue
             }
@@ -134,6 +137,7 @@ class ProxyServer(
     private fun handleRelay(client: Socket, targetHost: String, targetPort: Int) {
         activeConnections.incrementAndGet()
         openSockets.add(client)
+        devices.opened(client.inetAddress, client)
         try {
             client.tcpNoDelay = true
             val upstream = connectUpstream(targetHost, targetPort)
@@ -148,6 +152,7 @@ class ProxyServer(
             Log.w(TAG, "Unexpected relay error", e)
         } finally {
             release(client)
+            devices.closed(client.inetAddress, client)
             activeConnections.decrementAndGet()
         }
     }
@@ -155,6 +160,7 @@ class ProxyServer(
     private fun handleClient(client: Socket) {
         activeConnections.incrementAndGet()
         openSockets.add(client)
+        devices.opened(client.inetAddress, client)
         try {
             client.soTimeout = HEADER_TIMEOUT_MS
             client.tcpNoDelay = true
@@ -170,8 +176,21 @@ class ProxyServer(
             Log.w(TAG, "Unexpected proxy error", e)
         } finally {
             release(client)
+            devices.closed(client.inetAddress, client)
             activeConnections.decrementAndGet()
         }
+    }
+
+    /** Counts bytes sent from [client] to the internet, in total and for that device. */
+    internal fun countUp(client: InetAddress, bytes: Long) {
+        bytesUp.addAndGet(bytes)
+        devices.countUp(client, bytes)
+    }
+
+    /** Counts bytes sent from the internet to [client], in total and for that device. */
+    internal fun countDown(client: InetAddress, bytes: Long) {
+        bytesDown.addAndGet(bytes)
+        devices.countDown(client, bytes)
     }
 
     /** Opens a TCP connection over Wi-Fi; the caller must [release] it. */
@@ -210,12 +229,13 @@ class ProxyServer(
      */
     internal fun tunnel(client: Socket, clientIn: InputStream, upstream: Socket) {
         val lastActivity = AtomicLong(System.currentTimeMillis())
+        val address = client.inetAddress
         client.soTimeout = READ_TIMEOUT_MS
         upstream.soTimeout = READ_TIMEOUT_MS
 
         val downstream = executor.submit(Runnable {
             try {
-                pipe(upstream.getInputStream(), client.getOutputStream(), bytesDown, lastActivity)
+                pipe(upstream.getInputStream(), client.getOutputStream(), lastActivity) { countDown(address, it) }
             } catch (e: IOException) {
                 // Connection ended.
             } finally {
@@ -224,7 +244,7 @@ class ProxyServer(
             }
         })
         try {
-            pipe(clientIn, upstream.getOutputStream(), bytesUp, lastActivity)
+            pipe(clientIn, upstream.getOutputStream(), lastActivity) { countUp(address, it) }
             if (!upstream.isClosed) upstream.shutdownOutput()
             downstream.get()
         } catch (e: Exception) {
@@ -232,7 +252,7 @@ class ProxyServer(
         }
     }
 
-    private fun pipe(input: InputStream, output: OutputStream, counter: AtomicLong, lastActivity: AtomicLong) {
+    private fun pipe(input: InputStream, output: OutputStream, lastActivity: AtomicLong, count: (Long) -> Unit) {
         val buffer = ByteArray(BUFFER_SIZE)
         while (true) {
             val read = try {
@@ -244,7 +264,7 @@ class ProxyServer(
             }
             if (read < 0) return
             output.write(buffer, 0, read)
-            counter.addAndGet(read.toLong())
+            count(read.toLong())
             lastActivity.set(System.currentTimeMillis())
         }
     }

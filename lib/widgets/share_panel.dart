@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../models/share_status.dart';
 import '../services/share_channel.dart';
+import 'devices_card.dart';
 import 'error_card.dart';
 import 'network_card.dart';
 import 'power_button.dart';
@@ -166,6 +167,8 @@ class _SharePanelState extends State<SharePanel> {
               speedDown: _status.speedDown,
               startedAt: _status.startedAt,
             ),
+            const SizedBox(height: 12),
+            DevicesCard(devices: _status.devices),
           ],
         );
       case ShareStatusKind.error:

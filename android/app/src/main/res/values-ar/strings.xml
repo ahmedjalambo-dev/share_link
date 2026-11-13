@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Share Link</string>
+    <string name="app_name">شير لينك</string>
     <string name="notif_channel_name">مشاركة الواي فاي</string>
     <string name="notif_title">جارٍ مشاركة الواي فاي</string>
     <string name="notif_starting">جارٍ تشغيل Wi-Fi Direct…</string>
@@ -8,19 +8,19 @@
     <string name="notif_stop">إيقاف</string>
     <string name="notif_start">تشغيل</string>
     <string name="notif_stopped_title">توقفت المشاركة</string>
-    <string name="notif_stopped_text">اضغط تشغيل لمشاركة الواي فاي مجددًا.</string>
-    <string name="notif_failed_text">تعذّر التشغيل. افتح التطبيق لمعرفة السبب.</string>
-    <string name="client_notif_channel_name">الاتصال بالهاتف (أ)</string>
-    <string name="client_notif_connecting">جارٍ الاتصال بالهاتف (أ)…</string>
-    <string name="client_notif_connected">متصل بالهاتف (أ)</string>
-    <string name="client_notif_reconnecting">جارٍ إعادة الاتصال بالهاتف (أ)… (المحاولة %1$d)</string>
+    <string name="notif_stopped_text">اضغط تشغيل للمشاركة مجددًا.</string>
+    <string name="notif_failed_text">تعذّر التشغيل. افتح التطبيق للتفاصيل.</string>
+    <string name="client_notif_channel_name">استقبال الإنترنت</string>
+    <string name="client_notif_connecting">جارٍ الاتصال…</string>
+    <string name="client_notif_connected">هذا الهاتف يستقبل الإنترنت</string>
+    <string name="client_notif_reconnecting">جارٍ إعادة الاتصال… (المحاولة %1$d)</string>
     <string name="client_notif_disconnect">قطع الاتصال</string>
     <string name="client_notif_connect">اتصال</string>
-    <string name="client_notif_disconnected">انقطع الاتصال بالهاتف (أ)</string>
-    <string name="client_notif_disconnected_text">اضغط اتصال لاستخدام إنترنت الهاتف (أ) مجددًا.</string>
-    <string name="tile_label">Share Link</string>
+    <string name="client_notif_disconnected">انقطع الاتصال</string>
+    <string name="client_notif_disconnected_text">اضغط اتصال لاستقبال الإنترنت مجددًا.</string>
+    <string name="tile_label">شير لينك</string>
     <string name="tile_share">مشاركة الواي فاي</string>
-    <string name="tile_connect">الاتصال بالهاتف (أ)</string>
+    <string name="tile_connect">استقبال الإنترنت</string>
     <string name="tile_off">متوقف</string>
     <string name="tile_starting">جارٍ التشغيل…</string>
     <string name="tile_sharing">تتم المشاركة</string>

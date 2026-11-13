@@ -1,9 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Notification and Quick Settings tile icon: the app icon's glyph (Wi-Fi
+     waves above a link, see ic_launcher_foreground.xml), cropped to fill 24dp. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M1,9l2,2c4.97,-4.97 13.03,-4.97 18,0l2,-2C16.93,2.93 7.08,2.93 1,9zM9,17l3,3 3,-3c-1.65,-1.66 -4.34,-1.66 -6,0zM5,13l2,2c2.76,-2.76 7.24,-2.76 10,0l2,-2C15.14,9.14 8.87,9.14 5,13z" />
+    android:viewportWidth="44"
+    android:viewportHeight="44">
+    <group
+        android:translateX="-32"
+        android:translateY="-31.4">
+        <path
+            android:pathData="M38.44,41.44 A22,22 0 0,1 69.56,41.44"
+            android:strokeWidth="4.5"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M43.39,46.39 A15,15 0 0,1 64.61,46.39"
+            android:strokeWidth="4.5"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M48.34,51.34 A8,8 0 0,1 59.66,51.34"
+            android:strokeWidth="4.5"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M51,60 H42 A6,6 0 0,0 42,72 H51 M57,60 H66 A6,6 0 0,1 66,72 H57 M46,66 H62"
+            android:strokeWidth="4"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round" />
+    </group>
 </vector>

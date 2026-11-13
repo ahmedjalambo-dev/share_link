@@ -21,6 +21,7 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -511,6 +512,8 @@ class ClientVpnService : VpnService() {
         val text = getString(if (failed) R.string.notif_failed_text else R.string.client_notif_disconnected_text)
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_share)
+            // Fills the icon's circle in the notification shade (Android 12+).
+            .setColor(ContextCompat.getColor(this, R.color.brand_teal))
             .setContentTitle(getString(R.string.client_notif_disconnected))
             .setContentText(text)
             .setOngoing(false)
@@ -581,6 +584,8 @@ class ClientVpnService : VpnService() {
         val text = state.host?.let { "$it:${state.port}" }
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_share)
+            // Fills the icon's circle in the notification shade (Android 12+).
+            .setColor(ContextCompat.getColor(this, R.color.brand_teal))
             .setContentTitle(title)
             .setContentText(text)
             .setOngoing(true)

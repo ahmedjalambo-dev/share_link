@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/share_settings.dart';
@@ -120,7 +121,7 @@ class _ConnectTabState extends State<ConnectTab> {
             ),
             const SizedBox(height: 12),
             MethodCard(
-              icon: Icons.public,
+              icon: Icons.wifi_rounded,
               title: l.guideProxyTitle,
               subtitle: l.guideProxySubtitle,
               expanded: _open == _Method.proxy,
@@ -148,7 +149,7 @@ class _ConnectTabState extends State<ConnectTab> {
             // Telegram ignores the system proxy but has its own SOCKS5 setting,
             // which Phone A's proxy port also speaks.
             MethodCard(
-              icon: Icons.send,
+              icon: FontAwesomeIcons.telegram.data,
               title: l.guideTelegramTitle,
               subtitle: l.guideTelegramSubtitle,
               expanded: _open == _Method.telegram,
@@ -165,7 +166,7 @@ class _ConnectTabState extends State<ConnectTab> {
             if (whatsApp) ...[
               const SizedBox(height: 8),
               MethodCard(
-                icon: Icons.chat,
+                icon: FontAwesomeIcons.whatsapp.data,
                 title: l.guideWhatsAppTitle,
                 subtitle: l.guideWhatsAppSubtitle,
                 expanded: _open == _Method.whatsApp,
@@ -185,7 +186,7 @@ class _ConnectTabState extends State<ConnectTab> {
             // Apps that check the internet themselves need a DNS that answers;
             // Phone A's own address (handed out by Android) doesn't.
             MethodCard(
-              icon: Icons.dns,
+              icon: Icons.signal_wifi_connected_no_internet_4_rounded,
               title: l.guideDnsTitle,
               subtitle: l.guideDnsSubtitle,
               expanded: _open == _Method.dns,

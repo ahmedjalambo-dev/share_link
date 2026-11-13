@@ -143,7 +143,7 @@ abstract class AppLocalizations {
   /// No description provided for @hintStopped.
   ///
   /// In en, this message translates to:
-  /// **'Connect this phone to Wi-Fi, then tap Start to share it.'**
+  /// **'Connect to Wi-Fi, then tap Start.'**
   String get hintStopped;
 
   /// No description provided for @networkName.
@@ -203,13 +203,13 @@ abstract class AppLocalizations {
   /// No description provided for @wifiLost.
   ///
   /// In en, this message translates to:
-  /// **'This phone lost its Wi-Fi connection. Sharing resumes when it reconnects.'**
+  /// **'Wi-Fi lost. Sharing resumes when it\'s back.'**
   String get wifiLost;
 
   /// No description provided for @permissionRequired.
   ///
   /// In en, this message translates to:
-  /// **'Wi-Fi Direct permission is required to share the connection.'**
+  /// **'Sharing needs the Wi-Fi Direct permission.'**
   String get permissionRequired;
 
   /// No description provided for @settingsAction.
@@ -221,25 +221,25 @@ abstract class AppLocalizations {
   /// No description provided for @errorPermissionDenied.
   ///
   /// In en, this message translates to:
-  /// **'Wi-Fi Direct permission was denied. Allow it in the app settings.'**
+  /// **'Wi-Fi Direct permission denied. Allow it in the app settings.'**
   String get errorPermissionDenied;
 
   /// No description provided for @errorLocationDisabled.
   ///
   /// In en, this message translates to:
-  /// **'Location is turned off. Android needs it on for Wi-Fi Direct.'**
+  /// **'Turn on Location. Android needs it for Wi-Fi Direct.'**
   String get errorLocationDisabled;
 
   /// No description provided for @errorWifiDisabled.
   ///
   /// In en, this message translates to:
-  /// **'Wi-Fi is turned off. Turn it on and connect to a network.'**
+  /// **'Turn on Wi-Fi and connect to a network.'**
   String get errorWifiDisabled;
 
   /// No description provided for @errorWifiNotConnected.
   ///
   /// In en, this message translates to:
-  /// **'This phone is not connected to a Wi-Fi network with internet.'**
+  /// **'Connect this phone to a Wi-Fi network with internet.'**
   String get errorWifiNotConnected;
 
   /// No description provided for @errorP2pUnsupported.
@@ -269,7 +269,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorPortInUse.
   ///
   /// In en, this message translates to:
-  /// **'The proxy port is already used by another app. Choose a different port in Settings.'**
+  /// **'Another app uses this port. Choose another one in Settings.'**
   String get errorPortInUse;
 
   /// No description provided for @errorProxyFailed.
@@ -311,43 +311,43 @@ abstract class AppLocalizations {
   /// No description provided for @qrCaption.
   ///
   /// In en, this message translates to:
-  /// **'On the other phone, open Share Link → Connect a device → Receive mode → \"Scan Phone A\'s QR code\" to join and connect in one step. Its camera app can also scan it, but then only joins the Wi-Fi.'**
+  /// **'Scan it with Share Link on the other phone to connect in one step.'**
   String get qrCaption;
 
   /// No description provided for @guideStep1.
   ///
   /// In en, this message translates to:
-  /// **'Open Wi-Fi settings and join \"{ssid}\", or scan the QR code.'**
+  /// **'Join \"{ssid}\" in Wi-Fi settings, or scan the QR code.'**
   String guideStep1(String ssid);
 
   /// No description provided for @guideStep2.
   ///
   /// In en, this message translates to:
-  /// **'Enter the password: {password}'**
+  /// **'Password: {password}'**
   String guideStep2(String password);
 
   /// No description provided for @guideStep3.
   ///
   /// In en, this message translates to:
-  /// **'Tap the gear icon (or long-press the network), then Modify / Advanced options.'**
+  /// **'Open the network\'s settings (gear icon or long-press) → Advanced.'**
   String get guideStep3;
 
   /// No description provided for @guideStep4.
   ///
   /// In en, this message translates to:
-  /// **'Set Proxy to Manual: host {host}, port {port}. Leave the bypass list empty and save.'**
+  /// **'Proxy: Manual, host {host}, port {port}. Save.'**
   String guideStep4(String host, String port);
 
   /// No description provided for @guideStep5.
   ///
   /// In en, this message translates to:
-  /// **'If the phone says \"No internet\", choose to stay connected. Browsing still works.'**
+  /// **'If it says \"No internet\", stay connected anyway.'**
   String get guideStep5;
 
   /// No description provided for @guideNote.
   ///
   /// In en, this message translates to:
-  /// **'Browsers and most apps use the manual proxy, and Telegram can use its own SOCKS5 setting. WhatsApp and calls ignore both: for them, install Share Link on the other phone and use Receive mode.'**
+  /// **'WhatsApp and calls need Share Link on the other phone.'**
   String get guideNote;
 
   /// No description provided for @settingsTitle.
@@ -371,7 +371,7 @@ abstract class AppLocalizations {
   /// No description provided for @customNetworkUnsupported.
   ///
   /// In en, this message translates to:
-  /// **'On this Android version the system picks the network name and password automatically. Only the port can be changed.'**
+  /// **'On this Android version the name and password are set automatically. Only the port can change.'**
   String get customNetworkUnsupported;
 
   /// No description provided for @passwordHelper.
@@ -419,7 +419,7 @@ abstract class AppLocalizations {
   /// No description provided for @restartToApply.
   ///
   /// In en, this message translates to:
-  /// **'Settings saved. Restart sharing to apply them.'**
+  /// **'Saved. Restart sharing to apply.'**
   String get restartToApply;
 
   /// No description provided for @restart.
@@ -461,7 +461,7 @@ abstract class AppLocalizations {
   /// No description provided for @batteryRestrictedBody.
   ///
   /// In en, this message translates to:
-  /// **'Android may stop sharing while the screen is off. Allow the app to run in the background.'**
+  /// **'Android may stop sharing when the screen is off.'**
   String get batteryRestrictedBody;
 
   /// No description provided for @batteryAllow.
@@ -479,7 +479,7 @@ abstract class AppLocalizations {
   /// No description provided for @batteryUnrestrictedBody.
   ///
   /// In en, this message translates to:
-  /// **'Sharing can keep running in the background.'**
+  /// **'Sharing keeps running in the background.'**
   String get batteryUnrestrictedBody;
 
   /// No description provided for @errorInvalidName.
@@ -491,7 +491,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorNameTooLong.
   ///
   /// In en, this message translates to:
-  /// **'The name is too long (the full name must fit in 32 bytes).'**
+  /// **'The name is too long.'**
   String get errorNameTooLong;
 
   /// No description provided for @errorInvalidPassword.
@@ -551,61 +551,61 @@ abstract class AppLocalizations {
   /// No description provided for @clientPhoneA.
   ///
   /// In en, this message translates to:
-  /// **'Connected to Phone A'**
+  /// **'Sharing phone'**
   String get clientPhoneA;
 
   /// No description provided for @clientPortHelper.
   ///
   /// In en, this message translates to:
-  /// **'The port shown on Phone A (default 8282)'**
+  /// **'As shown on the sharing phone (default 8282)'**
   String get clientPortHelper;
 
   /// No description provided for @clientStepsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Use this phone with Phone A\'s internet'**
+  /// **'Get internet from the sharing phone'**
   String get clientStepsTitle;
 
   /// No description provided for @clientStep1.
   ///
   /// In en, this message translates to:
-  /// **'In Wi-Fi settings, join the \"DIRECT-…\" network shown on Phone A (password or QR code).'**
+  /// **'Join the \"DIRECT-…\" network in Wi-Fi settings.'**
   String get clientStep1;
 
   /// No description provided for @clientStep2.
   ///
   /// In en, this message translates to:
-  /// **'If you set a manual proxy on that network before, set Proxy back to None.'**
+  /// **'If that network has a manual proxy, set it to None.'**
   String get clientStep2;
 
   /// No description provided for @clientStep3.
   ///
   /// In en, this message translates to:
-  /// **'Tap CONNECT and accept the VPN request. All apps (WhatsApp, Telegram, banking) then use Phone A\'s internet.'**
+  /// **'Tap CONNECT and accept the VPN request.'**
   String get clientStep3;
 
   /// No description provided for @clientBankNote.
   ///
   /// In en, this message translates to:
-  /// **'A few banking apps refuse to open while any VPN is on. That is the bank\'s security policy and can\'t be changed by this app.'**
+  /// **'Some bank apps won\'t open while a VPN is on. That\'s the bank\'s choice.'**
   String get clientBankNote;
 
   /// No description provided for @errorVpnDenied.
   ///
   /// In en, this message translates to:
-  /// **'VPN permission was not given. Tap CONNECT again and choose OK.'**
+  /// **'VPN not allowed. Tap CONNECT and choose OK.'**
   String get errorVpnDenied;
 
   /// No description provided for @errorNotOnDirect.
   ///
   /// In en, this message translates to:
-  /// **'This phone isn\'t connected to Phone A\'s \"DIRECT-…\" network. Join it in Wi-Fi settings first.'**
+  /// **'Join the shared \"DIRECT-…\" network first.'**
   String get errorNotOnDirect;
 
   /// No description provided for @errorHostUnreachable.
   ///
   /// In en, this message translates to:
-  /// **'Can\'t reach Phone A. Make sure sharing is running on Phone A and the port matches.'**
+  /// **'Can\'t reach the sharing phone. Make sure sharing is on.'**
   String get errorHostUnreachable;
 
   /// No description provided for @errorVpnFailed.
@@ -617,13 +617,13 @@ abstract class AppLocalizations {
   /// No description provided for @errorConnectionLost.
   ///
   /// In en, this message translates to:
-  /// **'The connection to Phone A was lost. Rejoin its Wi-Fi network and connect again.'**
+  /// **'Connection lost. Rejoin the network and connect again.'**
   String get errorConnectionLost;
 
   /// No description provided for @clientNetworkTitle.
   ///
   /// In en, this message translates to:
-  /// **'Phone A\'s network'**
+  /// **'Shared network'**
   String get clientNetworkTitle;
 
   /// No description provided for @clientAutoJoin.
@@ -635,43 +635,43 @@ abstract class AppLocalizations {
   /// No description provided for @clientAutoJoinHelp.
   ///
   /// In en, this message translates to:
-  /// **'The app joins Phone A\'s Wi-Fi when you tap CONNECT and leaves it when you disconnect.'**
+  /// **'Joins the network when you connect and leaves it when you disconnect.'**
   String get clientAutoJoinHelp;
 
   /// No description provided for @clientSsidHintAny.
   ///
   /// In en, this message translates to:
-  /// **'Optional. Leave empty to choose Phone A\'s network from a list.'**
+  /// **'Optional. Leave empty to pick from a list.'**
   String get clientSsidHintAny;
 
   /// No description provided for @clientSsidHintExact.
   ///
   /// In en, this message translates to:
-  /// **'Exactly as shown on Phone A.'**
+  /// **'Exactly as shown on the sharing phone.'**
   String get clientSsidHintExact;
 
   /// No description provided for @clientJoining.
   ///
   /// In en, this message translates to:
-  /// **'Joining Phone A\'s Wi-Fi…'**
+  /// **'Joining the network…'**
   String get clientJoining;
 
   /// No description provided for @clientAutoStep1.
   ///
   /// In en, this message translates to:
-  /// **'Enter the password shown on Phone A (it\'s saved for next time).'**
+  /// **'Enter the password shown on the sharing phone, or scan its QR code.'**
   String get clientAutoStep1;
 
   /// No description provided for @clientAutoStep2.
   ///
   /// In en, this message translates to:
-  /// **'Tap CONNECT. If Android asks, choose Phone A\'s network and allow the connection, then accept the VPN request.'**
+  /// **'Tap CONNECT and accept the requests.'**
   String get clientAutoStep2;
 
   /// No description provided for @errorJoinFailed.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t join Phone A\'s Wi-Fi. Make sure sharing is running on Phone A and the password is correct.'**
+  /// **'Couldn\'t join. Make sure sharing is on and the password is right.'**
   String get errorJoinFailed;
 
   /// No description provided for @clientReconnecting.
@@ -683,25 +683,25 @@ abstract class AppLocalizations {
   /// No description provided for @clientReconnectingHelp.
   ///
   /// In en, this message translates to:
-  /// **'Phone A can\'t be reached. Reconnecting automatically; apps resume by themselves. Tap DISCONNECT to stop.'**
+  /// **'Can\'t reach the sharing phone. Retrying automatically.'**
   String get clientReconnectingHelp;
 
   /// No description provided for @scanQr.
   ///
   /// In en, this message translates to:
-  /// **'Scan Phone A\'s QR code'**
+  /// **'Scan QR code'**
   String get scanQr;
 
   /// No description provided for @scanTitle.
   ///
   /// In en, this message translates to:
-  /// **'Scan Phone A\'s QR code'**
+  /// **'Scan QR code'**
   String get scanTitle;
 
   /// No description provided for @scanHint.
   ///
   /// In en, this message translates to:
-  /// **'Point the camera at the QR code on Phone A\'s screen.'**
+  /// **'Point the camera at the QR code on the sharing phone.'**
   String get scanHint;
 
   /// No description provided for @scanFromPhoto.
@@ -719,7 +719,7 @@ abstract class AppLocalizations {
   /// No description provided for @scanNotShareLink.
   ///
   /// In en, this message translates to:
-  /// **'This isn\'t Phone A\'s Share Link QR code.'**
+  /// **'This isn\'t a Share Link QR code.'**
   String get scanNotShareLink;
 
   /// No description provided for @scanNoCodeInImage.
@@ -731,13 +731,13 @@ abstract class AppLocalizations {
   /// No description provided for @scanCameraDenied.
   ///
   /// In en, this message translates to:
-  /// **'Camera permission is needed to scan. Allow it in the app settings, or choose a photo of the QR code instead.'**
+  /// **'Allow the camera in the app settings, or choose a photo.'**
   String get scanCameraDenied;
 
   /// No description provided for @scanCameraUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'The camera can\'t be used right now. You can choose a photo of the QR code instead.'**
+  /// **'The camera isn\'t available. Choose a photo instead.'**
   String get scanCameraUnavailable;
 
   /// No description provided for @sectionTile.
@@ -755,19 +755,19 @@ abstract class AppLocalizations {
   /// No description provided for @tileAddHint.
   ///
   /// In en, this message translates to:
-  /// **'Swipe down twice from the top of the screen, tap the edit (pencil) button, and drag the Share Link tile into your tiles.'**
+  /// **'Open Quick Settings, tap the pencil, and drag the Share Link tile in.'**
   String get tileAddHint;
 
   /// No description provided for @tileAdded.
   ///
   /// In en, this message translates to:
-  /// **'Tile added. Swipe down to start or stop from anywhere.'**
+  /// **'Tile added.'**
   String get tileAdded;
 
   /// No description provided for @tileAlreadyAdded.
   ///
   /// In en, this message translates to:
-  /// **'The tile is already in your Quick Settings.'**
+  /// **'The tile is already added.'**
   String get tileAlreadyAdded;
 
   /// No description provided for @tileNotAdded.
@@ -779,7 +779,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorSetupNeeded.
   ///
   /// In en, this message translates to:
-  /// **'Enter Phone A\'s password or scan its QR code first, then tap CONNECT.'**
+  /// **'Enter the password or scan the QR code first.'**
   String get errorSetupNeeded;
 
   /// No description provided for @guideTelegramTitle.
@@ -791,7 +791,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideTelegram.
   ///
   /// In en, this message translates to:
-  /// **'In Telegram: Settings → Data and Storage → Proxy Settings → Add proxy → SOCKS5. Server {host}, port {port}, leave username and password empty.'**
+  /// **'Settings → Data and Storage → Proxy Settings → Add Proxy → SOCKS5, with server {host} and port {port}.'**
   String guideTelegram(String host, String port);
 
   /// No description provided for @guideWhatsAppTitle.
@@ -803,13 +803,13 @@ abstract class AppLocalizations {
   /// No description provided for @guideWhatsApp.
   ///
   /// In en, this message translates to:
-  /// **'In WhatsApp: Settings → Storage and data → Proxy → Use proxy. Proxy host {host}, chat port 5222, media port 7777. Messages and media work; calls don\'t go through the proxy.'**
+  /// **'Settings → Storage and data → Proxy → Use proxy. Host {host}, chat port 5222, media port 7777. Calls won\'t work.'**
   String guideWhatsApp(String host);
 
   /// No description provided for @guideNoteWithWhatsApp.
   ///
   /// In en, this message translates to:
-  /// **'Browsers and most apps use the manual proxy, and Telegram and WhatsApp can use their own proxy settings. For calls, install Share Link on the other phone and use Receive mode.'**
+  /// **'For calls, install Share Link on the other phone.'**
   String get guideNoteWithWhatsApp;
 
   /// No description provided for @guideDnsTitle.
@@ -821,7 +821,7 @@ abstract class AppLocalizations {
   /// No description provided for @guideDnsTip.
   ///
   /// In en, this message translates to:
-  /// **'Some apps (e.g. wallets) check the internet themselves. In the other phone\'s Wi-Fi settings for this network, set DNS to Manual, keep {host} and add 1.1.1.1. On iPhone: Settings → Wi-Fi → ⓘ → Configure DNS → Manual → Add Server.'**
+  /// **'In this network\'s Wi-Fi settings, set DNS to Manual: keep {host} and add 1.1.1.1. On iPhone: Wi-Fi → ⓘ → Configure DNS.'**
   String guideDnsTip(String host);
 
   /// No description provided for @navHome.
@@ -845,25 +845,25 @@ abstract class AppLocalizations {
   /// No description provided for @receiveCardTitle.
   ///
   /// In en, this message translates to:
-  /// **'Best: install Share Link on the other phone'**
+  /// **'Best: Share Link on both phones'**
   String get receiveCardTitle;
 
   /// No description provided for @receiveCardBody.
   ///
   /// In en, this message translates to:
-  /// **'With the app on the other phone, every app works there, including calls. On that phone open \"Connect a device\" and tap the button below.'**
+  /// **'Every app works, including calls.'**
   String get receiveCardBody;
 
   /// No description provided for @receiveButton.
   ///
   /// In en, this message translates to:
-  /// **'This phone needs internet? Open Receive mode'**
+  /// **'Receive internet on this phone'**
   String get receiveButton;
 
   /// No description provided for @receivingBanner.
   ///
   /// In en, this message translates to:
-  /// **'Receiving internet from Phone A'**
+  /// **'This phone is receiving internet'**
   String get receivingBanner;
 
   /// No description provided for @open.
@@ -905,7 +905,7 @@ abstract class AppLocalizations {
   /// No description provided for @withoutAppSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Works on any phone, including iPhone. Tap a method to see its steps.'**
+  /// **'Works on any phone, including iPhone.'**
   String get withoutAppSubtitle;
 
   /// No description provided for @guideProxyTitle.
@@ -977,7 +977,7 @@ abstract class AppLocalizations {
   /// No description provided for @qrPlaceholder.
   ///
   /// In en, this message translates to:
-  /// **'Start sharing to show the QR code for this network.'**
+  /// **'Start sharing to show the QR code.'**
   String get qrPlaceholder;
 
   /// No description provided for @goToHome.

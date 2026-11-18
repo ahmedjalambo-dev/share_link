@@ -53,7 +53,9 @@ class ShareService : Service() {
             val server = proxy ?: return
             val up = server.bytesUp.get()
             val down = server.bytesDown.get()
-            val (speedUp, speedDown) = meter.sample(up, down, SystemClock.elapsedRealtime())
+            val now = SystemClock.elapsedRealtime()
+            val (speedUp, speedDown) = meter.sample(up, down, now)
+            val devices = server.devices.snapshot(now, settings.deviceNicknames)
             ShareState.update {
                 it.copy(
                     activeConnections = server.activeConnections.get(),
@@ -62,6 +64,7 @@ class ShareService : Service() {
                     speedUp = speedUp,
                     speedDown = speedDown,
                     upstreamAvailable = upstreamNetwork != null,
+                    devices = devices,
                 )
             }
             mainHandler.postDelayed(this, STATS_INTERVAL_MS)
@@ -88,6 +91,7 @@ class ShareService : Service() {
     override fun onDestroy() {
         destroyed = true
         mainHandler.removeCallbacks(statsTicker)
+        runningProxy = null
         proxy?.stop()
         proxy = null
         unregisterWifiCallback()
@@ -150,6 +154,8 @@ class ShareService : Service() {
         val port = settings.port
         Thread({
             val server = ProxyServer(port, { upstreamNetwork }, ::upstreamDnsServer) { ShareState.current.ssid }
+            // Give DHCP and the group info a moment before asking Wi-Fi Direct for the name.
+            server.devices.onNewDevice = { mainHandler.postDelayed(::lookUpDeviceNames, NAME_LOOKUP_DELAY_MS) }
             var error: IOException? = null
             for (attempt in 1..BIND_ATTEMPTS) {
                 try {
@@ -183,6 +189,7 @@ class ShareService : Service() {
             return
         }
         proxy = server
+        runningProxy = server
         // WhatsApp proxy for phones without the app; if its ports can't be opened, sharing still runs.
         val whatsApp = WhatsAppRelay.start(server, InetAddress.getByName(group.ownerIp))
         ShareState.update {
@@ -200,6 +207,14 @@ class ShareService : Service() {
         meter.reset()
         updateNotification()
         mainHandler.post(statsTicker)
+    }
+
+    /** Names devices from the Wi-Fi Direct group's client list (Android 15+ knows their IPs). */
+    private fun lookUpDeviceNames() {
+        val server = proxy ?: return
+        wifiDirect.requestClientNames { names ->
+            names.forEach { (address, name) -> server.devices.nameDevice(address, name, NameSource.WIFI_DIRECT) }
+        }
     }
 
     private fun fail(code: String, detail: String?) {
@@ -378,6 +393,29 @@ class ShareService : Service() {
         private const val BIND_ATTEMPTS = 6
         private const val BIND_RETRY_MS = 500L
         private const val STATS_INTERVAL_MS = 1000L
+        private const val NAME_LOOKUP_DELAY_MS = 2000L
+
+        /** The running proxy, so the app's devices list can block and allow devices. */
+        @Volatile
+        private var runningProxy: ProxyServer? = null
+
+        /** Blocks or allows a device; false if sharing isn't running or [address] isn't an IP. */
+        fun setDeviceBlocked(address: String, blocked: Boolean): Boolean {
+            val server = runningProxy ?: return false
+            // Only numeric addresses, so this never does a DNS lookup.
+            if (!address.matches(Regex("[0-9a-fA-F:.]+"))) return false
+            val ip = try {
+                InetAddress.getByName(address)
+            } catch (e: IOException) {
+                return false
+            }
+            if (blocked) server.devices.block(ip) else server.devices.unblock(ip)
+            // Show it right away instead of on the next stats tick.
+            ShareState.update { state ->
+                state.copy(devices = state.devices.map { if (it.address == address) it.copy(blocked = blocked) else it })
+            }
+            return true
+        }
 
         fun start(context: Context) {
             ContextCompat.startForegroundService(

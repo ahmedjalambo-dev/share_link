@@ -525,4 +525,35 @@ class AppLocalizationsAr extends AppLocalizations {
   String totalAmount(String size) {
     return 'الإجمالي $size';
   }
+
+  @override
+  String get devicesTitle => 'الأجهزة المتصلة';
+
+  @override
+  String get devicesEmpty => 'تظهر الأجهزة هنا عندما تستخدم الإنترنت.';
+
+  @override
+  String get deviceUnnamed => 'جهاز';
+
+  @override
+  String get deviceRename => 'إعادة التسمية';
+
+  @override
+  String get deviceNickname => 'اسم الجهاز';
+
+  @override
+  String get deviceNicknameHelper => 'اتركه فارغًا لاستخدام اسمه الأصلي.';
+
+  @override
+  String get deviceDisconnect => 'فصل';
+
+  @override
+  String get deviceDisconnectConfirm =>
+      'سيفقد الإنترنت حتى تسمح له أو تعيد تشغيل المشاركة.';
+
+  @override
+  String get deviceAllow => 'السماح';
+
+  @override
+  String get deviceBlocked => 'محظور';
 }

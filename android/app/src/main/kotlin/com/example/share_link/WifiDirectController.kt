@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import java.net.Inet4Address
+import java.net.InetAddress
 import java.net.NetworkInterface
 
 /**
@@ -158,6 +159,26 @@ class WifiDirectController(context: Context) {
                 Log.i(TAG, "Group ready: ssid=$ssid ip=$ip")
                 onResult(Result.success(GroupDetails(ssid, pass, ip)))
             }
+        }
+    }
+
+    /**
+     * Device names of the group's Wi-Fi Direct clients by IP address. Only Android 15+ reports
+     * the IPs, and phones that joined from Wi-Fi settings may not be listed, so this is often empty.
+     */
+    fun requestClientNames(onResult: (Map<InetAddress, String>) -> Unit) {
+        val mgr = manager
+        val ch = channel
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM || mgr == null || ch == null) {
+            onResult(emptyMap())
+            return
+        }
+        mgr.requestGroupInfo(ch) { group ->
+            val names = group?.clientList.orEmpty().mapNotNull { device ->
+                val ip = device.ipAddress ?: return@mapNotNull null
+                device.deviceName?.takeIf { it.isNotBlank() }?.let { ip to it }
+            }
+            onResult(names.toMap())
         }
     }
 

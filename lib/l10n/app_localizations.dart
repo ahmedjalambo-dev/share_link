@@ -1051,6 +1051,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{size} total'**
   String totalAmount(String size);
+
+  /// No description provided for @devicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected devices'**
+  String get devicesTitle;
+
+  /// No description provided for @devicesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Devices appear here when they use the internet.'**
+  String get devicesEmpty;
+
+  /// No description provided for @deviceUnnamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Device'**
+  String get deviceUnnamed;
+
+  /// No description provided for @deviceRename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get deviceRename;
+
+  /// No description provided for @deviceNickname.
+  ///
+  /// In en, this message translates to:
+  /// **'Device name'**
+  String get deviceNickname;
+
+  /// No description provided for @deviceNicknameHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use its own name.'**
+  String get deviceNicknameHelper;
+
+  /// No description provided for @deviceDisconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get deviceDisconnect;
+
+  /// No description provided for @deviceDisconnectConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'It loses internet until you allow it again or restart sharing.'**
+  String get deviceDisconnectConfirm;
+
+  /// No description provided for @deviceAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get deviceAllow;
+
+  /// No description provided for @deviceBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get deviceBlocked;
 }
 
 class _AppLocalizationsDelegate

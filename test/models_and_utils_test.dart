@@ -123,6 +123,37 @@ void main() {
     expect(formatBytes(200 * 1024 * 1024), '200 MB');
   });
 
+  test('ShareStatus parses the connected devices', () {
+    final status = ShareStatus.fromMap({
+      'devices': [
+        {
+          'address': '192.168.49.37',
+          'name': 'Redmi Note 14',
+          'bytesDown': 5000,
+          'speedDown': 1024,
+          'connections': 2,
+        },
+        {'address': '192.168.49.80', 'nickname': 'Ali', 'blocked': true},
+        'junk',
+      ],
+    });
+    expect(status.devices, hasLength(2));
+    final redmi = status.devices[0];
+    expect(redmi.displayName, 'Redmi Note 14');
+    expect(redmi.bytesDown, 5000);
+    expect(redmi.active, isTrue);
+    final ali = status.devices[1];
+    expect(ali.displayName, 'Ali');
+    expect(ali.blocked, isTrue);
+    expect(ali.active, isFalse);
+    expect(ShareStatus.fromMap({}).devices, isEmpty);
+    expect(
+      const ConnectedDevice(address: 'x', name: 'A', nickname: 'B').displayName,
+      'B',
+    );
+    expect(const ConnectedDevice(address: 'x').displayName, isNull);
+  });
+
   test('formatSpeed never goes below KB/s', () {
     expect(formatSpeed(0), '0 KB/s');
     expect(formatSpeed(512), '0.5 KB/s');

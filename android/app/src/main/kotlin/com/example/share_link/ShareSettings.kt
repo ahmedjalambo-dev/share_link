@@ -3,6 +3,8 @@ package com.example.share_link
 import android.content.Context
 import android.os.Build
 import androidx.core.content.edit
+import org.json.JSONException
+import org.json.JSONObject
 import java.security.SecureRandom
 
 /** User settings stored natively so the service can read them without Flutter. */
@@ -114,6 +116,27 @@ class ShareSettings(context: Context) {
     /** Remembers Phone A's exact network name, learned after connecting via Android's picker. */
     fun saveClientSsid(ssid: String) = prefs.edit { putString(KEY_CLIENT_SSID, ssid) }
 
+    /** Names the user gave connected devices, by IP address. */
+    val deviceNicknames: Map<String, String>
+        get() {
+            val json = prefs.getString(KEY_DEVICE_NICKNAMES, null) ?: return emptyMap()
+            return try {
+                val names = JSONObject(json)
+                names.keys().asSequence().associateWith { names.getString(it) }
+            } catch (e: JSONException) {
+                emptyMap()
+            }
+        }
+
+    /** Saves [nickname] for [address]; a blank nickname removes it. Returns the stored value. */
+    fun saveDeviceNickname(address: String, nickname: String): String? {
+        val names = deviceNicknames.toMutableMap()
+        val clean = nickname.trim().take(MAX_NICKNAME_LENGTH).takeIf { it.isNotEmpty() }
+        if (clean == null) names.remove(address) else names[address] = clean
+        prefs.edit { putString(KEY_DEVICE_NICKNAMES, JSONObject(names.toMap()).toString()) }
+        return clean
+    }
+
     /** WPA2 passphrase: 8–63 printable ASCII characters. */
     private fun isValidPassphrase(pass: String) = pass.length in 8..63 && pass.all { it.code in 32..126 }
 
@@ -137,6 +160,8 @@ class ShareSettings(context: Context) {
         private const val KEY_CLIENT_SSID = "client_ssid"
         private const val KEY_CLIENT_PASS = "client_passphrase"
         private const val KEY_CLIENT_AUTO_JOIN = "client_auto_join"
+        private const val KEY_DEVICE_NICKNAMES = "device_nicknames"
+        private const val MAX_NICKNAME_LENGTH = 40
         const val MODE_SHARE = "share"
         const val MODE_CONNECT = "connect"
         private const val LANGUAGE_SYSTEM = "system"

@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.Socket
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 /** HTTP proxy: CONNECT tunnels (HTTPS) and plain requests, one request per connection. */
 internal class HttpProxyHandler(private val server: ProxyServer) {
@@ -17,7 +19,14 @@ internal class HttpProxyHandler(private val server: ProxyServer) {
         val target = parts[1]
         val version = parts[2]
 
-        if (isInfoRequest(method, target)) return sendInfo(client)
+        if (isInfoRequest(method, target)) {
+            // Phone B with the app says its own name here.
+            headerValue(head, DEVICE_HEADER)?.let { decodeDeviceHeader(it) }
+                ?.let { server.devices.nameDevice(client.inetAddress, it, NameSource.APP) }
+            return sendInfo(client)
+        }
+        headerValue(head, "User-Agent")?.let { deviceFromUserAgent(it) }
+            ?.let { server.devices.nameDevice(client.inetAddress, it, NameSource.USER_AGENT) }
 
         if (method == "CONNECT") {
             val (host, port) = parseHostPort(target, 443) ?: return sendError(client, 400, "Bad Request")
@@ -34,7 +43,7 @@ internal class HttpProxyHandler(private val server: ProxyServer) {
             try {
                 val rewritten = buildRequestHead(method, request.path, version, head)
                 upstream.getOutputStream().write(rewritten)
-                server.bytesUp.addAndGet(rewritten.size.toLong())
+                server.countUp(client.inetAddress, rewritten.size.toLong())
                 server.tunnel(client, input, upstream)
             } finally {
                 server.release(upstream)
@@ -96,6 +105,18 @@ internal const val PHONE_A_INFO_PATH = "/.sharelink/info"
  * ("http://host/…"), so this exact origin-form path only arrives when the proxy itself is asked.
  */
 internal fun isInfoRequest(method: String, target: String) = method == "GET" && target == PHONE_A_INFO_PATH
+
+/** Header in Phone B's info request with its device name, for Phone A's devices list. */
+internal const val DEVICE_HEADER = "X-ShareLink-Device"
+
+/** Header values must be plain ASCII, so the (maybe Arabic) name is percent-encoded UTF-8. */
+internal fun encodeDeviceHeader(name: String): String = URLEncoder.encode(name, "UTF-8")
+
+internal fun decodeDeviceHeader(value: String): String? = try {
+    URLDecoder.decode(value, "UTF-8").trim().takeIf { it.isNotEmpty() }
+} catch (e: IllegalArgumentException) {
+    null
+}
 
 /** `{"ssid":"…","v":1}` with the name JSON-escaped. */
 internal fun buildInfoJson(ssid: String): String {

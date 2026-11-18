@@ -48,6 +48,8 @@ data class ShareSnapshot(
     val upstreamAvailable: Boolean = true,
     /** The WhatsApp proxy ports (WhatsAppRelay) are open. */
     val whatsAppProxy: Boolean = false,
+    /** Every device that used the proxy this session (see [DeviceRegistry]). */
+    val devices: List<DeviceSnapshot> = emptyList(),
 ) {
     fun toMap(): Map<String, Any?> = mapOf(
         "status" to status.wire,
@@ -65,6 +67,7 @@ data class ShareSnapshot(
         "startedAt" to startedAt,
         "upstreamAvailable" to upstreamAvailable,
         "whatsAppProxy" to whatsAppProxy,
+        "devices" to devices.map { it.toMap() },
     )
 }
 

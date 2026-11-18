@@ -156,4 +156,22 @@ class ShareChannel {
 
   static Future<void> disconnectClient() =>
       _control.invokeMethod<void>('disconnectClient');
+
+  // Devices list (Phone A)
+
+  /// Cuts a device off (or lets it back in) until sharing restarts.
+  /// Returns false if sharing isn't running.
+  static Future<bool> setDeviceBlocked(String address, bool blocked) async =>
+      await _control.invokeMethod<bool>('setDeviceBlocked', {
+        'address': address,
+        'blocked': blocked,
+      }) ??
+      false;
+
+  /// Saves a nickname for the device at [address]; an empty one removes it.
+  static Future<void> renameDevice(String address, String nickname) =>
+      _control.invokeMethod<void>('renameDevice', {
+        'address': address,
+        'nickname': nickname,
+      });
 }

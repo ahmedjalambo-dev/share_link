@@ -113,6 +113,15 @@ class MainActivity : FlutterActivity() {
                     result.error("invalid_theme_mode", null, null)
                 }
             }
+            "setBand" -> {
+                val band = call.argument<String>("band") ?: ""
+                if (band in ShareSettings.BANDS) {
+                    settings.band = band
+                    result.success(null)
+                } else {
+                    result.error("invalid_band", null, null)
+                }
+            }
             "getAppInfo" -> result.success(appInfo())
             "isIgnoringBatteryOptimizations" -> result.success(isIgnoringBatteryOptimizations())
             "requestIgnoreBatteryOptimizations" -> {

@@ -18,6 +18,8 @@ class ShareStatus {
     this.startedAt,
     this.upstreamAvailable = true,
     this.whatsAppProxy = false,
+    this.band,
+    this.bandNotHonored = false,
     this.devices = const [],
   });
 
@@ -42,6 +44,8 @@ class ShareStatus {
       startedAt: _time(map['startedAt']),
       upstreamAvailable: map['upstreamAvailable'] as bool? ?? true,
       whatsAppProxy: map['whatsAppProxy'] == true,
+      band: map['band'] as String?,
+      bandNotHonored: map['bandNotHonored'] == true,
       devices: [
         for (final device in map['devices'] as List<Object?>? ?? const [])
           if (device is Map) ConnectedDevice.fromMap(device),
@@ -72,6 +76,13 @@ class ShareStatus {
 
   /// The experimental WhatsApp proxy ports are open on Phone A.
   final bool whatsAppProxy;
+
+  /// The network's actual band (`2.4`, `5` or `6`); null when Android doesn't say.
+  final String? band;
+
+  /// A band was chosen in Settings but the network isn't on it (the phone's
+  /// Wi-Fi chip usually has to follow the Wi-Fi it's sharing).
+  final bool bandNotHonored;
 
   /// Every device that used the internet this session, active ones first.
   final List<ConnectedDevice> devices;

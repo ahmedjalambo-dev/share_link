@@ -556,4 +556,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get deviceBlocked => 'محظور';
+
+  @override
+  String get band => 'نطاق الواي فاي';
+
+  @override
+  String get bandAuto => 'تلقائي (مستحسن)';
+
+  @override
+  String get band24 => '2.4 GHz · يصل أبعد';
+
+  @override
+  String get band5 => '5 GHz · أسرع عن قرب';
+
+  @override
+  String get bandNotHonored =>
+      'تعذّر استخدام النطاق المختار، فاختار الهاتف ما يناسب الواي فاي الحالي.';
 }

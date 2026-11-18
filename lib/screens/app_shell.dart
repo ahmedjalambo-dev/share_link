@@ -84,6 +84,7 @@ class _AppShellState extends State<AppShell> {
                   receiving: _client.isActive,
                   onOpenReceive: _openReceive,
                   onShowGuide: () => _select(_connectTab),
+                  onOpenSettings: () => _select(_settingsTab),
                 ),
                 ConnectTab(
                   settings: settings,

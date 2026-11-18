@@ -141,8 +141,9 @@ class ShareService : Service() {
         ShareState.update { starting }
 
         wifiDirect.onChannelLost = { fail(ErrorCodes.P2P_ERROR, "Wi-Fi Direct framework disconnected") }
-        wifiDirect.createGroup(settings.fullSsid, settings.passphrase) { result ->
-            result.onSuccess { group -> startProxy(group) }
+        val band = settings.band
+        wifiDirect.createGroup(settings.fullSsid, settings.passphrase, band) { result ->
+            result.onSuccess { group -> startProxy(group, band) }
                 .onFailure { e ->
                     fail((e as? WifiDirectController.GroupException)?.code ?: ErrorCodes.P2P_ERROR, e.message)
                 }
@@ -150,7 +151,7 @@ class ShareService : Service() {
     }
 
     /** Binds the proxy off the main thread; the group's IP can take a moment to appear on the interface. */
-    private fun startProxy(group: WifiDirectController.GroupDetails) {
+    private fun startProxy(group: WifiDirectController.GroupDetails, band: String) {
         val port = settings.port
         Thread({
             val server = ProxyServer(port, { upstreamNetwork }, ::upstreamDnsServer) { ShareState.current.ssid }
@@ -168,12 +169,13 @@ class ShareService : Service() {
                     Thread.sleep(BIND_RETRY_MS)
                 }
             }
-            mainHandler.post { onProxyStarted(group, port, server, error) }
+            mainHandler.post { onProxyStarted(group, band, port, server, error) }
         }, "proxy-start").start()
     }
 
     private fun onProxyStarted(
         group: WifiDirectController.GroupDetails,
+        requestedBand: String,
         port: Int,
         server: ProxyServer,
         error: IOException?,
@@ -192,6 +194,7 @@ class ShareService : Service() {
         runningProxy = server
         // WhatsApp proxy for phones without the app; if its ports can't be opened, sharing still runs.
         val whatsApp = WhatsAppRelay.start(server, InetAddress.getByName(group.ownerIp))
+        val band = bandOfFrequency(group.frequencyMhz)
         ShareState.update {
             it.copy(
                 whatsAppProxy = whatsApp,
@@ -202,6 +205,8 @@ class ShareService : Service() {
                 port = port,
                 upstreamAvailable = upstreamNetwork != null,
                 startedAt = System.currentTimeMillis(),
+                band = band,
+                bandNotHonored = !bandHonored(requestedBand, group.bandFallback, band),
             )
         }
         meter.reset()

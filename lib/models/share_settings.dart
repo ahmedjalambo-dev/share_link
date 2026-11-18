@@ -16,6 +16,7 @@ class ShareSettingsData {
     required this.clientAutoJoin,
     required this.apiLevel,
     required this.customNetworkSupported,
+    this.band = 'auto',
   });
 
   factory ShareSettingsData.fromMap(Map<Object?, Object?> map) {
@@ -33,6 +34,7 @@ class ShareSettingsData {
       clientAutoJoin: map['clientAutoJoin'] != false,
       apiLevel: map['apiLevel'] as int? ?? 0,
       customNetworkSupported: map['customNetworkSupported'] == true,
+      band: map['band'] as String? ?? 'auto',
     );
   }
 
@@ -41,6 +43,9 @@ class ShareSettingsData {
   final String networkName;
   final String passphrase;
   final int port;
+
+  /// Wi-Fi Direct band: `auto`, `2.4` or `5` (Android 10+).
+  final String band;
 
   /// `system`, `en` or `ar`.
   final String language;

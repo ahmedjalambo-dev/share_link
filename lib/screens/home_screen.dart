@@ -10,6 +10,7 @@ class HomeScreen extends StatelessWidget {
     required this.receiving,
     required this.onOpenReceive,
     required this.onShowGuide,
+    required this.onOpenSettings,
   });
 
   /// Receive mode is active on this phone.
@@ -20,6 +21,9 @@ class HomeScreen extends StatelessWidget {
 
   /// Switches to the Connect a device tab.
   final VoidCallback onShowGuide;
+
+  /// Switches to the Settings tab.
+  final VoidCallback onOpenSettings;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +47,11 @@ class HomeScreen extends StatelessWidget {
                     _ReceivingBanner(onOpen: onOpenReceive),
                     const SizedBox(height: 16),
                   ],
-                  SharePanel(receiving: receiving, onShowGuide: onShowGuide),
+                  SharePanel(
+                    receiving: receiving,
+                    onShowGuide: onShowGuide,
+                    onOpenSettings: onOpenSettings,
+                  ),
                 ],
               ),
             ),

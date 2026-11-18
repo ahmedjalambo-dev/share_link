@@ -23,6 +23,9 @@ String formatSpeed(int bytesPerSecond) {
   return '${kb.toStringAsFixed(digits)} KB/s';
 }
 
+/// A band code (`2.4`, `5`, `6`) as shown to users, e.g. `5 GHz`.
+String formatBand(String band) => '$band GHz';
+
 /// Session length as a clock, e.g. `4:05` or `1:02:33`.
 String formatDuration(Duration duration) {
   String two(int n) => n.toString().padLeft(2, '0');

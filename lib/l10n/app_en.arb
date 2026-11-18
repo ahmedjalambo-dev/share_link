@@ -244,5 +244,10 @@
   "deviceDisconnect": "Disconnect",
   "deviceDisconnectConfirm": "It loses internet until you allow it again or restart sharing.",
   "deviceAllow": "Allow",
-  "deviceBlocked": "Blocked"
+  "deviceBlocked": "Blocked",
+  "band": "Wi-Fi band",
+  "bandAuto": "Automatic (recommended)",
+  "band24": "2.4 GHz · reaches farther",
+  "band5": "5 GHz · faster up close",
+  "bandNotHonored": "Couldn't use the chosen band, so the phone picked one that suits the current Wi-Fi."
 }

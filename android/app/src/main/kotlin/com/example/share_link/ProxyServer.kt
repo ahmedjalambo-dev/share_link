@@ -3,6 +3,7 @@ package com.example.share_link
 import android.net.Network
 import android.util.Log
 import java.io.BufferedInputStream
+import java.io.Closeable
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -15,6 +16,7 @@ import java.net.Socket
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
@@ -53,11 +55,22 @@ class ProxyServer(
     private val openSockets: MutableSet<Socket> = ConcurrentHashMap.newKeySet()
     internal val openDatagrams: MutableSet<DatagramSocket> = ConcurrentHashMap.newKeySet()
 
+    /**
+     * What depends on the current upstream Wi-Fi network: outgoing TCP sockets and UDP sessions.
+     * [resetUpstream] closes them all when that network changes.
+     */
+    private val upstreamConnections: MutableSet<Closeable> = ConcurrentHashMap.newKeySet()
+
     private val http = HttpProxyHandler(this)
     private val socks = Socks5Handler(this)
 
     @Volatile
     private var serverSocket: ServerSocket? = null
+
+    /** A fixed-target port from [startTcpRelay], remembered so [rebind] can reopen it. */
+    private data class Relay(val listenPort: Int, val targetHost: String, val targetPort: Int)
+
+    private val relays = CopyOnWriteArrayList<Relay>()
 
     /** Extra listeners from [startTcpRelay] (e.g. the WhatsApp proxy ports). */
     private val relayServers: MutableSet<ServerSocket> = ConcurrentHashMap.newKeySet()
@@ -82,10 +95,40 @@ class ProxyServer(
      */
     @Throws(IOException::class)
     fun startTcpRelay(bindAddress: InetAddress, listenPort: Int, targetHost: String, targetPort: Int) {
-        val server = bindServer(bindAddress, listenPort)
+        val relay = Relay(listenPort, targetHost, targetPort)
+        listenRelay(bindAddress, relay)
+        relays.add(relay)
+    }
+
+    /**
+     * Listens again on [bindAddress] after Android recreated the Wi-Fi Direct group. Counters,
+     * devices and blocks are kept. Throws if the proxy port can't be bound (yet).
+     */
+    @Throws(IOException::class)
+    fun rebind(bindAddress: InetAddress) {
+        // The old listener holds the same address and port, so it has to go first.
+        closeQuietly(serverSocket)
+        serverSocket = null
+        val server = bindServer(bindAddress, port)
+        serverSocket = server
+        executor.execute { acceptLoop(server, ::handleClient) }
+        relayServers.forEach(::closeQuietly)
+        relayServers.clear()
+        for (relay in relays) {
+            try {
+                listenRelay(bindAddress, relay)
+            } catch (e: IOException) {
+                Log.w(TAG, "Relay port ${relay.listenPort} not reopened: ${e.message}")
+            }
+        }
+        Log.i(TAG, "Proxy listening again on ${bindAddress.hostAddress}:$port")
+    }
+
+    private fun listenRelay(bindAddress: InetAddress, relay: Relay) {
+        val server = bindServer(bindAddress, relay.listenPort)
         relayServers.add(server)
-        executor.execute { acceptLoop(server) { client -> handleRelay(client, targetHost, targetPort) } }
-        Log.i(TAG, "Relay ${bindAddress.hostAddress}:$listenPort → $targetHost:$targetPort")
+        executor.execute { acceptLoop(server) { client -> handleRelay(client, relay.targetHost, relay.targetPort) } }
+        Log.i(TAG, "Relay ${bindAddress.hostAddress}:${relay.listenPort} → ${relay.targetHost}:${relay.targetPort}")
     }
 
     private fun bindServer(bindAddress: InetAddress, listenPort: Int): ServerSocket {
@@ -110,8 +153,30 @@ class ProxyServer(
         openSockets.clear()
         openDatagrams.forEach(::closeQuietly)
         openDatagrams.clear()
+        upstreamConnections.clear()
         executor.shutdownNow()
         Log.i(TAG, "Proxy stopped")
+    }
+
+    /**
+     * Closes every connection going out through the Wi-Fi, after that network dropped or came
+     * back. Otherwise clients keep waiting on dead connections for minutes; this way their apps
+     * reconnect at once, through the current network. Returns how many were closed.
+     */
+    fun resetUpstream(): Int {
+        val connections = upstreamConnections.toList()
+        upstreamConnections.clear()
+        connections.forEach(::closeQuietly)
+        return connections.size
+    }
+
+    /** Tracks [connection] until [untrackUpstream], so [resetUpstream] can close it. */
+    internal fun trackUpstream(connection: Closeable) {
+        upstreamConnections.add(connection)
+    }
+
+    internal fun untrackUpstream(connection: Closeable) {
+        upstreamConnections.remove(connection)
     }
 
     private fun acceptLoop(server: ServerSocket, handler: (Socket) -> Unit) {
@@ -217,6 +282,7 @@ class ProxyServer(
                 socket.tcpNoDelay = true
                 socket.connect(InetSocketAddress(address, targetPort), CONNECT_TIMEOUT_MS)
                 openSockets.add(socket)
+                trackUpstream(socket)
                 return socket
             } catch (e: IOException) {
                 closeQuietly(socket)
@@ -229,6 +295,7 @@ class ProxyServer(
     internal fun release(socket: Socket) {
         closeQuietly(socket)
         openSockets.remove(socket)
+        untrackUpstream(socket)
     }
 
     /**

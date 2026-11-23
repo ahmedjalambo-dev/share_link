@@ -18,6 +18,7 @@ class ShareStatus {
     this.startedAt,
     this.upstreamAvailable = true,
     this.whatsAppProxy = false,
+    this.recovering = false,
     this.band,
     this.bandNotHonored = false,
     this.devices = const [],
@@ -44,6 +45,7 @@ class ShareStatus {
       startedAt: _time(map['startedAt']),
       upstreamAvailable: map['upstreamAvailable'] as bool? ?? true,
       whatsAppProxy: map['whatsAppProxy'] == true,
+      recovering: map['recovering'] == true,
       band: map['band'] as String?,
       bandNotHonored: map['bandNotHonored'] == true,
       devices: [
@@ -76,6 +78,10 @@ class ShareStatus {
 
   /// The experimental WhatsApp proxy ports are open on Phone A.
   final bool whatsAppProxy;
+
+  /// Android dropped the Wi-Fi Direct network (often when this phone's own
+  /// Wi-Fi blinked) and it's being recreated with the same name and password.
+  final bool recovering;
 
   /// The network's actual band (`2.4`, `5` or `6`); null when Android doesn't say.
   final String? band;

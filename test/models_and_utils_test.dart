@@ -168,6 +168,8 @@ void main() {
       expect(status.bandNotHonored, isTrue);
       expect(ShareStatus.fromMap({}).band, isNull);
       expect(ShareStatus.fromMap({}).bandNotHonored, isFalse);
+      expect(ShareStatus.fromMap({'recovering': true}).recovering, isTrue);
+      expect(ShareStatus.fromMap({}).recovering, isFalse);
       expect(formatBand('5'), '5 GHz');
       expect(ltrIsolate('87.5 KB'), '\u206687.5 KB\u2069');
     },

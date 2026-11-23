@@ -53,7 +53,12 @@ class WifiDirectController(context: Context) {
             return
         }
         cancelled = false
+        // Recreating after the group was lost: start from a fresh channel.
+        channel?.let(::closeChannel)
+        channel = null
+        var created: WifiP2pManager.Channel? = null
         val ch = mgr.initialize(appContext, Looper.getMainLooper()) {
+            if (channel !== created) return@initialize // An old channel we already replaced.
             Log.w(TAG, "Wi-Fi Direct channel disconnected")
             channel = null
             if (!cancelled) onChannelLost?.invoke()
@@ -62,6 +67,7 @@ class WifiDirectController(context: Context) {
             onResult(Result.failure(GroupException(ErrorCodes.P2P_UNSUPPORTED, "Wi-Fi Direct channel unavailable")))
             return
         }
+        created = ch
         channel = ch
 
         // Remove any leftover group first (e.g. from a crash); failure just means there was none.
@@ -74,6 +80,24 @@ class WifiDirectController(context: Context) {
                 attemptCreate(mgr, ch, networkName, passphrase, band, 1, onResult)
             }
         })
+    }
+
+    /**
+     * Asks Android whether our group still exists with us as its owner. Some phones drop the group
+     * when their own Wi-Fi disconnects or changes channel, without telling the app.
+     * [expectedName] is null below Android 10, where the name is random.
+     */
+    fun checkGroup(expectedName: String?, onResult: (Boolean) -> Unit) {
+        val mgr = manager
+        val ch = channel
+        if (mgr == null || ch == null) {
+            onResult(false)
+            return
+        }
+        mgr.requestGroupInfo(ch) { group ->
+            if (cancelled) return@requestGroupInfo
+            onResult(isOurGroup(group != null, group?.isGroupOwner == true, group?.networkName, expectedName))
+        }
     }
 
     fun removeGroup() {
@@ -229,9 +253,15 @@ class WifiDirectController(context: Context) {
     }
 
     companion object {
+        /** Broadcast Android sends when Wi-Fi Direct connections change (the group may be gone). */
+        const val CONNECTION_CHANGED = WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION
         private const val MAX_CREATE_ATTEMPTS = 3
         private const val RETRY_DELAY_MS = 1000L
         private const val MAX_INFO_ATTEMPTS = 10
         private const val INFO_POLL_MS = 500L
     }
 }
+
+/** True when Android still reports our group with us as owner (and its name, when known). */
+internal fun isOurGroup(present: Boolean, isOwner: Boolean, name: String?, expectedName: String?): Boolean =
+    present && isOwner && (expectedName == null || name == expectedName)

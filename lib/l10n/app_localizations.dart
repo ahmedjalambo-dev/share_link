@@ -1141,6 +1141,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t use the chosen band, so the phone picked one that suits the current Wi-Fi.'**
   String get bandNotHonored;
+
+  /// No description provided for @networkRecovering.
+  ///
+  /// In en, this message translates to:
+  /// **'Restarting the network… The other phones rejoin by themselves.'**
+  String get networkRecovering;
 }
 
 class _AppLocalizationsDelegate

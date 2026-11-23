@@ -577,4 +577,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get bandNotHonored =>
       'Couldn\'t use the chosen band, so the phone picked one that suits the current Wi-Fi.';
+
+  @override
+  String get networkRecovering =>
+      'Restarting the network… The other phones rejoin by themselves.';
 }

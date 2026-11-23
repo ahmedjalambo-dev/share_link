@@ -249,5 +249,6 @@
   "bandAuto": "Automatic (recommended)",
   "band24": "2.4 GHz · reaches farther",
   "band5": "5 GHz · faster up close",
-  "bandNotHonored": "Couldn't use the chosen band, so the phone picked one that suits the current Wi-Fi."
+  "bandNotHonored": "Couldn't use the chosen band, so the phone picked one that suits the current Wi-Fi.",
+  "networkRecovering": "Restarting the network… The other phones rejoin by themselves."
 }

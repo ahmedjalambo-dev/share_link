@@ -572,4 +572,8 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get bandNotHonored =>
       'تعذّر استخدام النطاق المختار، فاختار الهاتف ما يناسب الواي فاي الحالي.';
+
+  @override
+  String get networkRecovering =>
+      'جارٍ إعادة تشغيل الشبكة… ستعود الهواتف الأخرى وحدها.';
 }

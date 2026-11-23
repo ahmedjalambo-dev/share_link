@@ -4,6 +4,7 @@
     <string name="notif_channel_name">Wi-Fi sharing</string>
     <string name="notif_title">Sharing Wi-Fi</string>
     <string name="notif_starting">Starting Wi-Fi Direct…</string>
+    <string name="notif_recovering">Restarting the network…</string>
     <string name="notif_running_text">Network: %1$s\nPassword: %2$s\nProxy: %3$s:%4$d</string>
     <string name="notif_stop">Stop</string>
     <string name="notif_start">Start</string>

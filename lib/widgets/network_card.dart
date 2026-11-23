@@ -37,7 +37,7 @@ class NetworkCard extends StatelessWidget {
               // In the label, so copying still gives just the name.
               label: band == null
                   ? l.networkName
-                  : '${l.networkName} · ${formatBand(band!)}',
+                  : '${l.networkName} · ${ltrIsolate(formatBand(band!))}',
               value: ssid,
             ),
             CredentialTile(icon: Icons.key, label: l.password, value: password),

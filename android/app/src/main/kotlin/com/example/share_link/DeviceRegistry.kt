@@ -37,7 +37,10 @@ data class DeviceSnapshot(
  * Per-client traffic, names and blocking for one sharing session (owned by [ProxyServer]).
  * Clients are told apart by their IP address on the Wi-Fi Direct network.
  */
-internal class DeviceRegistry {
+internal class DeviceRegistry(
+    /** True for this phone's own addresses: its own apps can use the proxy too, but it isn't a device. */
+    private val isOwnAddress: (InetAddress) -> Boolean = { false },
+) {
 
     private class Entry(val order: Long) {
         val bytesUp = AtomicLong()
@@ -56,6 +59,9 @@ internal class DeviceRegistry {
     private val blocked: MutableSet<InetAddress> = ConcurrentHashMap.newKeySet()
     private val seen = AtomicLong()
 
+    /** [isOwnAddress] answers, cached: it's asked on every byte count. */
+    private val own = ConcurrentHashMap<InetAddress, Boolean>()
+
     /** Called (on a proxy thread) the first time an address shows up, e.g. to look up its name. */
     @Volatile
     var onNewDevice: ((InetAddress) -> Unit)? = null
@@ -64,6 +70,7 @@ internal class DeviceRegistry {
 
     /** Tracks [connection] as one of [address]'s open connections until [closed]. */
     fun opened(address: InetAddress, connection: Closeable) {
+        if (isOwn(address)) return
         entry(address).sockets.add(connection)
         // Accepted just before a block: don't let it through.
         if (address in blocked) closeQuietly(connection)
@@ -74,17 +81,17 @@ internal class DeviceRegistry {
     }
 
     fun countUp(address: InetAddress, bytes: Long) {
-        entry(address).bytesUp.addAndGet(bytes)
+        if (!isOwn(address)) entry(address).bytesUp.addAndGet(bytes)
     }
 
     fun countDown(address: InetAddress, bytes: Long) {
-        entry(address).bytesDown.addAndGet(bytes)
+        if (!isOwn(address)) entry(address).bytesDown.addAndGet(bytes)
     }
 
     /** Names [address] unless it already has a name from a better [source]. */
     fun nameDevice(address: InetAddress, name: String?, source: NameSource) {
         val clean = name?.trim()?.take(MAX_NAME_LENGTH)
-        if (clean.isNullOrEmpty()) return
+        if (clean.isNullOrEmpty() || isOwn(address)) return
         val entry = entry(address)
         synchronized(entry) {
             val current = entry.nameSource
@@ -130,6 +137,8 @@ internal class DeviceRegistry {
                 compareByDescending<DeviceSnapshot> { it.connections > 0 && !it.blocked }
                     .thenByDescending { it.bytesUp + it.bytesDown },
             )
+
+    private fun isOwn(address: InetAddress): Boolean = own.getOrPut(address) { isOwnAddress(address) }
 
     private fun entry(address: InetAddress): Entry {
         entries[address]?.let { return it }

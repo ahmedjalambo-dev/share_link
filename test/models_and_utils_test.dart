@@ -169,6 +169,7 @@ void main() {
       expect(ShareStatus.fromMap({}).band, isNull);
       expect(ShareStatus.fromMap({}).bandNotHonored, isFalse);
       expect(formatBand('5'), '5 GHz');
+      expect(ltrIsolate('87.5 KB'), '\u206687.5 KB\u2069');
     },
   );
 

@@ -96,6 +96,10 @@ class ShareChannel {
   static Future<void> setLanguage(String language) =>
       _control.invokeMethod<void>('setLanguage', {'language': language});
 
+  /// `auto`, `2.4` or `5`; applies the next time sharing starts.
+  static Future<void> setBand(String band) =>
+      _control.invokeMethod<void>('setBand', {'band': band});
+
   static Future<void> setThemeMode(String themeMode) =>
       _control.invokeMethod<void>('setThemeMode', {'themeMode': themeMode});
 

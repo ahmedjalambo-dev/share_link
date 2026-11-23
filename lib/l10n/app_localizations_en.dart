@@ -561,4 +561,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deviceBlocked => 'Blocked';
+
+  @override
+  String get band => 'Wi-Fi band';
+
+  @override
+  String get bandAuto => 'Automatic (recommended)';
+
+  @override
+  String get band24 => '2.4 GHz · reaches farther';
+
+  @override
+  String get band5 => '5 GHz · faster up close';
+
+  @override
+  String get bandNotHonored =>
+      'Couldn\'t use the chosen band, so the phone picked one that suits the current Wi-Fi.';
 }

@@ -1111,6 +1111,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Blocked'**
   String get deviceBlocked;
+
+  /// No description provided for @band.
+  ///
+  /// In en, this message translates to:
+  /// **'Wi-Fi band'**
+  String get band;
+
+  /// No description provided for @bandAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic (recommended)'**
+  String get bandAuto;
+
+  /// No description provided for @band24.
+  ///
+  /// In en, this message translates to:
+  /// **'2.4 GHz · reaches farther'**
+  String get band24;
+
+  /// No description provided for @band5.
+  ///
+  /// In en, this message translates to:
+  /// **'5 GHz · faster up close'**
+  String get band5;
+
+  /// No description provided for @bandNotHonored.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t use the chosen band, so the phone picked one that suits the current Wi-Fi.'**
+  String get bandNotHonored;
 }
 
 class _AppLocalizationsDelegate

@@ -169,7 +169,7 @@ class _SpeedTile extends StatelessWidget {
             ),
           ),
           Text(
-            l.totalAmount(formatBytes(total)),
+            l.totalAmount(ltrIsolate(formatBytes(total))),
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(color: muted),
           ),

@@ -81,6 +81,22 @@ class DeviceRegistryTest {
     }
 
     @Test
+    fun ownAddress_isNeverListed() {
+        val owner = InetAddress.getByName(DIRECT_OWNER_IP)
+        var asked = 0
+        val registry = DeviceRegistry { asked++; it == owner }
+        registry.opened(owner, FakeConnection())
+        registry.countDown(owner, 12_000)
+        registry.countUp(owner, 7_000)
+        registry.nameDevice(owner, "Self", NameSource.USER_AGENT)
+        registry.countDown(phone, 10)
+
+        assertEquals(listOf("192.168.49.37"), registry.snapshot(0, emptyMap()).map { it.address })
+        // Each address is checked once, not on every byte count.
+        assertEquals(2, asked)
+    }
+
+    @Test
     fun deviceFromUserAgent_guessesOnlyWhenSure() {
         assertEquals(
             "iPhone",

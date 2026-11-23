@@ -20,11 +20,15 @@ class SharePanel extends StatefulWidget {
   const SharePanel({
     super.key,
     required this.onShowGuide,
+    required this.onOpenSettings,
     this.receiving = false,
   });
 
   /// Switches to the Connect a device tab.
   final VoidCallback onShowGuide;
+
+  /// Switches to the Settings tab (from the band notice).
+  final VoidCallback onOpenSettings;
 
   /// Receive mode is active on this phone; sharing can't start until it's disconnected.
   final bool receiving;
@@ -151,9 +155,14 @@ class _SharePanelState extends State<SharePanel> {
               const _WifiLostBanner(),
               const SizedBox(height: 12),
             ],
+            if (_status.bandNotHonored) ...[
+              _BandBanner(onOpenSettings: widget.onOpenSettings),
+              const SizedBox(height: 12),
+            ],
             NetworkCard(
               ssid: ssid,
               password: password,
+              band: _status.band,
               onShowQr: () =>
                   showQrSheet(context, ssid: ssid, password: password),
               onShowGuide: widget.onShowGuide,
@@ -201,6 +210,28 @@ class _WifiLostBanner extends StatelessWidget {
       foreground: scheme.onTertiaryContainer,
       actionLabel: l.openWifiSettings,
       onAction: () => ShareChannel.openSystemSettings('wifi'),
+    );
+  }
+}
+
+/// The band chosen in Settings couldn't be used, usually because the Wi-Fi chip
+/// has to stay on the band of the Wi-Fi being shared.
+class _BandBanner extends StatelessWidget {
+  const _BandBanner({required this.onOpenSettings});
+
+  final VoidCallback onOpenSettings;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return StatusBanner(
+      icon: Icons.network_wifi,
+      message: l.bandNotHonored,
+      background: scheme.secondaryContainer,
+      foreground: scheme.onSecondaryContainer,
+      actionLabel: l.settingsAction,
+      onAction: onOpenSettings,
     );
   }
 }

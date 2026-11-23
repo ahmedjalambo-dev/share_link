@@ -168,5 +168,10 @@
   "deviceDisconnect": "فصل",
   "deviceDisconnectConfirm": "سيفقد الإنترنت حتى تسمح له أو تعيد تشغيل المشاركة.",
   "deviceAllow": "السماح",
-  "deviceBlocked": "محظور"
+  "deviceBlocked": "محظور",
+  "band": "نطاق الواي فاي",
+  "bandAuto": "تلقائي (مستحسن)",
+  "band24": "2.4 GHz · يصل أبعد",
+  "band5": "5 GHz · أسرع عن قرب",
+  "bandNotHonored": "تعذّر استخدام النطاق المختار، فاختار الهاتف ما يناسب الواي فاي الحالي."
 }

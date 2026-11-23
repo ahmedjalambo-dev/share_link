@@ -23,6 +23,13 @@ String formatSpeed(int bytesPerSecond) {
   return '${kb.toStringAsFixed(digits)} KB/s';
 }
 
+/// Keeps a left-to-right value such as `87.5 KB` or `5 GHz` in one piece inside
+/// Arabic text; otherwise the number and unit swap places (`KB 87.5`).
+String ltrIsolate(String text) => '\u2066$text\u2069';
+
+/// A band code (`2.4`, `5`, `6`) as shown to users, e.g. `5 GHz`.
+String formatBand(String band) => '$band GHz';
+
 /// Session length as a clock, e.g. `4:05` or `1:02:33`.
 String formatDuration(Duration duration) {
   String two(int n) => n.toString().padLeft(2, '0');

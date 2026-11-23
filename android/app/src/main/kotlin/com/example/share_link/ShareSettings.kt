@@ -33,6 +33,11 @@ class ShareSettings(context: Context) {
     val fullSsid: String
         get() = ssidPrefix + networkName
 
+    /** Wi-Fi Direct band: "auto", "2.4" or "5" (Android 10+; see WifiBand.kt). */
+    var band: String
+        get() = prefs.getString(KEY_BAND, null) ?: BAND_AUTO
+        set(value) = prefs.edit { putString(KEY_BAND, value) }
+
     /** UI language: "system", "en" or "ar". */
     var language: String
         get() = prefs.getString(KEY_LANGUAGE, null) ?: LANGUAGE_SYSTEM
@@ -69,6 +74,7 @@ class ShareSettings(context: Context) {
         "networkName" to networkName,
         "passphrase" to passphrase,
         "port" to port,
+        "band" to band,
         "language" to language,
         "themeMode" to themeMode,
         "mode" to mode,
@@ -153,6 +159,8 @@ class ShareSettings(context: Context) {
         private const val KEY_NAME = "network_name"
         private const val KEY_PASS = "passphrase"
         private const val KEY_PORT = "port"
+        private const val KEY_BAND = "band"
+        val BANDS = setOf(BAND_AUTO, BAND_2GHZ, BAND_5GHZ)
         private const val KEY_LANGUAGE = "language"
         private const val KEY_THEME_MODE = "theme_mode"
         private const val KEY_MODE = "mode"

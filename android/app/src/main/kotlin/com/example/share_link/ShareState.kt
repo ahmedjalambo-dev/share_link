@@ -48,6 +48,10 @@ data class ShareSnapshot(
     val upstreamAvailable: Boolean = true,
     /** The WhatsApp proxy ports (WhatsAppRelay) are open. */
     val whatsAppProxy: Boolean = false,
+    /** The group's actual band ("2.4", "5" or "6"); null when Android doesn't report it. */
+    val band: String? = null,
+    /** A specific band was chosen in Settings but the group isn't on it. */
+    val bandNotHonored: Boolean = false,
     /** Every device that used the proxy this session (see [DeviceRegistry]). */
     val devices: List<DeviceSnapshot> = emptyList(),
 ) {
@@ -67,6 +71,8 @@ data class ShareSnapshot(
         "startedAt" to startedAt,
         "upstreamAvailable" to upstreamAvailable,
         "whatsAppProxy" to whatsAppProxy,
+        "band" to band,
+        "bandNotHonored" to bandNotHonored,
         "devices" to devices.map { it.toMap() },
     )
 }

@@ -154,6 +154,25 @@ void main() {
     expect(const ConnectedDevice(address: 'x').displayName, isNull);
   });
 
+  test(
+    'Wi-Fi band: setting defaults to auto, status reports the real band',
+    () {
+      expect(ShareSettingsData.fromMap({}).band, 'auto');
+      expect(ShareSettingsData.fromMap({'band': '5'}).band, '5');
+
+      final status = ShareStatus.fromMap({
+        'band': '2.4',
+        'bandNotHonored': true,
+      });
+      expect(status.band, '2.4');
+      expect(status.bandNotHonored, isTrue);
+      expect(ShareStatus.fromMap({}).band, isNull);
+      expect(ShareStatus.fromMap({}).bandNotHonored, isFalse);
+      expect(formatBand('5'), '5 GHz');
+      expect(ltrIsolate('87.5 KB'), '\u206687.5 KB\u2069');
+    },
+  );
+
   test('formatSpeed never goes below KB/s', () {
     expect(formatSpeed(0), '0 KB/s');
     expect(formatSpeed(512), '0.5 KB/s');

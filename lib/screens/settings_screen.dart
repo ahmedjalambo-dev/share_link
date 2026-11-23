@@ -70,18 +70,25 @@ class _SettingsScreenState extends State<SettingsScreen>
         passphrase: password ?? current.passphrase,
         port: port ?? current.port,
       );
-      final running = (await ShareChannel.getStatus()).isActive;
       if (!mounted) return;
       setState(() => _settings = saved);
-      _showSnack(
-        running ? l.restartToApply : l.saved,
-        action: running
-            ? SnackBarAction(label: l.restart, onPressed: ShareChannel.restart)
-            : null,
-      );
+      await _confirmSaved();
     } on PlatformException catch (e) {
       if (mounted) _showSnack(settingsErrorMessage(l, e.code));
     }
+  }
+
+  /// "Saved", or "Restart sharing to apply" with a Restart button while sharing.
+  Future<void> _confirmSaved() async {
+    final running = (await ShareChannel.getStatus()).isActive;
+    if (!mounted) return;
+    final l = AppLocalizations.of(context);
+    _showSnack(
+      running ? l.restartToApply : l.saved,
+      action: running
+          ? SnackBarAction(label: l.restart, onPressed: ShareChannel.restart)
+          : null,
+    );
   }
 
   Future<void> _editName() async {
@@ -123,6 +130,21 @@ class _SettingsScreenState extends State<SettingsScreen>
       validator: _validatePort,
     );
     if (value != null) await _save(port: int.parse(value));
+  }
+
+  Future<void> _pickBand() async {
+    final l = AppLocalizations.of(context);
+    final current = _settings!.band;
+    final band = await showChoiceDialog(
+      context,
+      title: l.band,
+      options: _bands(l),
+      selected: current,
+    );
+    if (band == null || band == current) return;
+    await ShareChannel.setBand(band);
+    await _reload();
+    await _confirmSaved();
   }
 
   Future<void> _pickLanguage() async {
@@ -176,6 +198,12 @@ class _SettingsScreenState extends State<SettingsScreen>
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(message), action: action));
   }
+
+  static Map<String, String> _bands(AppLocalizations l) => {
+    'auto': l.bandAuto,
+    '2.4': l.band24,
+    '5': l.band5,
+  };
 
   static Map<String, String> _languages(AppLocalizations l) => {
     'system': l.languageSystem,
@@ -252,6 +280,14 @@ class _SettingsScreenState extends State<SettingsScreen>
                   title: l.proxyPort,
                   value: '${settings.port}',
                   onTap: _editPort,
+                ),
+                // Setting the band needs Android 10+, like the network name.
+                ListTile(
+                  leading: const Icon(Icons.network_wifi),
+                  title: Text(l.band),
+                  subtitle: Text(_bands(l)[settings.band] ?? ''),
+                  enabled: settings.customNetworkSupported,
+                  onTap: _pickBand,
                 ),
                 _SectionHeader(l.sectionAppearance),
                 ListTile(

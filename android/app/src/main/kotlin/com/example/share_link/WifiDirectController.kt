@@ -19,7 +19,15 @@ import java.net.NetworkInterface
 @SuppressLint("MissingPermission")
 class WifiDirectController(context: Context) {
 
-    data class GroupDetails(val ssid: String, val passphrase: String, val ownerIp: String)
+    data class GroupDetails(
+        val ssid: String,
+        val passphrase: String,
+        val ownerIp: String,
+        /** Channel frequency in MHz; 0 when unknown (below Android 11). */
+        val frequencyMhz: Int = 0,
+        /** The chosen band failed, so the group was created with an automatic band. */
+        val bandFallback: Boolean = false,
+    )
 
     class GroupException(val code: String, message: String) : Exception(message)
 
@@ -32,7 +40,13 @@ class WifiDirectController(context: Context) {
     /** Called if the Wi-Fi Direct framework disconnects while a group is active. */
     var onChannelLost: (() -> Unit)? = null
 
-    fun createGroup(networkName: String, passphrase: String, onResult: (Result<GroupDetails>) -> Unit) {
+    /** [band] is a saved choice ("auto", "2.4" or "5"); it only applies from Android 10. */
+    fun createGroup(
+        networkName: String,
+        passphrase: String,
+        band: String,
+        onResult: (Result<GroupDetails>) -> Unit,
+    ) {
         val mgr = manager
         if (mgr == null) {
             onResult(Result.failure(GroupException(ErrorCodes.P2P_UNSUPPORTED, "WifiP2pManager unavailable")))
@@ -53,11 +67,11 @@ class WifiDirectController(context: Context) {
         // Remove any leftover group first (e.g. from a crash); failure just means there was none.
         mgr.removeGroup(ch, object : WifiP2pManager.ActionListener {
             override fun onSuccess() {
-                handler.postDelayed({ attemptCreate(mgr, ch, networkName, passphrase, 1, onResult) }, 500)
+                handler.postDelayed({ attemptCreate(mgr, ch, networkName, passphrase, band, 1, onResult) }, 500)
             }
 
             override fun onFailure(reason: Int) {
-                attemptCreate(mgr, ch, networkName, passphrase, 1, onResult)
+                attemptCreate(mgr, ch, networkName, passphrase, band, 1, onResult)
             }
         })
     }
@@ -86,25 +100,37 @@ class WifiDirectController(context: Context) {
         ch: WifiP2pManager.Channel,
         networkName: String,
         passphrase: String,
+        band: String,
         attempt: Int,
         onResult: (Result<GroupDetails>) -> Unit,
+        bandFallback: Boolean = false,
     ) {
         if (cancelled) return
         val listener = object : WifiP2pManager.ActionListener {
             override fun onSuccess() {
-                Log.i(TAG, "createGroup succeeded")
+                Log.i(TAG, "createGroup succeeded (band=$band)")
                 if (cancelled) {
                     mgr.removeGroup(ch, null)
                     return
                 }
-                fetchGroupInfo(mgr, ch, 1, onResult)
+                fetchGroupInfo(mgr, ch, 1) { result ->
+                    onResult(result.map { it.copy(bandFallback = bandFallback) })
+                }
             }
 
             override fun onFailure(reason: Int) {
-                Log.w(TAG, "createGroup failed: reason=$reason attempt=$attempt")
+                Log.w(TAG, "createGroup failed: reason=$reason attempt=$attempt band=$band")
                 if (reason == WifiP2pManager.BUSY && attempt < MAX_CREATE_ATTEMPTS) {
                     handler.postDelayed(
-                        { attemptCreate(mgr, ch, networkName, passphrase, attempt + 1, onResult) },
+                        { attemptCreate(mgr, ch, networkName, passphrase, band, attempt + 1, onResult, bandFallback) },
+                        RETRY_DELAY_MS,
+                    )
+                    return
+                }
+                // Usually the chip can't use that band next to the current Wi-Fi; let Android pick.
+                if (band != BAND_AUTO && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    handler.postDelayed(
+                        { attemptCreate(mgr, ch, networkName, passphrase, BAND_AUTO, 1, onResult, bandFallback = true) },
                         RETRY_DELAY_MS,
                     )
                     return
@@ -119,7 +145,7 @@ class WifiDirectController(context: Context) {
                     .setNetworkName(networkName)
                     .setPassphrase(passphrase)
                     .enablePersistentMode(false)
-                    .setGroupOperatingBand(WifiP2pConfig.GROUP_OWNER_BAND_AUTO)
+                    .setGroupOperatingBand(configBand(band))
                     .build()
             } catch (e: IllegalArgumentException) {
                 onResult(Result.failure(GroupException(ErrorCodes.INVALID_SETTINGS, e.message ?: "Invalid config")))
@@ -156,8 +182,9 @@ class WifiDirectController(context: Context) {
                 val ip = info?.groupOwnerAddress?.hostAddress
                     ?: interfaceIpv4(group.`interface`)
                     ?: DIRECT_OWNER_IP
-                Log.i(TAG, "Group ready: ssid=$ssid ip=$ip")
-                onResult(Result.success(GroupDetails(ssid, pass, ip)))
+                val frequency = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) group.frequency else 0
+                Log.i(TAG, "Group ready: ssid=$ssid ip=$ip frequency=$frequency")
+                onResult(Result.success(GroupDetails(ssid, pass, ip, frequency)))
             }
         }
     }

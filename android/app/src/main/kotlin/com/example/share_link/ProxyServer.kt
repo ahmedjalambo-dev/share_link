@@ -9,6 +9,7 @@ import java.io.OutputStream
 import java.net.DatagramSocket
 import java.net.InetAddress
 import java.net.InetSocketAddress
+import java.net.NetworkInterface
 import java.net.ServerSocket
 import java.net.Socket
 import java.net.SocketTimeoutException
@@ -41,7 +42,7 @@ class ProxyServer(
     val bytesDown = AtomicLong()
 
     /** Per-client traffic and blocking, for the devices list. */
-    internal val devices = DeviceRegistry()
+    internal val devices = DeviceRegistry(::isThisPhone)
 
     private val threadCounter = AtomicInteger()
     internal val executor: ExecutorService = Executors.newCachedThreadPool { runnable ->
@@ -191,6 +192,13 @@ class ProxyServer(
     internal fun countDown(client: InetAddress, bytes: Long) {
         bytesDown.addAndGet(bytes)
         devices.countDown(client, bytes)
+    }
+
+    /** An address of this phone itself (e.g. its own 192.168.49.1), not another device. */
+    private fun isThisPhone(address: InetAddress): Boolean = try {
+        address.isLoopbackAddress || address.isAnyLocalAddress || NetworkInterface.getByInetAddress(address) != null
+    } catch (e: IOException) {
+        false
     }
 
     /** Opens a TCP connection over Wi-Fi; the caller must [release] it. */

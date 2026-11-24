@@ -2,6 +2,7 @@ package com.example.share_link
 
 import android.net.Network
 import android.util.Log
+import java.io.Closeable
 import java.io.DataInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -73,7 +74,7 @@ internal class Socks5Handler(private val server: ProxyServer) {
             return
         }
         val association = try {
-            UdpAssociation(client.inetAddress, client.localAddress, network)
+            UdpAssociation(client, client.inetAddress, client.localAddress, network)
         } catch (e: IOException) {
             sendReply(out, REP_GENERAL_FAILURE)
             return
@@ -101,12 +102,17 @@ internal class Socks5Handler(private val server: ProxyServer) {
         }
     }
 
-    /** Relays datagrams between one client and the internet, wrapping them in SOCKS5 UDP headers. */
+    /**
+     * Relays datagrams between one client and the internet, wrapping them in SOCKS5 UDP headers.
+     * Closing it also closes the client's [control] connection, so the client sets up a new
+     * association right away instead of sending into a dead one.
+     */
     private inner class UdpAssociation(
+        private val control: Socket,
         private val clientIp: InetAddress,
         bindAddress: InetAddress,
         private val network: Network,
-    ) {
+    ) : Closeable {
         private val relay = DatagramSocket(InetSocketAddress(bindAddress, 0))
         private val remote = DatagramSocket()
         val relayPort: Int get() = relay.localPort
@@ -129,6 +135,7 @@ internal class Socks5Handler(private val server: ProxyServer) {
             }
             server.openDatagrams.add(relay)
             server.openDatagrams.add(remote)
+            server.trackUpstream(this)
         }
 
         fun clientToRemote() {
@@ -139,6 +146,9 @@ internal class Socks5Handler(private val server: ProxyServer) {
                     packet.setData(buffer)
                     relay.receive(packet)
                     if (packet.address != clientIp) continue
+                    // [remote] is bound to the Wi-Fi network of when this started; after the Wi-Fi
+                    // reconnects (a new network) it can't reach anything any more.
+                    if (server.upstreamNetwork() != network) return
                     clientAddress = packet.socketAddress as InetSocketAddress
                     val headerLength = udpHeaderLength(buffer, packet.length) ?: continue
                     val target = parseUdpTarget(buffer) ?: continue
@@ -192,11 +202,13 @@ internal class Socks5Handler(private val server: ProxyServer) {
             return InetSocketAddress(address, target.port)
         }
 
-        fun close() {
+        override fun close() {
             relay.close()
             remote.close()
             server.openDatagrams.remove(relay)
             server.openDatagrams.remove(remote)
+            server.untrackUpstream(this)
+            closeQuietly(control)
         }
     }
 

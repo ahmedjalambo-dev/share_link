@@ -155,7 +155,10 @@ class _SharePanelState extends State<SharePanel> {
               const _WifiLostBanner(),
               const SizedBox(height: 12),
             ],
-            if (_status.bandNotHonored) ...[
+            if (_status.recovering) ...[
+              const _RecoveringBanner(),
+              const SizedBox(height: 12),
+            ] else if (_status.bandNotHonored) ...[
               _BandBanner(onOpenSettings: widget.onOpenSettings),
               const SizedBox(height: 12),
             ],
@@ -210,6 +213,24 @@ class _WifiLostBanner extends StatelessWidget {
       foreground: scheme.onTertiaryContainer,
       actionLabel: l.openWifiSettings,
       onAction: () => ShareChannel.openSystemSettings('wifi'),
+    );
+  }
+}
+
+/// The network vanished and is coming back by itself; the other phones rejoin
+/// on their own.
+class _RecoveringBanner extends StatelessWidget {
+  const _RecoveringBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return StatusBanner(
+      icon: Icons.sync,
+      message: l.networkRecovering,
+      background: scheme.tertiaryContainer,
+      foreground: scheme.onTertiaryContainer,
     );
   }
 }

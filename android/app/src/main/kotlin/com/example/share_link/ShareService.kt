@@ -6,8 +6,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.net.ConnectivityManager
 import android.net.Network
@@ -47,6 +49,26 @@ class ShareService : Service() {
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     private val meter = TrafficMeter()
+
+    /** Name, password and band of this session; a lost group is recreated with them. */
+    private var shareName = ""
+    private var sharePassphrase = ""
+    private var shareBand = BAND_AUTO
+
+    /** Recreating the group after Android dropped it. */
+    private var recovering = false
+    private var recoveryAttempt = 0
+
+    /** Checks in a row that didn't find the group; one can be a passing hiccup. */
+    private var groupMisses = 0
+
+    /** The Wi-Fi passed Android's internet check; see [registerWifiCallback]. */
+    @Volatile
+    private var upstreamValidated = true
+    private var p2pReceiver: BroadcastReceiver? = null
+
+    private val groupWatch = Runnable { checkGroup() }
+    private val recoveryRetry = Runnable { recoverGroup() }
 
     private val statsTicker = object : Runnable {
         override fun run() {
@@ -91,6 +113,9 @@ class ShareService : Service() {
     override fun onDestroy() {
         destroyed = true
         mainHandler.removeCallbacks(statsTicker)
+        mainHandler.removeCallbacks(groupWatch)
+        mainHandler.removeCallbacks(recoveryRetry)
+        unregisterP2pReceiver()
         runningProxy = null
         proxy?.stop()
         proxy = null
@@ -140,9 +165,18 @@ class ShareService : Service() {
         registerWifiCallback()
         ShareState.update { starting }
 
-        wifiDirect.onChannelLost = { fail(ErrorCodes.P2P_ERROR, "Wi-Fi Direct framework disconnected") }
-        val band = settings.band
-        wifiDirect.createGroup(settings.fullSsid, settings.passphrase, band) { result ->
+        wifiDirect.onChannelLost = {
+            if (proxy != null) {
+                startRecovery("Wi-Fi Direct framework disconnected")
+            } else {
+                fail(ErrorCodes.P2P_ERROR, "Wi-Fi Direct framework disconnected")
+            }
+        }
+        shareName = settings.fullSsid
+        sharePassphrase = settings.passphrase
+        shareBand = settings.band
+        val band = shareBand
+        wifiDirect.createGroup(shareName, sharePassphrase, band) { result ->
             result.onSuccess { group -> startProxy(group, band) }
                 .onFailure { e ->
                     fail((e as? WifiDirectController.GroupException)?.code ?: ErrorCodes.P2P_ERROR, e.message)
@@ -212,6 +246,152 @@ class ShareService : Service() {
         meter.reset()
         updateNotification()
         mainHandler.post(statsTicker)
+        registerP2pReceiver()
+        scheduleGroupCheck()
+    }
+
+    // region Group recovery: some phones drop the Wi-Fi Direct group when their own Wi-Fi
+    // disconnects or changes channel, without telling the app. Watch it and recreate it.
+
+    private fun scheduleGroupCheck(delayMs: Long = GROUP_CHECK_MS) {
+        mainHandler.removeCallbacks(groupWatch)
+        mainHandler.postDelayed(groupWatch, delayMs)
+    }
+
+    private fun checkGroup() {
+        if (destroyed || recovering || proxy == null) return
+        // Below Android 10 the name is random, so only the group's existence is checked.
+        val expected = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ShareState.current.ssid else null
+        wifiDirect.checkGroup(expected) { ok ->
+            if (destroyed || recovering) return@checkGroup
+            when {
+                ok -> {
+                    groupMisses = 0
+                    scheduleGroupCheck()
+                }
+                ++groupMisses < GROUP_MISSES_BEFORE_LOST -> scheduleGroupCheck(GROUP_RECHECK_MS)
+                else -> startRecovery("group gone")
+            }
+        }
+    }
+
+    private fun startRecovery(reason: String) {
+        if (destroyed || recovering) return
+        Log.w(TAG, "Wi-Fi Direct group lost ($reason); recreating it")
+        recovering = true
+        recoveryAttempt = 0
+        groupMisses = 0
+        mainHandler.removeCallbacks(groupWatch)
+        ShareState.update { it.copy(recovering = true) }
+        updateNotification()
+        recoverGroup()
+    }
+
+    /** Same name, password and band as before, so the other phones rejoin by themselves. */
+    private fun recoverGroup() {
+        if (destroyed) return
+        recoveryAttempt++
+        wifiDirect.createGroup(shareName, sharePassphrase, shareBand) { result ->
+            if (destroyed) return@createGroup
+            result.onSuccess { group -> rebindProxy(group) }
+                .onFailure { e ->
+                    retryRecovery((e as? WifiDirectController.GroupException)?.code ?: ErrorCodes.P2P_ERROR, e.message)
+                }
+        }
+    }
+
+    private fun retryRecovery(code: String, detail: String?) {
+        if (recoveryAttempt >= MAX_RECOVERY_ATTEMPTS) {
+            fail(code, detail)
+            return
+        }
+        Log.w(TAG, "Recreating the group failed (attempt $recoveryAttempt): $detail")
+        mainHandler.postDelayed(recoveryRetry, reconnectDelayMs(recoveryAttempt))
+    }
+
+    /** Listens on the recreated group's address; counters, devices and blocks are kept. */
+    private fun rebindProxy(group: WifiDirectController.GroupDetails) {
+        val server = proxy ?: return
+        Thread({
+            var error: IOException? = null
+            for (attempt in 1..BIND_ATTEMPTS) {
+                try {
+                    server.rebind(InetAddress.getByName(group.ownerIp))
+                    error = null
+                    break
+                } catch (e: IOException) {
+                    error = e
+                    Thread.sleep(BIND_RETRY_MS)
+                }
+            }
+            mainHandler.post { onGroupRecovered(group, error) }
+        }, "proxy-rebind").start()
+    }
+
+    private fun onGroupRecovered(group: WifiDirectController.GroupDetails, error: IOException?) {
+        if (destroyed) return
+        if (error != null) {
+            retryRecovery(ErrorCodes.PROXY_FAILED, error.message)
+            return
+        }
+        recovering = false
+        recoveryAttempt = 0
+        // Connections from before the drop are dead; let clients open new ones right away.
+        proxy?.resetUpstream()
+        val band = bandOfFrequency(group.frequencyMhz)
+        ShareState.update {
+            it.copy(
+                recovering = false,
+                ssid = group.ssid,
+                passphrase = group.passphrase,
+                ownerIp = group.ownerIp,
+                band = band,
+                bandNotHonored = !bandHonored(shareBand, group.bandFallback, band),
+            )
+        }
+        updateNotification()
+        Log.i(TAG, "Wi-Fi Direct group recreated")
+        scheduleGroupCheck()
+    }
+
+    /** Android announces Wi-Fi Direct changes; check the group then instead of waiting. */
+    private fun registerP2pReceiver() {
+        if (p2pReceiver != null) return
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                if (!recovering && proxy != null) scheduleGroupCheck(GROUP_RECHECK_MS)
+            }
+        }
+        ContextCompat.registerReceiver(
+            this,
+            receiver,
+            IntentFilter(WifiDirectController.CONNECTION_CHANGED),
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
+        p2pReceiver = receiver
+    }
+
+    private fun unregisterP2pReceiver() {
+        val receiver = p2pReceiver ?: return
+        p2pReceiver = null
+        try {
+            unregisterReceiver(receiver)
+        } catch (e: IllegalArgumentException) {
+            // Already unregistered.
+        }
+    }
+
+    // endregion
+
+    /**
+     * Any thread. Closes connections that went out through a Wi-Fi network that is gone or that
+     * just got its internet back, so clients reconnect now instead of hanging for minutes.
+     */
+    private fun resetUpstream(reason: String) {
+        mainHandler.post {
+            val closed = proxy?.resetUpstream() ?: return@post
+            if (closed > 0) Log.i(TAG, "Upstream reset ($reason): closed $closed connections")
+        }
     }
 
     /** Names devices from the Wi-Fi Direct group's client list (Android 15+ knows their IPs). */
@@ -246,12 +426,26 @@ class ShareService : Service() {
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 Log.i(TAG, "Wi-Fi available: $network")
+                val previous = upstreamNetwork
                 upstreamNetwork = network
+                if (previous != null && previous != network) resetUpstream("Wi-Fi switched")
             }
 
             override fun onLost(network: Network) {
                 Log.w(TAG, "Wi-Fi lost: $network")
-                if (upstreamNetwork == network) upstreamNetwork = null
+                if (upstreamNetwork == network) {
+                    upstreamNetwork = null
+                    resetUpstream("Wi-Fi lost")
+                }
+            }
+
+            override fun onCapabilitiesChanged(network: Network, caps: NetworkCapabilities) {
+                if (network != upstreamNetwork) return
+                val validated = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                // The Wi-Fi stayed connected but its internet dropped and came back (e.g. the
+                // router's line): connections from the outage are stuck, so start fresh.
+                if (validated && !upstreamValidated) resetUpstream("internet back")
+                upstreamValidated = validated
             }
         }
         try {
@@ -328,10 +522,11 @@ class ShareService : Service() {
             Intent(this, ShareService::class.java).setAction(ACTION_STOP),
             flags,
         )
-        val text = if (state.status == ShareStatus.RUNNING) {
-            getString(R.string.notif_running_text, state.ssid, state.passphrase, state.ownerIp, state.port ?: 0)
-        } else {
-            getString(R.string.notif_starting)
+        val text = when {
+            state.recovering -> getString(R.string.notif_recovering)
+            state.status == ShareStatus.RUNNING ->
+                getString(R.string.notif_running_text, state.ssid, state.passphrase, state.ownerIp, state.port ?: 0)
+            else -> getString(R.string.notif_starting)
         }
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
         // Session timer; the system ticks it, so the notification isn't redrawn.
@@ -399,6 +594,11 @@ class ShareService : Service() {
         private const val BIND_RETRY_MS = 500L
         private const val STATS_INTERVAL_MS = 1000L
         private const val NAME_LOOKUP_DELAY_MS = 2000L
+        private const val GROUP_CHECK_MS = 5000L
+        private const val GROUP_RECHECK_MS = 1000L
+        private const val GROUP_MISSES_BEFORE_LOST = 2
+        /** About 2 minutes with the reconnect back-off (2, 4, 8, 16, then 30 s). */
+        private const val MAX_RECOVERY_ATTEMPTS = 8
 
         /** The running proxy, so the app's devices list can block and allow devices. */
         @Volatile

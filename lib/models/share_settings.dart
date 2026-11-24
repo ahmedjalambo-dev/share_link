@@ -17,6 +17,8 @@ class ShareSettingsData {
     required this.apiLevel,
     required this.customNetworkSupported,
     this.band = 'auto',
+    this.noInternetAlert = true,
+    this.tellBlockedDevices = false,
   });
 
   factory ShareSettingsData.fromMap(Map<Object?, Object?> map) {
@@ -35,6 +37,8 @@ class ShareSettingsData {
       apiLevel: map['apiLevel'] as int? ?? 0,
       customNetworkSupported: map['customNetworkSupported'] == true,
       band: map['band'] as String? ?? 'auto',
+      noInternetAlert: map['noInternetAlert'] != false,
+      tellBlockedDevices: map['tellBlockedDevices'] == true,
     );
   }
 
@@ -46,6 +50,13 @@ class ShareSettingsData {
 
   /// Wi-Fi Direct band: `auto`, `2.4` or `5` (Android 10+).
   final String band;
+
+  /// Show an alert when the Wi-Fi (this phone's, or the sharing phone's in
+  /// Receive mode) has no internet.
+  final bool noInternetAlert;
+
+  /// Sharing phone: a device cut off from the devices list sees that it's blocked.
+  final bool tellBlockedDevices;
 
   /// `system`, `en` or `ar`.
   final String language;

@@ -21,6 +21,7 @@ class SharePanel extends StatefulWidget {
     super.key,
     required this.onShowGuide,
     required this.onOpenSettings,
+    this.noInternetAlert = true,
     this.receiving = false,
   });
 
@@ -29,6 +30,9 @@ class SharePanel extends StatefulWidget {
 
   /// Switches to the Settings tab (from the band notice).
   final VoidCallback onOpenSettings;
+
+  /// Show the "Wi-Fi has no internet" alert (a setting).
+  final bool noInternetAlert;
 
   /// Receive mode is active on this phone; sharing can't start until it's disconnected.
   final bool receiving;
@@ -155,6 +159,13 @@ class _SharePanelState extends State<SharePanel> {
               const _WifiLostBanner(),
               const SizedBox(height: 12),
             ],
+            if (widget.noInternetAlert &&
+                _status.upstreamAvailable &&
+                !_status.upstreamInternet &&
+                !_status.recovering) ...[
+              const _NoInternetBanner(),
+              const SizedBox(height: 12),
+            ],
             if (_status.recovering) ...[
               const _RecoveringBanner(),
               const SizedBox(height: 12),
@@ -211,6 +222,26 @@ class _WifiLostBanner extends StatelessWidget {
       message: l.wifiLost,
       background: scheme.tertiaryContainer,
       foreground: scheme.onTertiaryContainer,
+      actionLabel: l.openWifiSettings,
+      onAction: () => ShareChannel.openSystemSettings('wifi'),
+    );
+  }
+}
+
+/// This phone's Wi-Fi is connected but Android's internet check fails: the
+/// provider is down, or the network wants a login page (opened from Wi-Fi settings).
+class _NoInternetBanner extends StatelessWidget {
+  const _NoInternetBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return StatusBanner(
+      icon: Icons.public_off,
+      message: l.noInternetHere,
+      background: scheme.errorContainer,
+      foreground: scheme.onErrorContainer,
       actionLabel: l.openWifiSettings,
       onAction: () => ShareChannel.openSystemSettings('wifi'),
     );

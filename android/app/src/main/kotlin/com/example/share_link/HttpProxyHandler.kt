@@ -11,7 +11,8 @@ import java.net.URLEncoder
 /** HTTP proxy: CONNECT tunnels (HTTPS) and plain requests, one request per connection. */
 internal class HttpProxyHandler(private val server: ProxyServer) {
 
-    fun handle(client: Socket, input: InputStream) {
+    /** [blocked]: the client was cut off; it only gets the info answer (which tells it so). */
+    fun handle(client: Socket, input: InputStream, blocked: Boolean = false) {
         val head = readHead(input) ?: return
         val parts = head.first().split(' ')
         if (parts.size < 3) return sendError(client, 400, "Bad Request")
@@ -23,8 +24,9 @@ internal class HttpProxyHandler(private val server: ProxyServer) {
             // Phone B with the app says its own name here.
             headerValue(head, DEVICE_HEADER)?.let { decodeDeviceHeader(it) }
                 ?.let { server.devices.nameDevice(client.inetAddress, it, NameSource.APP) }
-            return sendInfo(client)
+            return sendInfo(client, blocked)
         }
+        if (blocked) return
         headerValue(head, "User-Agent")?.let { deviceFromUserAgent(it) }
             ?.let { server.devices.nameDevice(client.inetAddress, it, NameSource.USER_AGENT) }
 
@@ -60,10 +62,13 @@ internal class HttpProxyHandler(private val server: ProxyServer) {
         null
     }
 
-    /** Tells Phone B this phone's network name, so it can rejoin without Android's picker. */
-    private fun sendInfo(client: Socket) {
+    /**
+     * Tells Phone B this phone's network name (so it can rejoin without Android's picker),
+     * whether this phone's Wi-Fi has internet, and whether Phone B was cut off.
+     */
+    private fun sendInfo(client: Socket, blocked: Boolean) {
         val ssid = server.networkName() ?: return sendError(client, 404, "Not Found")
-        val body = buildInfoJson(ssid).toByteArray(Charsets.UTF_8)
+        val body = buildInfoJson(ssid, server.upstreamHasInternet(), blocked).toByteArray(Charsets.UTF_8)
         val head = "HTTP/1.1 200 OK\r\n" +
             "Content-Type: application/json\r\n" +
             "Content-Length: ${body.size}\r\n" +
@@ -118,18 +123,30 @@ internal fun decodeDeviceHeader(value: String): String? = try {
     null
 }
 
-/** `{"ssid":"…","v":1}` with the name JSON-escaped. */
-internal fun buildInfoJson(ssid: String): String {
+/**
+ * `{"ssid":"…","v":2,"internet":true}` with the name JSON-escaped, plus `"blocked":true` when
+ * the asking phone was cut off. Version 1 (older Phone A) had only the ssid.
+ */
+internal fun buildInfoJson(ssid: String, internet: Boolean = true, blocked: Boolean = false): String {
     val escaped = ssid.replace("\\", "\\\\").replace("\"", "\\\"")
-    return "{\"ssid\":\"$escaped\",\"v\":1}"
+    val blockedField = if (blocked) ",\"blocked\":true" else ""
+    return "{\"ssid\":\"$escaped\",\"v\":2,\"internet\":$internet$blockedField}"
+}
+
+/** What Phone B learns from [buildInfoJson]; [internet] is null from an older Phone A. */
+internal data class PhoneAInfo(val ssid: String?, val internet: Boolean?, val blocked: Boolean)
+
+/** Parses [buildInfoJson]'s output, or null if [json] isn't Phone A's info at all. */
+internal fun parseInfo(json: String): PhoneAInfo? {
+    val match = Regex(""""ssid"\s*:\s*"((?:[^"\\]|\\.)*)"""").find(json) ?: return null
+    val ssid = match.groupValues[1].replace(Regex("""\\(.)"""), "$1")
+    val internet = Regex(""""internet"\s*:\s*(true|false)""").find(json)?.groupValues?.get(1)?.toBoolean()
+    val blocked = Regex(""""blocked"\s*:\s*true""").containsMatchIn(json)
+    return PhoneAInfo(ssid.takeIf { it.startsWith("DIRECT-") }, internet, blocked)
 }
 
 /** The network name from [buildInfoJson]'s output, or null if it isn't a DIRECT- name. */
-internal fun parseInfoSsid(json: String): String? {
-    val match = Regex(""""ssid"\s*:\s*"((?:[^"\\]|\\.)*)"""").find(json) ?: return null
-    val ssid = match.groupValues[1].replace(Regex("""\\(.)"""), "$1")
-    return ssid.takeIf { it.startsWith("DIRECT-") }
-}
+internal fun parseInfoSsid(json: String): String? = parseInfo(json)?.ssid
 
 /** Reads the request line and headers (up to the blank line). Returns null on EOF or oversize. */
 internal fun readHead(input: InputStream): List<String>? {

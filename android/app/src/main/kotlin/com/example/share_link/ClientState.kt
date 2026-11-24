@@ -10,6 +10,10 @@ object ClientErrorCodes {
     const val JOIN_FAILED = "join_failed"
     /** Auto-join is on but Phone A's password (or, below Android 10, its name) isn't saved yet. */
     const val SETUP_NEEDED = "setup_needed"
+    /** Phone A stayed unreachable for [GIVE_UP_MS], so the VPN was turned off. */
+    const val GAVE_UP = "gave_up"
+    /** Another VPN app took over, or the user turned ours off in system settings. */
+    const val VPN_REVOKED = "vpn_revoked"
 }
 
 /** A client-mode failure with the code shown to the user. */
@@ -41,6 +45,10 @@ data class ClientSnapshot(
     val joining: Boolean = false,
     /** Current retry number while RECONNECTING (errorCode/errorDetail hold the last failure). */
     val reconnectAttempt: Int = 0,
+    /** Phone A's Wi-Fi has internet; null when unknown (not connected, or an older Phone A). */
+    val phoneAInternet: Boolean? = null,
+    /** Phone A cut this phone off (only reported when Phone A allows it). */
+    val blocked: Boolean = false,
 ) {
     fun toMap(): Map<String, Any?> = mapOf(
         "status" to status.wire,
@@ -55,6 +63,8 @@ data class ClientSnapshot(
         "errorDetail" to errorDetail,
         "joining" to joining,
         "reconnectAttempt" to reconnectAttempt,
+        "phoneAInternet" to phoneAInternet,
+        "blocked" to blocked,
     )
 }
 

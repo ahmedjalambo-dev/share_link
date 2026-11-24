@@ -85,6 +85,7 @@ class _AppShellState extends State<AppShell> {
                   onOpenReceive: _openReceive,
                   onShowGuide: () => _select(_connectTab),
                   onOpenSettings: () => _select(_settingsTab),
+                  noInternetAlert: settings.noInternetAlert,
                 ),
                 ConnectTab(
                   settings: settings,

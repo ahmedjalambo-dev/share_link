@@ -17,6 +17,7 @@ class ShareStatus {
     this.speedDown = 0,
     this.startedAt,
     this.upstreamAvailable = true,
+    this.upstreamInternet = true,
     this.whatsAppProxy = false,
     this.recovering = false,
     this.band,
@@ -44,6 +45,7 @@ class ShareStatus {
       speedDown: map['speedDown'] as int? ?? 0,
       startedAt: _time(map['startedAt']),
       upstreamAvailable: map['upstreamAvailable'] as bool? ?? true,
+      upstreamInternet: map['upstreamInternet'] as bool? ?? true,
       whatsAppProxy: map['whatsAppProxy'] == true,
       recovering: map['recovering'] == true,
       band: map['band'] as String?,
@@ -75,6 +77,10 @@ class ShareStatus {
 
   /// False while Phone A's Wi-Fi is down (the proxy keeps running).
   final bool upstreamAvailable;
+
+  /// The Wi-Fi passed Android's internet check; false while the provider is
+  /// down or the network wants a login page.
+  final bool upstreamInternet;
 
   /// The experimental WhatsApp proxy ports are open on Phone A.
   final bool whatsAppProxy;

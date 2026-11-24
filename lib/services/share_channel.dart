@@ -100,6 +100,12 @@ class ShareChannel {
   static Future<void> setBand(String band) =>
       _control.invokeMethod<void>('setBand', {'band': band});
 
+  static Future<void> setNoInternetAlert(bool enabled) =>
+      _control.invokeMethod<void>('setNoInternetAlert', {'enabled': enabled});
+
+  static Future<void> setTellBlockedDevices(bool enabled) => _control
+      .invokeMethod<void>('setTellBlockedDevices', {'enabled': enabled});
+
   static Future<void> setThemeMode(String themeMode) =>
       _control.invokeMethod<void>('setThemeMode', {'themeMode': themeMode});
 

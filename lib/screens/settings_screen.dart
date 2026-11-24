@@ -175,6 +175,11 @@ class _SettingsScreenState extends State<SettingsScreen>
     await _reload();
   }
 
+  Future<void> _setFlag(Future<void> Function(bool) save, bool value) async {
+    await save(value);
+    await _reload();
+  }
+
   Future<void> _reload() async {
     final settings = await ShareChannel.getSettings();
     if (mounted) setState(() => _settings = settings);
@@ -301,6 +306,23 @@ class _SettingsScreenState extends State<SettingsScreen>
                   title: Text(l.themeTitle),
                   subtitle: Text(_themes(l)[settings.themeMode] ?? ''),
                   onTap: _pickTheme,
+                ),
+                _SectionHeader(l.sectionAlerts),
+                SwitchListTile(
+                  secondary: const Icon(Icons.public_off),
+                  title: Text(l.noInternetAlert),
+                  subtitle: Text(l.noInternetAlertBody),
+                  value: settings.noInternetAlert,
+                  onChanged: (value) =>
+                      _setFlag(ShareChannel.setNoInternetAlert, value),
+                ),
+                SwitchListTile(
+                  secondary: const Icon(Icons.block),
+                  title: Text(l.tellBlocked),
+                  subtitle: Text(l.tellBlockedBody),
+                  value: settings.tellBlockedDevices,
+                  onChanged: (value) =>
+                      _setFlag(ShareChannel.setTellBlockedDevices, value),
                 ),
                 _SectionHeader(l.sectionDevice),
                 _BatteryTile(

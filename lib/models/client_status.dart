@@ -23,6 +23,8 @@ class ClientStatus {
     this.errorDetail,
     this.joining = false,
     this.reconnectAttempt = 0,
+    this.phoneAInternet,
+    this.blocked = false,
   });
 
   static const disconnected = ClientStatus(kind: ClientStatusKind.disconnected);
@@ -43,6 +45,8 @@ class ClientStatus {
       errorDetail: map['errorDetail'] as String?,
       joining: map['joining'] == true,
       reconnectAttempt: map['reconnectAttempt'] as int? ?? 0,
+      phoneAInternet: map['phoneAInternet'] as bool?,
+      blocked: map['blocked'] == true,
     );
   }
 
@@ -69,6 +73,13 @@ class ClientStatus {
   /// Retry number while [ClientStatusKind.reconnecting]; [errorCode] then holds
   /// the last attempt's failure.
   final int reconnectAttempt;
+
+  /// The sharing phone's Wi-Fi has internet; null when unknown (an older
+  /// version of the app on the sharing phone).
+  final bool? phoneAInternet;
+
+  /// The sharing phone cut this phone off (it only says so when allowed).
+  final bool blocked;
 
   bool get isActive =>
       kind == ClientStatusKind.connecting ||

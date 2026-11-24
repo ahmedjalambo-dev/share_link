@@ -48,6 +48,16 @@ class ShareSettings(context: Context) {
         get() = prefs.getString(KEY_THEME_MODE, null) ?: THEME_SYSTEM
         set(value) = prefs.edit { putString(KEY_THEME_MODE, value) }
 
+    /** Show an alert when the Wi-Fi (this phone's, or Phone A's in Receive mode) has no internet. */
+    var noInternetAlert: Boolean
+        get() = prefs.getBoolean(KEY_NO_INTERNET_ALERT, true)
+        set(value) = prefs.edit { putBoolean(KEY_NO_INTERNET_ALERT, value) }
+
+    /** Phone A: let a device cut off from the devices list see that it's blocked. */
+    var tellBlockedDevices: Boolean
+        get() = prefs.getBoolean(KEY_TELL_BLOCKED, false)
+        set(value) = prefs.edit { putBoolean(KEY_TELL_BLOCKED, value) }
+
     /** Last thing started, "share" (Phone A) or "connect" (Phone B); the Quick Settings tile follows it. */
     var mode: String
         get() = prefs.getString(KEY_MODE, null) ?: MODE_SHARE
@@ -77,6 +87,8 @@ class ShareSettings(context: Context) {
         "band" to band,
         "language" to language,
         "themeMode" to themeMode,
+        "noInternetAlert" to noInternetAlert,
+        "tellBlockedDevices" to tellBlockedDevices,
         "mode" to mode,
         "clientPort" to clientPort,
         "clientSsid" to clientSsid,
@@ -136,10 +148,14 @@ class ShareSettings(context: Context) {
 
     /** Saves [nickname] for [address]; a blank nickname removes it. Returns the stored value. */
     fun saveDeviceNickname(address: String, nickname: String): String? {
-        val names = deviceNicknames.toMutableMap()
+        val names = LinkedHashMap(deviceNicknames)
         val clean = nickname.trim().take(MAX_NICKNAME_LENGTH).takeIf { it.isNotEmpty() }
-        if (clean == null) names.remove(address) else names[address] = clean
-        prefs.edit { putString(KEY_DEVICE_NICKNAMES, JSONObject(names.toMap()).toString()) }
+        // Re-insert so a renamed device counts as the newest.
+        names.remove(address)
+        if (clean != null) names[address] = clean
+        prefs.edit {
+            putString(KEY_DEVICE_NICKNAMES, JSONObject(capNicknames(names, MAX_NICKNAMES)).toString())
+        }
         return clean
     }
 
@@ -170,6 +186,9 @@ class ShareSettings(context: Context) {
         private const val KEY_CLIENT_AUTO_JOIN = "client_auto_join"
         private const val KEY_DEVICE_NICKNAMES = "device_nicknames"
         private const val MAX_NICKNAME_LENGTH = 40
+        private const val MAX_NICKNAMES = 50
+        private const val KEY_NO_INTERNET_ALERT = "no_internet_alert"
+        private const val KEY_TELL_BLOCKED = "tell_blocked_devices"
         const val MODE_SHARE = "share"
         const val MODE_CONNECT = "connect"
         private const val LANGUAGE_SYSTEM = "system"
@@ -181,3 +200,7 @@ class ShareSettings(context: Context) {
         private const val PASS_CHARS = "abcdefghjkmnpqrstuvwxyz23456789"
     }
 }
+
+/** The newest [max] entries of [names] (in insertion order), so the saved nicknames stay small. */
+internal fun capNicknames(names: Map<String, String>, max: Int): Map<String, String> =
+    if (names.size <= max) names else names.entries.drop(names.size - max).associate { it.key to it.value }

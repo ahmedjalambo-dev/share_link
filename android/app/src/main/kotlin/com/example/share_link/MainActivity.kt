@@ -122,6 +122,14 @@ class MainActivity : FlutterActivity() {
                     result.error("invalid_band", null, null)
                 }
             }
+            "setNoInternetAlert" -> {
+                settings.noInternetAlert = call.argument<Boolean>("enabled") == true
+                result.success(null)
+            }
+            "setTellBlockedDevices" -> {
+                settings.tellBlockedDevices = call.argument<Boolean>("enabled") == true
+                result.success(null)
+            }
             "getAppInfo" -> result.success(appInfo())
             "isIgnoringBatteryOptimizations" -> result.success(isIgnoringBatteryOptimizations())
             "requestIgnoreBatteryOptimizations" -> {

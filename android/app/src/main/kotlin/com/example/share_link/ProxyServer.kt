@@ -38,6 +38,10 @@ class ProxyServer(
     internal val upstreamDns: () -> InetAddress? = { null },
     /** This phone's Wi-Fi Direct network name, served to Phone B at [PHONE_A_INFO_PATH]. */
     internal val networkName: () -> String? = { null },
+    /** This phone's Wi-Fi currently reaches the internet; told to Phone B at [PHONE_A_INFO_PATH]. */
+    internal val upstreamHasInternet: () -> Boolean = { true },
+    /** Blocked devices may still ask [PHONE_A_INFO_PATH], which then tells them they're blocked. */
+    private val tellBlocked: () -> Boolean = { false },
 ) {
     val activeConnections = AtomicInteger()
     val bytesUp = AtomicLong()
@@ -84,7 +88,7 @@ class ProxyServer(
         val server = bindServer(bindAddress, port)
         serverSocket = server
         running = true
-        executor.execute { acceptLoop(server, ::handleClient) }
+        executor.execute { acceptLoop(server, admitBlocked = true, ::handleClient) }
         Log.i(TAG, "Proxy listening on ${bindAddress.hostAddress}:$port")
     }
 
@@ -111,7 +115,7 @@ class ProxyServer(
         serverSocket = null
         val server = bindServer(bindAddress, port)
         serverSocket = server
-        executor.execute { acceptLoop(server, ::handleClient) }
+        executor.execute { acceptLoop(server, admitBlocked = true, ::handleClient) }
         relayServers.forEach(::closeQuietly)
         relayServers.clear()
         for (relay in relays) {
@@ -127,7 +131,7 @@ class ProxyServer(
     private fun listenRelay(bindAddress: InetAddress, relay: Relay) {
         val server = bindServer(bindAddress, relay.listenPort)
         relayServers.add(server)
-        executor.execute { acceptLoop(server) { client -> handleRelay(client, relay.targetHost, relay.targetPort) } }
+        executor.execute { acceptLoop(server, admitBlocked = false) { client -> handleRelay(client, relay.targetHost, relay.targetPort) } }
         Log.i(TAG, "Relay ${bindAddress.hostAddress}:${relay.listenPort} → ${relay.targetHost}:${relay.targetPort}")
     }
 
@@ -179,7 +183,8 @@ class ProxyServer(
         upstreamConnections.remove(connection)
     }
 
-    private fun acceptLoop(server: ServerSocket, handler: (Socket) -> Unit) {
+    /** [admitBlocked]: blocked devices get through to [handler] when [tellBlocked] (only the main port). */
+    private fun acceptLoop(server: ServerSocket, admitBlocked: Boolean, handler: (Socket) -> Unit) {
         while (running) {
             val client = try {
                 server.accept()
@@ -187,7 +192,8 @@ class ProxyServer(
                 if (running) Log.w(TAG, "accept failed", e)
                 break
             }
-            if (devices.isBlocked(client.inetAddress) || activeConnections.get() >= MAX_CONNECTIONS) {
+            val refused = devices.isBlocked(client.inetAddress) && !(admitBlocked && tellBlocked())
+            if (refused || activeConnections.get() >= MAX_CONNECTIONS) {
                 closeQuietly(client)
                 continue
             }
@@ -226,7 +232,9 @@ class ProxyServer(
     private fun handleClient(client: Socket) {
         activeConnections.incrementAndGet()
         openSockets.add(client)
-        devices.opened(client.inetAddress, client)
+        // A blocked device only gets here to be told so; registering it would close it at once.
+        val blocked = devices.isBlocked(client.inetAddress)
+        if (!blocked) devices.opened(client.inetAddress, client)
         try {
             client.soTimeout = HEADER_TIMEOUT_MS
             client.tcpNoDelay = true
@@ -235,7 +243,10 @@ class ProxyServer(
             val first = input.read()
             if (first < 0) return
             input.reset()
-            if (first == SOCKS_VERSION) socks.handle(client, input) else http.handle(client, input)
+            when {
+                first != SOCKS_VERSION -> http.handle(client, input, blocked)
+                !blocked -> socks.handle(client, input)
+            }
         } catch (e: IOException) {
             // Timeouts, resets and closes are normal for a proxy.
         } catch (e: Exception) {
@@ -272,8 +283,8 @@ class ProxyServer(
         val addresses = network.getAllByName(host)
         var lastError: IOException? = null
         for (address in addresses) {
-            // Don't let clients reach services on this phone itself.
-            if (address.isLoopbackAddress || address.isAnyLocalAddress) {
+            // Don't let clients reach services on this phone itself (any of its addresses).
+            if (isThisPhone(address)) {
                 throw IOException("Blocked address $address")
             }
             val socket = Socket()

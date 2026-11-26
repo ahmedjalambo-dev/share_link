@@ -11,6 +11,7 @@ class HomeScreen extends StatelessWidget {
     required this.onOpenReceive,
     required this.onShowGuide,
     required this.onOpenSettings,
+    required this.noInternetAlert,
   });
 
   /// Receive mode is active on this phone.
@@ -24,6 +25,9 @@ class HomeScreen extends StatelessWidget {
 
   /// Switches to the Settings tab.
   final VoidCallback onOpenSettings;
+
+  /// The user wants an alert when the Wi-Fi has no internet (a setting).
+  final bool noInternetAlert;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +55,7 @@ class HomeScreen extends StatelessWidget {
                     receiving: receiving,
                     onShowGuide: onShowGuide,
                     onOpenSettings: onOpenSettings,
+                    noInternetAlert: noInternetAlert,
                   ),
                 ],
               ),

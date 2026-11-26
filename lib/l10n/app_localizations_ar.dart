@@ -576,4 +576,36 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get networkRecovering =>
       'جارٍ إعادة تشغيل الشبكة… ستعود الهواتف الأخرى وحدها.';
+
+  @override
+  String get sectionAlerts => 'التنبيهات';
+
+  @override
+  String get noInternetAlert => 'تنبيه عند انقطاع الإنترنت';
+
+  @override
+  String get noInternetAlertBody =>
+      'يظهر تنبيه عندما يكون الواي فاي بلا إنترنت.';
+
+  @override
+  String get tellBlocked => 'إخبار الجهاز المفصول أنه محظور';
+
+  @override
+  String get tellBlockedBody => 'يرى الجهاز في وضع الاستقبال أنك فصلته.';
+
+  @override
+  String get noInternetHere => 'الواي فاي متصل لكن ما فيه إنترنت الآن.';
+
+  @override
+  String get phoneANoInternet => 'الهاتف المُشارِك ما عنده إنترنت الآن.';
+
+  @override
+  String get clientBlocked => 'أوقف الهاتف المُشارِك الإنترنت عن هذا الهاتف.';
+
+  @override
+  String get errorGaveUp =>
+      'تعذّر الوصول للهاتف المُشارِك 10 دقائق، فرجع هذا الهاتف لإنترنته العادي.';
+
+  @override
+  String get errorVpnRevoked => 'شغّلت VPN آخر، فتوقف وضع الاستقبال.';
 }

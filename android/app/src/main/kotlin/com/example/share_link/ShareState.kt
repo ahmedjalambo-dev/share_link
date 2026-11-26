@@ -46,6 +46,8 @@ data class ShareSnapshot(
     val startedAt: Long? = null,
     /** False while Phone A's Wi-Fi is down; the proxy keeps running and recovers when it returns. */
     val upstreamAvailable: Boolean = true,
+    /** Phone A's Wi-Fi passed Android's internet check (false: ISP down or a login page). */
+    val upstreamInternet: Boolean = true,
     /** The WhatsApp proxy ports (WhatsAppRelay) are open. */
     val whatsAppProxy: Boolean = false,
     /** Android dropped the Wi-Fi Direct group and it's being recreated (still RUNNING). */
@@ -72,6 +74,7 @@ data class ShareSnapshot(
         "speedDown" to speedDown,
         "startedAt" to startedAt,
         "upstreamAvailable" to upstreamAvailable,
+        "upstreamInternet" to upstreamInternet,
         "whatsAppProxy" to whatsAppProxy,
         "recovering" to recovering,
         "band" to band,

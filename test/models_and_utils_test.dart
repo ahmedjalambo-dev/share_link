@@ -6,6 +6,8 @@ import 'package:share_link/models/share_settings.dart';
 import 'package:share_link/utils/constants.dart';
 import 'package:share_link/models/share_status.dart';
 import 'package:share_link/utils/format.dart';
+import 'package:share_link/l10n/app_localizations.dart';
+import 'package:share_link/utils/messages.dart';
 
 void main() {
   test('ShareStatus parses a running snapshot', () {
@@ -174,6 +176,41 @@ void main() {
       expect(ltrIsolate('87.5 KB'), '\u206687.5 KB\u2069');
     },
   );
+
+  test('Alert settings: no-internet alert on, telling blocked devices off', () {
+    final defaults = ShareSettingsData.fromMap({});
+    expect(defaults.noInternetAlert, isTrue);
+    expect(defaults.tellBlockedDevices, isFalse);
+    final set = ShareSettingsData.fromMap({
+      'noInternetAlert': false,
+      'tellBlockedDevices': true,
+    });
+    expect(set.noInternetAlert, isFalse);
+    expect(set.tellBlockedDevices, isTrue);
+  });
+
+  test('Receive mode explains giving up and a VPN takeover', () {
+    final l = lookupAppLocalizations(const Locale('en'));
+    expect(shareErrorMessage(l, 'gave_up'), l.errorGaveUp);
+    expect(shareErrorMessage(l, 'vpn_revoked'), l.errorVpnRevoked);
+  });
+
+  test('Statuses report missing internet and blocking', () {
+    expect(ShareStatus.fromMap({}).upstreamInternet, isTrue);
+    expect(
+      ShareStatus.fromMap({'upstreamInternet': false}).upstreamInternet,
+      isFalse,
+    );
+    final client = ClientStatus.fromMap({
+      'status': 'connected',
+      'phoneAInternet': false,
+      'blocked': true,
+    });
+    expect(client.phoneAInternet, isFalse);
+    expect(client.blocked, isTrue);
+    expect(ClientStatus.fromMap({}).phoneAInternet, isNull);
+    expect(ClientStatus.fromMap({}).blocked, isFalse);
+  });
 
   test('formatSpeed never goes below KB/s', () {
     expect(formatSpeed(0), '0 KB/s');

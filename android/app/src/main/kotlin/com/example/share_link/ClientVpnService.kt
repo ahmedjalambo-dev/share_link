@@ -26,12 +26,9 @@ import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import java.io.File
 import java.io.IOException
-import java.net.HttpURLConnection
 import java.net.InetAddress
 import java.net.InetSocketAddress
-import java.net.Proxy
 import java.net.Socket
-import java.net.URL
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -67,6 +64,9 @@ class ClientVpnService : VpnService() {
     private var reconnecting = false
     private var attempt = 0
     private var probeFailures = 0
+
+    /** When the current reconnecting started (elapsed realtime), for [shouldGiveUp]. */
+    private var reconnectingSince = 0L
 
     /** Bumped on every disconnect so results of stale background work are discarded. */
     private var generation = 0
@@ -125,7 +125,10 @@ class ClientVpnService : VpnService() {
     }
 
     override fun onRevoke() {
-        // Another VPN took over, or the user turned ours off in system settings.
+        // Another VPN took over, or the user turned ours off in system settings: say so.
+        if (active) {
+            ClientState.update { ClientSnapshot(status = ClientStatus.ERROR, errorCode = ClientErrorCodes.VPN_REVOKED) }
+        }
         disconnect()
         super.onRevoke()
     }
@@ -173,6 +176,7 @@ class ClientVpnService : VpnService() {
         stopLink()
         reconnecting = true
         attempt = 0
+        reconnectingSince = SystemClock.elapsedRealtime()
         scheduleReconnect(code, detail)
     }
 
@@ -189,6 +193,8 @@ class ClientVpnService : VpnService() {
                 // Nothing flows until the next link; the stats ticker is stopped.
                 speedUp = 0,
                 speedDown = 0,
+                phoneAInternet = null,
+                blocked = false,
             )
         }
         updateNotification()
@@ -197,6 +203,10 @@ class ClientVpnService : VpnService() {
 
     private fun startReconnectAttempt() {
         if (!active || !reconnecting) return
+        if (shouldGiveUp(reconnectingSince, SystemClock.elapsedRealtime())) {
+            fail(ClientErrorCodes.GAVE_UP, "Phone A unreachable for ${GIVE_UP_MS / 60_000} minutes")
+            return
+        }
         val gen = generation
         Thread({
             val result = runCatching { acquireLink(port) }
@@ -306,8 +316,9 @@ class ClientVpnService : VpnService() {
         meter.reset()
         mainHandler.removeCallbacks(statsTicker)
         mainHandler.post(statsTicker)
-        mainHandler.postDelayed(healthProbe, PROBE_INTERVAL_MS)
-        introduceToPhoneA(newLink)
+        // Ask Phone A right away: it learns this phone's name, we learn its state.
+        mainHandler.removeCallbacks(healthProbe)
+        mainHandler.post(healthProbe)
     }
 
     /** Main thread. Stops the tunnel and leaves the current link; the VPN interface stays up. */
@@ -361,17 +372,20 @@ class ClientVpnService : VpnService() {
     }
 
     /**
-     * Main thread, every [PROBE_INTERVAL_MS]: checks Phone A still answers. This catches Phone A's
-     * proxy restarting or hanging while the Wi-Fi link itself stays up.
+     * Main thread, right after connecting and then every [PROBE_INTERVAL_MS]: checks Phone A still
+     * answers (this catches its proxy restarting or hanging while the Wi-Fi link stays up), and
+     * picks up whether it has internet and whether it cut this phone off.
      */
     private fun probeCurrentLink() {
         val current = link ?: return
+        val name = deviceName()
         background.execute {
-            val alive = probe(current.network, InetAddress.getByName(current.host), port)
+            val reply = queryPhoneA(current.network, InetAddress.getByName(current.host), port, name)
             mainHandler.post {
                 if (link !== current) return@post
-                if (alive) {
+                if (reply != null) {
                     probeFailures = 0
+                    reply.info?.let(::applyPhoneAInfo)
                 } else if (++probeFailures >= PROBE_FAILURES_BEFORE_LOST) {
                     onLinkLost(current.network, ClientErrorCodes.HOST_UNREACHABLE, "Phone A stopped answering")
                     return@post
@@ -394,39 +408,52 @@ class ClientVpnService : VpnService() {
 
     // endregion
 
+    /** Phone A answered the health probe; [info] is null when it didn't say more (older Phone A). */
+    private class PhoneAReply(val info: PhoneAInfo?)
+
     /**
-     * When the user left the network name empty (Android's picker was used), ask Phone A for its
-     * exact name and save it, so later reconnects can rejoin without the picker.
+     * Any thread. Asks Phone A's info endpoint over [network], sending this phone's [name] for
+     * its devices list. Null if Phone A doesn't accept the connection (it's gone). A connection
+     * that is accepted but closed without an answer (an older Phone A, or a blocked phone that
+     * Phone A doesn't tell) still counts as alive, as the plain TCP probe always did.
      */
-    /**
-     * Tells Phone A this phone's name (for its devices list) and, when auto-join still needs it,
-     * learns Phone A's network name. Runs after every successful link.
-     */
-    private fun introduceToPhoneA(current: Link) {
-        val settings = ShareSettings(this)
-        val learnSsid = settings.clientAutoJoin && settings.clientSsid.isEmpty()
-        val name = deviceName()
-        background.execute {
+    private fun queryPhoneA(network: Network, host: InetAddress, port: Int, name: String): PhoneAReply? {
+        val socket = Socket()
+        try {
+            network.bindSocket(socket)
+            socket.connect(InetSocketAddress(host, port), PROBE_TIMEOUT_MS)
+        } catch (e: IOException) {
+            closeQuietly(socket)
+            return null
+        }
+        return socket.use {
             try {
-                val url = URL("http", current.host, port, PHONE_A_INFO_PATH)
-                val connection = current.network.openConnection(url, Proxy.NO_PROXY) as HttpURLConnection
-                connection.connectTimeout = PROBE_TIMEOUT_MS
-                connection.readTimeout = PROBE_TIMEOUT_MS
-                connection.setRequestProperty(DEVICE_HEADER, encodeDeviceHeader(name))
-                val body = try {
-                    connection.inputStream.bufferedReader().use { it.readText() }
-                } finally {
-                    connection.disconnect()
-                }
-                if (learnSsid) {
-                    parseInfoSsid(body)?.let {
-                        settings.saveClientSsid(it)
-                        Log.i(TAG, "Learned Phone A's network name: $it")
-                    }
-                }
+                it.soTimeout = PROBE_TIMEOUT_MS
+                val request = "GET $PHONE_A_INFO_PATH HTTP/1.0\r\n" +
+                    "Host: ${host.hostAddress}:$port\r\n" +
+                    "$DEVICE_HEADER: ${encodeDeviceHeader(name)}\r\n" +
+                    "Connection: close\r\n\r\n"
+                it.getOutputStream().write(request.toByteArray(Charsets.ISO_8859_1))
+                val response = it.getInputStream().readBytes().toString(Charsets.UTF_8)
+                PhoneAReply(parseInfo(response))
             } catch (e: IOException) {
-                // Older Phone A without the info endpoint; reconnects will use the picker.
+                PhoneAReply(null)
             }
+        }
+    }
+
+    /** Main thread. Shows Phone A's internet and blocked state, and learns its network name. */
+    private fun applyPhoneAInfo(info: PhoneAInfo) {
+        val wasBlocked = ClientState.current.blocked
+        ClientState.update { it.copy(phoneAInternet = info.internet, blocked = info.blocked) }
+        if (wasBlocked != info.blocked) updateNotification()
+        // When the user left the network name empty (Android's picker was used), remember
+        // Phone A's exact name so later reconnects can rejoin without the picker.
+        val ssid = info.ssid ?: return
+        val settings = ShareSettings(this)
+        if (settings.clientAutoJoin && settings.clientSsid.isEmpty()) {
+            settings.saveClientSsid(ssid)
+            Log.i(TAG, "Learned Phone A's network name: $ssid")
         }
     }
 
@@ -543,8 +570,15 @@ class ClientVpnService : VpnService() {
         } else {
             PendingIntent.getService(this, 4, connectIntent, flags)
         }
-        val failed = ClientState.current.status == ClientStatus.ERROR
-        val text = getString(if (failed) R.string.notif_failed_text else R.string.client_notif_disconnected_text)
+        val state = ClientState.current
+        val text = getString(
+            when {
+                state.errorCode == ClientErrorCodes.GAVE_UP -> R.string.client_notif_gave_up
+                state.errorCode == ClientErrorCodes.VPN_REVOKED -> R.string.client_notif_vpn_revoked
+                state.status == ClientStatus.ERROR -> R.string.notif_failed_text
+                else -> R.string.client_notif_disconnected_text
+            },
+        )
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_share)
             // Fills the icon's circle in the notification shade (Android 12+).
@@ -612,7 +646,8 @@ class ClientVpnService : VpnService() {
             flags,
         )
         val title = when (state.status) {
-            ClientStatus.CONNECTED -> getString(R.string.client_notif_connected)
+            ClientStatus.CONNECTED ->
+                getString(if (state.blocked) R.string.client_notif_blocked else R.string.client_notif_connected)
             ClientStatus.RECONNECTING -> getString(R.string.client_notif_reconnecting, state.reconnectAttempt)
             else -> getString(R.string.client_notif_connecting)
         }

@@ -250,5 +250,15 @@
   "band24": "2.4 GHz · reaches farther",
   "band5": "5 GHz · faster up close",
   "bandNotHonored": "Couldn't use the chosen band, so the phone picked one that suits the current Wi-Fi.",
-  "networkRecovering": "Restarting the network… The other phones rejoin by themselves."
+  "networkRecovering": "Restarting the network… The other phones rejoin by themselves.",
+  "sectionAlerts": "Alerts",
+  "noInternetAlert": "Alert when there's no internet",
+  "noInternetAlertBody": "Shows an alert when the Wi-Fi has no internet.",
+  "tellBlocked": "Tell disconnected devices",
+  "tellBlockedBody": "A phone in Receive mode sees that you disconnected it.",
+  "noInternetHere": "The Wi-Fi is connected but has no internet right now.",
+  "phoneANoInternet": "The sharing phone has no internet right now.",
+  "clientBlocked": "The sharing phone cut off this phone's internet.",
+  "errorGaveUp": "Couldn't reach the sharing phone for 10 minutes, so this phone is back on its own internet.",
+  "errorVpnRevoked": "Another VPN took over, so Receive mode stopped."
 }

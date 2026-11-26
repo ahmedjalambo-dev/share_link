@@ -19,6 +19,9 @@
     <string name="client_notif_connect">Connect</string>
     <string name="client_notif_disconnected">Disconnected</string>
     <string name="client_notif_disconnected_text">Tap Connect to receive internet again.</string>
+    <string name="client_notif_blocked">Blocked by the sharing phone</string>
+    <string name="client_notif_gave_up">Couldn\'t reach the sharing phone, so this phone is back on its own internet.</string>
+    <string name="client_notif_vpn_revoked">Another VPN took over, so Receive mode stopped.</string>
     <string name="tile_label">Share Link</string>
     <string name="tile_share">Share Wi-Fi</string>
     <string name="tile_connect">Receive internet</string>

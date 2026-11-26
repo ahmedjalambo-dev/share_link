@@ -15,6 +15,7 @@ import 'error_card.dart';
 import 'numbered_step.dart';
 import 'power_button.dart';
 import 'stats_card.dart';
+import 'status_banner.dart';
 
 /// Client mode (Phone B): joins Phone A's Wi-Fi (optionally) and routes every
 /// app through Phone A via a local VPN.
@@ -165,6 +166,29 @@ class _ClientPanelState extends State<ClientPanel> {
     return null;
   }
 
+  /// While connected: the sharing phone cut this phone off, or (if wanted) it
+  /// has no internet itself. Null when there's nothing to say.
+  Widget? _phoneANotice(AppLocalizations l) {
+    final scheme = Theme.of(context).colorScheme;
+    if (_status.blocked) {
+      return StatusBanner(
+        icon: Icons.block,
+        message: l.clientBlocked,
+        background: scheme.errorContainer,
+        foreground: scheme.onErrorContainer,
+      );
+    }
+    if (widget.settings.noInternetAlert && _status.phoneAInternet == false) {
+      return StatusBanner(
+        icon: Icons.public_off,
+        message: l.phoneANoInternet,
+        background: scheme.errorContainer,
+        foreground: scheme.onErrorContainer,
+      );
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
@@ -215,6 +239,10 @@ class _ClientPanelState extends State<ClientPanel> {
             startedAt: _status.startedAt,
           ),
         ] else if (connected) ...[
+          if (_phoneANotice(l) case final notice?) ...[
+            notice,
+            const SizedBox(height: 8),
+          ],
           Card(
             child: CredentialTile(
               icon: Icons.phone_android,

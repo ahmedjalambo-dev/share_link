@@ -86,6 +86,7 @@ class ShareService : Service() {
                     speedUp = speedUp,
                     speedDown = speedDown,
                     upstreamAvailable = upstreamNetwork != null,
+                    upstreamInternet = hasInternet(),
                     devices = devices,
                 )
             }
@@ -188,7 +189,14 @@ class ShareService : Service() {
     private fun startProxy(group: WifiDirectController.GroupDetails, band: String) {
         val port = settings.port
         Thread({
-            val server = ProxyServer(port, { upstreamNetwork }, ::upstreamDnsServer) { ShareState.current.ssid }
+            val server = ProxyServer(
+                port,
+                upstreamNetwork = { upstreamNetwork },
+                upstreamDns = ::upstreamDnsServer,
+                networkName = { ShareState.current.ssid },
+                upstreamHasInternet = ::hasInternet,
+                tellBlocked = { settings.tellBlockedDevices },
+            )
             // Give DHCP and the group info a moment before asking Wi-Fi Direct for the name.
             server.devices.onNewDevice = { mainHandler.postDelayed(::lookUpDeviceNames, NAME_LOOKUP_DELAY_MS) }
             var error: IOException? = null
@@ -238,6 +246,7 @@ class ShareService : Service() {
                 ownerIp = group.ownerIp,
                 port = port,
                 upstreamAvailable = upstreamNetwork != null,
+                upstreamInternet = hasInternet(),
                 startedAt = System.currentTimeMillis(),
                 band = band,
                 bandNotHonored = !bandHonored(requestedBand, group.bandFallback, band),
@@ -277,6 +286,7 @@ class ShareService : Service() {
 
     private fun startRecovery(reason: String) {
         if (destroyed || recovering) return
+        if (failIfCannotRecover()) return
         Log.w(TAG, "Wi-Fi Direct group lost ($reason); recreating it")
         recovering = true
         recoveryAttempt = 0
@@ -285,6 +295,18 @@ class ShareService : Service() {
         ShareState.update { it.copy(recovering = true) }
         updateNotification()
         recoverGroup()
+    }
+
+    /**
+     * Stops at once with the real reason when the user turned Wi-Fi or Location off, instead of
+     * retrying for minutes. A Wi-Fi that is only disconnected for now is what we wait out.
+     */
+    private fun failIfCannotRecover(): Boolean {
+        val code = AppActions.sharePreflightError(this)
+            ?.takeIf { it != ErrorCodes.WIFI_NOT_CONNECTED }
+            ?: return false
+        fail(code, "Can't recreate the group")
+        return true
     }
 
     /** Same name, password and band as before, so the other phones rejoin by themselves. */
@@ -301,6 +323,7 @@ class ShareService : Service() {
     }
 
     private fun retryRecovery(code: String, detail: String?) {
+        if (failIfCannotRecover()) return
         if (recoveryAttempt >= MAX_RECOVERY_ATTEMPTS) {
             fail(code, detail)
             return
@@ -408,6 +431,9 @@ class ShareService : Service() {
         stopSelf()
     }
 
+    /** The Wi-Fi is there and Android's internet check passed. */
+    private fun hasInternet(): Boolean = upstreamNetwork != null && upstreamValidated
+
     private fun upstreamDnsServer(): InetAddress? {
         val network = upstreamNetwork ?: return null
         return getSystemService(ConnectivityManager::class.java)
@@ -419,6 +445,8 @@ class ShareService : Service() {
     private fun registerWifiCallback() {
         upstreamNetwork = NetworkUtils.findWifiNetwork(this)
         val cm = getSystemService(ConnectivityManager::class.java) ?: return
+        upstreamValidated = upstreamNetwork?.let { cm.getNetworkCapabilities(it) }
+            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) == true
         val request = NetworkRequest.Builder()
             .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)

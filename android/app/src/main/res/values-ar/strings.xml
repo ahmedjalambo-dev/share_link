@@ -19,6 +19,9 @@
     <string name="client_notif_connect">اتصال</string>
     <string name="client_notif_disconnected">انقطع الاتصال</string>
     <string name="client_notif_disconnected_text">اضغط اتصال لاستقبال الإنترنت مجددًا.</string>
+    <string name="client_notif_blocked">أوقف الهاتف المُشارِك الإنترنت عن هذا الهاتف</string>
+    <string name="client_notif_gave_up">تعذّر الوصول للهاتف المُشارِك، فرجع هذا الهاتف لإنترنته العادي.</string>
+    <string name="client_notif_vpn_revoked">شغّلت VPN آخر، فتوقف وضع الاستقبال.</string>
     <string name="tile_label">شير لينك</string>
     <string name="tile_share">مشاركة الواي فاي</string>
     <string name="tile_connect">استقبال الإنترنت</string>

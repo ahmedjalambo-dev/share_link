@@ -581,4 +581,40 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get networkRecovering =>
       'Restarting the network… The other phones rejoin by themselves.';
+
+  @override
+  String get sectionAlerts => 'Alerts';
+
+  @override
+  String get noInternetAlert => 'Alert when there\'s no internet';
+
+  @override
+  String get noInternetAlertBody =>
+      'Shows an alert when the Wi-Fi has no internet.';
+
+  @override
+  String get tellBlocked => 'Tell disconnected devices';
+
+  @override
+  String get tellBlockedBody =>
+      'A phone in Receive mode sees that you disconnected it.';
+
+  @override
+  String get noInternetHere =>
+      'The Wi-Fi is connected but has no internet right now.';
+
+  @override
+  String get phoneANoInternet => 'The sharing phone has no internet right now.';
+
+  @override
+  String get clientBlocked =>
+      'The sharing phone cut off this phone\'s internet.';
+
+  @override
+  String get errorGaveUp =>
+      'Couldn\'t reach the sharing phone for 10 minutes, so this phone is back on its own internet.';
+
+  @override
+  String get errorVpnRevoked =>
+      'Another VPN took over, so Receive mode stopped.';
 }

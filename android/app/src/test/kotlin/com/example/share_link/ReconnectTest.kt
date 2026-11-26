@@ -30,7 +30,7 @@ class ReconnectTest {
     @Test
     fun infoJson_roundTrip() {
         val json = buildInfoJson("DIRECT-ab-ShareLink")
-        assertEquals("""{"ssid":"DIRECT-ab-ShareLink","v":1}""", json)
+        assertEquals("""{"ssid":"DIRECT-ab-ShareLink","v":2,"internet":true}""", json)
         assertEquals("DIRECT-ab-ShareLink", parseInfoSsid(json))
     }
 

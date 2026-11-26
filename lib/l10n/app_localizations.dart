@@ -1147,6 +1147,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Restarting the network… The other phones rejoin by themselves.'**
   String get networkRecovering;
+
+  /// No description provided for @sectionAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get sectionAlerts;
+
+  /// No description provided for @noInternetAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert when there\'s no internet'**
+  String get noInternetAlert;
+
+  /// No description provided for @noInternetAlertBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows an alert when the Wi-Fi has no internet.'**
+  String get noInternetAlertBody;
+
+  /// No description provided for @tellBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell disconnected devices'**
+  String get tellBlocked;
+
+  /// No description provided for @tellBlockedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A phone in Receive mode sees that you disconnected it.'**
+  String get tellBlockedBody;
+
+  /// No description provided for @noInternetHere.
+  ///
+  /// In en, this message translates to:
+  /// **'The Wi-Fi is connected but has no internet right now.'**
+  String get noInternetHere;
+
+  /// No description provided for @phoneANoInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'The sharing phone has no internet right now.'**
+  String get phoneANoInternet;
+
+  /// No description provided for @clientBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'The sharing phone cut off this phone\'s internet.'**
+  String get clientBlocked;
+
+  /// No description provided for @errorGaveUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the sharing phone for 10 minutes, so this phone is back on its own internet.'**
+  String get errorGaveUp;
+
+  /// No description provided for @errorVpnRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Another VPN took over, so Receive mode stopped.'**
+  String get errorVpnRevoked;
 }
 
 class _AppLocalizationsDelegate

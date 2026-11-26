@@ -29,6 +29,34 @@ class WifiBandTest {
     }
 
     @Test
+    fun groupFrequencyFor_staysOnTheWifiChannelUnlessTheOtherBandWasChosen() {
+        assertEquals(2437, groupFrequencyFor("auto", 2437))
+        assertEquals(5180, groupFrequencyFor("auto", 5180))
+        assertEquals(5180, groupFrequencyFor("5", 5180))
+        assertEquals(2437, groupFrequencyFor("2.4", 2437))
+        // The user asked for the other band on purpose: keep it (the app warns about the cost).
+        assertEquals(0, groupFrequencyFor("5", 2437))
+        assertEquals(0, groupFrequencyFor("2.4", 5180))
+        assertEquals(0, groupFrequencyFor("auto", 0))
+    }
+
+    @Test
+    fun channelMismatch_onlyWhenBothAreKnownAndDiffer() {
+        assertTrue(channelMismatch(2437, 5180))
+        assertTrue(channelMismatch(2412, 2437))
+        assertFalse(channelMismatch(2437, 2437))
+        assertFalse(channelMismatch(0, 5180))
+        assertFalse(channelMismatch(2437, 0))
+    }
+
+    @Test
+    fun directSubnet_detectsARouterOn192_168_49() {
+        assertTrue(NetworkUtils.isDirectSubnetAddress("192.168.49.23"))
+        assertFalse(NetworkUtils.isDirectSubnetAddress("192.168.1.23"))
+        assertFalse(NetworkUtils.isDirectSubnetAddress(null))
+    }
+
+    @Test
     fun configBand_unknownMeansAuto() {
         assertEquals(WifiP2pConfig.GROUP_OWNER_BAND_2GHZ, configBand("2.4"))
         assertEquals(WifiP2pConfig.GROUP_OWNER_BAND_5GHZ, configBand("5"))

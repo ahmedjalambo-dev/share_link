@@ -40,11 +40,16 @@ class WifiDirectController(context: Context) {
     /** Called if the Wi-Fi Direct framework disconnects while a group is active. */
     var onChannelLost: (() -> Unit)? = null
 
-    /** [band] is a saved choice ("auto", "2.4" or "5"); it only applies from Android 10. */
+    /**
+     * [band] is a saved choice ("auto", "2.4" or "5"); it only applies from Android 10.
+     * [wifiFrequencyMhz] is the channel of the Wi-Fi being shared (0 if unknown): the group is put
+     * on that same channel when the band allows it (see [groupFrequencyFor]).
+     */
     fun createGroup(
         networkName: String,
         passphrase: String,
         band: String,
+        wifiFrequencyMhz: Int,
         onResult: (Result<GroupDetails>) -> Unit,
     ) {
         val mgr = manager
@@ -70,14 +75,15 @@ class WifiDirectController(context: Context) {
         created = ch
         channel = ch
 
+        val frequency = groupFrequencyFor(band, wifiFrequencyMhz)
         // Remove any leftover group first (e.g. from a crash); failure just means there was none.
         mgr.removeGroup(ch, object : WifiP2pManager.ActionListener {
             override fun onSuccess() {
-                handler.postDelayed({ attemptCreate(mgr, ch, networkName, passphrase, band, 1, onResult) }, 500)
+                handler.postDelayed({ attemptCreate(mgr, ch, networkName, passphrase, band, frequency, 1, onResult) }, 500)
             }
 
             override fun onFailure(reason: Int) {
-                attemptCreate(mgr, ch, networkName, passphrase, band, 1, onResult)
+                attemptCreate(mgr, ch, networkName, passphrase, band, frequency, 1, onResult)
             }
         })
     }
@@ -85,18 +91,21 @@ class WifiDirectController(context: Context) {
     /**
      * Asks Android whether our group still exists with us as its owner. Some phones drop the group
      * when their own Wi-Fi disconnects or changes channel, without telling the app.
-     * [expectedName] is null below Android 10, where the name is random.
+     * [expectedName] is null below Android 10, where the name is random. Also reports the group's
+     * channel frequency (0 when unknown, below Android 11).
      */
-    fun checkGroup(expectedName: String?, onResult: (Boolean) -> Unit) {
+    fun checkGroup(expectedName: String?, onResult: (ok: Boolean, frequencyMhz: Int) -> Unit) {
         val mgr = manager
         val ch = channel
         if (mgr == null || ch == null) {
-            onResult(false)
+            onResult(false, 0)
             return
         }
         mgr.requestGroupInfo(ch) { group ->
             if (cancelled) return@requestGroupInfo
-            onResult(isOurGroup(group != null, group?.isGroupOwner == true, group?.networkName, expectedName))
+            val ok = isOurGroup(group != null, group?.isGroupOwner == true, group?.networkName, expectedName)
+            val frequency = if (group != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) group.frequency else 0
+            onResult(ok, frequency)
         }
     }
 
@@ -125,6 +134,8 @@ class WifiDirectController(context: Context) {
         networkName: String,
         passphrase: String,
         band: String,
+        /** Exact channel to use (the shared Wi-Fi's); 0 asks for [band] instead. */
+        frequency: Int,
         attempt: Int,
         onResult: (Result<GroupDetails>) -> Unit,
         bandFallback: Boolean = false,
@@ -132,7 +143,7 @@ class WifiDirectController(context: Context) {
         if (cancelled) return
         val listener = object : WifiP2pManager.ActionListener {
             override fun onSuccess() {
-                Log.i(TAG, "createGroup succeeded (band=$band)")
+                Log.i(TAG, "createGroup succeeded (band=$band frequency=$frequency)")
                 if (cancelled) {
                     mgr.removeGroup(ch, null)
                     return
@@ -143,20 +154,22 @@ class WifiDirectController(context: Context) {
             }
 
             override fun onFailure(reason: Int) {
-                Log.w(TAG, "createGroup failed: reason=$reason attempt=$attempt band=$band")
+                Log.w(TAG, "createGroup failed: reason=$reason attempt=$attempt band=$band frequency=$frequency")
                 if (reason == WifiP2pManager.BUSY && attempt < MAX_CREATE_ATTEMPTS) {
                     handler.postDelayed(
-                        { attemptCreate(mgr, ch, networkName, passphrase, band, attempt + 1, onResult, bandFallback) },
+                        {
+                            attemptCreate(
+                                mgr, ch, networkName, passphrase, band, frequency, attempt + 1, onResult, bandFallback,
+                            )
+                        },
                         RETRY_DELAY_MS,
                     )
                     return
                 }
-                // Usually the chip can't use that band next to the current Wi-Fi; let Android pick.
-                if (band != BAND_AUTO && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    handler.postDelayed(
-                        { attemptCreate(mgr, ch, networkName, passphrase, BAND_AUTO, 1, onResult, bandFallback = true) },
-                        RETRY_DELAY_MS,
-                    )
+                // The chip couldn't use that channel or band (e.g. a radar channel, or a band it
+                // can't run next to the current Wi-Fi); let Android pick.
+                if ((frequency > 0 || band != BAND_AUTO) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    fallBackToAuto(mgr, ch, networkName, passphrase, band, onResult)
                     return
                 }
                 onResult(Result.failure(GroupException(codeForReason(reason), "createGroup failed (reason $reason)")))
@@ -169,16 +182,46 @@ class WifiDirectController(context: Context) {
                     .setNetworkName(networkName)
                     .setPassphrase(passphrase)
                     .enablePersistentMode(false)
-                    .setGroupOperatingBand(configBand(band))
+                    .apply {
+                        // Same channel as the shared Wi-Fi, so the one radio doesn't keep
+                        // hopping between two channels (that slows this phone's own internet).
+                        if (frequency > 0) setGroupOperatingFrequency(frequency) else setGroupOperatingBand(configBand(band))
+                    }
                     .build()
             } catch (e: IllegalArgumentException) {
-                onResult(Result.failure(GroupException(ErrorCodes.INVALID_SETTINGS, e.message ?: "Invalid config")))
+                if (frequency > 0) {
+                    attemptCreate(mgr, ch, networkName, passphrase, band, 0, attempt, onResult, bandFallback)
+                } else {
+                    onResult(Result.failure(GroupException(ErrorCodes.INVALID_SETTINGS, e.message ?: "Invalid config")))
+                }
                 return
             }
             mgr.createGroup(ch, config, listener)
         } else {
             mgr.createGroup(ch, listener)
         }
+    }
+
+    /**
+     * Last try with an automatic band. Only a specific band the user chose counts as a fallback
+     * ([GroupDetails.bandFallback]); a missed channel with "auto" is still what they asked for.
+     */
+    private fun fallBackToAuto(
+        mgr: WifiP2pManager,
+        ch: WifiP2pManager.Channel,
+        networkName: String,
+        passphrase: String,
+        band: String,
+        onResult: (Result<GroupDetails>) -> Unit,
+    ) {
+        handler.postDelayed(
+            {
+                attemptCreate(
+                    mgr, ch, networkName, passphrase, BAND_AUTO, 0, 1, onResult, bandFallback = band != BAND_AUTO,
+                )
+            },
+            RETRY_DELAY_MS,
+        )
     }
 
     /** Group info can be null for a short while after createGroup succeeds, so poll a few times. */

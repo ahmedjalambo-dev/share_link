@@ -290,7 +290,11 @@ class _SettingsScreenState extends State<SettingsScreen>
                 ListTile(
                   leading: const Icon(Icons.network_wifi),
                   title: Text(l.band),
-                  subtitle: Text(_bands(l)[settings.band] ?? ''),
+                  subtitle: Text(
+                    settings.band == 'auto'
+                        ? _bands(l)[settings.band] ?? ''
+                        : '${_bands(l)[settings.band] ?? ''}\n${l.bandOtherHint}',
+                  ),
                   enabled: settings.customNetworkSupported,
                   onTap: _pickBand,
                 ),

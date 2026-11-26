@@ -169,8 +169,17 @@ class _SharePanelState extends State<SharePanel> {
             if (_status.recovering) ...[
               const _RecoveringBanner(),
               const SizedBox(height: 12),
+            ] else if (_status.channelMismatch) ...[
+              _BandBanner(
+                message: l.channelMismatch,
+                onOpenSettings: widget.onOpenSettings,
+              ),
+              const SizedBox(height: 12),
             ] else if (_status.bandNotHonored) ...[
-              _BandBanner(onOpenSettings: widget.onOpenSettings),
+              _BandBanner(
+                message: l.bandNotHonored,
+                onOpenSettings: widget.onOpenSettings,
+              ),
               const SizedBox(height: 12),
             ],
             NetworkCard(
@@ -266,11 +275,12 @@ class _RecoveringBanner extends StatelessWidget {
   }
 }
 
-/// The band chosen in Settings couldn't be used, usually because the Wi-Fi chip
-/// has to stay on the band of the Wi-Fi being shared.
+/// A band or channel problem with a way to Settings: the chosen band couldn't
+/// be used, or the network sits on another channel than the shared Wi-Fi.
 class _BandBanner extends StatelessWidget {
-  const _BandBanner({required this.onOpenSettings});
+  const _BandBanner({required this.message, required this.onOpenSettings});
 
+  final String message;
   final VoidCallback onOpenSettings;
 
   @override
@@ -279,7 +289,7 @@ class _BandBanner extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return StatusBanner(
       icon: Icons.network_wifi,
-      message: l.bandNotHonored,
+      message: message,
       background: scheme.secondaryContainer,
       foreground: scheme.onSecondaryContainer,
       actionLabel: l.settingsAction,

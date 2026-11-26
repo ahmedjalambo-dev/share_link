@@ -617,4 +617,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorVpnRevoked =>
       'Another VPN took over, so Receive mode stopped.';
+
+  @override
+  String get channelMismatch =>
+      'The network is on another channel than your Wi-Fi, which slows this phone\'s internet.';
+
+  @override
+  String get bandOtherHint =>
+      'May slow this phone\'s internet if your Wi-Fi is on the other band.';
+
+  @override
+  String get errorSubnetConflict =>
+      'Your Wi-Fi uses the same addresses as Wi-Fi Direct (192.168.49.x), so it can\'t be shared. Change the router\'s addresses.';
 }

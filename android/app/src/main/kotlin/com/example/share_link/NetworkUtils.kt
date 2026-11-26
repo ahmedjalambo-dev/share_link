@@ -33,8 +33,11 @@ object NetworkUtils {
     }
 
     fun isOnDirectSubnet(link: LinkProperties): Boolean = link.linkAddresses.any {
-        it.address is Inet4Address && it.address.hostAddress?.startsWith(DIRECT_SUBNET_PREFIX) == true
+        it.address is Inet4Address && isDirectSubnetAddress(it.address.hostAddress)
     }
+
+    /** The Wi-Fi Direct subnet (192.168.49.x), which Android always gives the group. */
+    fun isDirectSubnetAddress(address: String?): Boolean = address?.startsWith(DIRECT_SUBNET_PREFIX) == true
 
     /** Phone A is the gateway of its Wi-Fi Direct group; fall back to Android's fixed owner address. */
     fun phoneAAddress(link: LinkProperties): InetAddress =

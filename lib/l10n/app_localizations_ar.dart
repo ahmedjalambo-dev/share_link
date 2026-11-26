@@ -608,4 +608,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorVpnRevoked => 'شغّلت VPN آخر، فتوقف وضع الاستقبال.';
+
+  @override
+  String get channelMismatch =>
+      'الشبكة المُشارَكة على قناة غير قناة الواي فاي، وهذا يُضعف الإنترنت على هذا الهاتف.';
+
+  @override
+  String get bandOtherHint =>
+      'قد يُضعف إنترنت هذا الهاتف إذا كان الواي فاي على النطاق الآخر.';
+
+  @override
+  String get errorSubnetConflict =>
+      'شبكة الواي فاي تستخدم نفس عناوين Wi-Fi Direct (192.168.49.x)، فلا يمكن مشاركتها. غيّر عناوين الراوتر.';
 }

@@ -15,6 +15,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Handler
@@ -177,7 +178,7 @@ class ShareService : Service() {
         sharePassphrase = settings.passphrase
         shareBand = settings.band
         val band = shareBand
-        wifiDirect.createGroup(shareName, sharePassphrase, band) { result ->
+        wifiDirect.createGroup(shareName, sharePassphrase, band, wifiFrequency()) { result ->
             result.onSuccess { group -> startProxy(group, band) }
                 .onFailure { e ->
                     fail((e as? WifiDirectController.GroupException)?.code ?: ErrorCodes.P2P_ERROR, e.message)
@@ -239,6 +240,7 @@ class ShareService : Service() {
         val band = bandOfFrequency(group.frequencyMhz)
         ShareState.update {
             it.copy(
+                channelMismatch = channelMismatch(wifiFrequency(), group.frequencyMhz),
                 whatsAppProxy = whatsApp,
                 status = ShareStatus.RUNNING,
                 ssid = group.ssid,
@@ -271,11 +273,14 @@ class ShareService : Service() {
         if (destroyed || recovering || proxy == null) return
         // Below Android 10 the name is random, so only the group's existence is checked.
         val expected = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ShareState.current.ssid else null
-        wifiDirect.checkGroup(expected) { ok ->
+        wifiDirect.checkGroup(expected) { ok, groupMhz ->
             if (destroyed || recovering) return@checkGroup
             when {
                 ok -> {
                     groupMisses = 0
+                    // The router may change channel mid-session.
+                    val mismatch = channelMismatch(wifiFrequency(), groupMhz)
+                    ShareState.update { it.copy(channelMismatch = mismatch) }
                     scheduleGroupCheck()
                 }
                 ++groupMisses < GROUP_MISSES_BEFORE_LOST -> scheduleGroupCheck(GROUP_RECHECK_MS)
@@ -313,7 +318,7 @@ class ShareService : Service() {
     private fun recoverGroup() {
         if (destroyed) return
         recoveryAttempt++
-        wifiDirect.createGroup(shareName, sharePassphrase, shareBand) { result ->
+        wifiDirect.createGroup(shareName, sharePassphrase, shareBand, wifiFrequency()) { result ->
             if (destroyed) return@createGroup
             result.onSuccess { group -> rebindProxy(group) }
                 .onFailure { e ->
@@ -365,6 +370,7 @@ class ShareService : Service() {
         ShareState.update {
             it.copy(
                 recovering = false,
+                channelMismatch = channelMismatch(wifiFrequency(), group.frequencyMhz),
                 ssid = group.ssid,
                 passphrase = group.passphrase,
                 ownerIp = group.ownerIp,
@@ -429,6 +435,17 @@ class ShareService : Service() {
         Log.e(TAG, "Sharing failed: $code ($detail)")
         ShareState.update { ShareSnapshot(status = ShareStatus.ERROR, errorCode = code, errorDetail = detail) }
         stopSelf()
+    }
+
+    /** Channel frequency (MHz) of the Wi-Fi being shared, or 0 if unknown. */
+    @Suppress("DEPRECATION")
+    private fun wifiFrequency(): Int {
+        val wifi = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        wifi.connectionInfo?.frequency?.takeIf { it > 0 }?.let { return it }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return 0
+        val network = upstreamNetwork ?: return 0
+        val info = getSystemService(ConnectivityManager::class.java)?.getNetworkCapabilities(network)?.transportInfo
+        return (info as? WifiInfo)?.frequency?.takeIf { it > 0 } ?: 0
     }
 
     /** The Wi-Fi is there and Android's internet check passed. */

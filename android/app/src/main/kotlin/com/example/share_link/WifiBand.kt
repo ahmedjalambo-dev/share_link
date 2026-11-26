@@ -25,6 +25,21 @@ internal fun bandOfFrequency(mhz: Int): String? = when {
 }
 
 /**
+ * The exact frequency to create the group on, or 0 to ask for [band] instead. Most phones have
+ * one Wi-Fi radio: a group on another channel than the shared Wi-Fi makes it hop between the
+ * two, which slows this phone's own internet. So stay on the Wi-Fi's channel, unless the user
+ * chose the other band on purpose.
+ */
+internal fun groupFrequencyFor(band: String, wifiMhz: Int): Int {
+    val wifiBand = bandOfFrequency(wifiMhz) ?: return 0
+    return if (band == BAND_AUTO || band == wifiBand) wifiMhz else 0
+}
+
+/** The group and the shared Wi-Fi are on different channels (both known). */
+internal fun channelMismatch(wifiMhz: Int, groupMhz: Int): Boolean =
+    wifiMhz > 0 && groupMhz > 0 && wifiMhz != groupMhz
+
+/**
  * False when a specific band was asked for but the group isn't on it: creating it needed the
  * automatic fallback, or Android quietly picked another band (usually the shared Wi-Fi's).
  */

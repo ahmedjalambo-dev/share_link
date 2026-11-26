@@ -170,6 +170,11 @@ void main() {
       expect(status.bandNotHonored, isTrue);
       expect(ShareStatus.fromMap({}).band, isNull);
       expect(ShareStatus.fromMap({}).bandNotHonored, isFalse);
+      expect(
+        ShareStatus.fromMap({'channelMismatch': true}).channelMismatch,
+        isTrue,
+      );
+      expect(ShareStatus.fromMap({}).channelMismatch, isFalse);
       expect(ShareStatus.fromMap({'recovering': true}).recovering, isTrue);
       expect(ShareStatus.fromMap({}).recovering, isFalse);
       expect(formatBand('5'), '5 GHz');
@@ -193,6 +198,7 @@ void main() {
     final l = lookupAppLocalizations(const Locale('en'));
     expect(shareErrorMessage(l, 'gave_up'), l.errorGaveUp);
     expect(shareErrorMessage(l, 'vpn_revoked'), l.errorVpnRevoked);
+    expect(shareErrorMessage(l, 'wifi_subnet_conflict'), l.errorSubnetConflict);
   });
 
   test('Statuses report missing internet and blocking', () {

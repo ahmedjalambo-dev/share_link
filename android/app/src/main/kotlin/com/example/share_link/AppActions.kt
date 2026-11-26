@@ -49,7 +49,11 @@ object AppActions {
         }
         if (!hasRequiredPermissions(context)) return ErrorCodes.PERMISSION_DENIED
         if (!wifiManager(context).isWifiEnabled) return ErrorCodes.WIFI_DISABLED
-        if (NetworkUtils.findWifiNetwork(context) == null) return ErrorCodes.WIFI_NOT_CONNECTED
+        val wifi = NetworkUtils.findWifiNetwork(context) ?: return ErrorCodes.WIFI_NOT_CONNECTED
+        // A router on 192.168.49.x clashes with the group's addresses and this phone's internet
+        // would stop as soon as sharing starts.
+        val link = context.getSystemService(ConnectivityManager::class.java)?.getLinkProperties(wifi)
+        if (link != null && NetworkUtils.isOnDirectSubnet(link)) return ErrorCodes.WIFI_SUBNET_CONFLICT
         if (locationRequiredButOff(context)) return ErrorCodes.LOCATION_DISABLED
         return null
     }

@@ -1207,6 +1207,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Another VPN took over, so Receive mode stopped.'**
   String get errorVpnRevoked;
+
+  /// No description provided for @channelMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The network is on another channel than your Wi-Fi, which slows this phone\'s internet.'**
+  String get channelMismatch;
+
+  /// No description provided for @bandOtherHint.
+  ///
+  /// In en, this message translates to:
+  /// **'May slow this phone\'s internet if your Wi-Fi is on the other band.'**
+  String get bandOtherHint;
+
+  /// No description provided for @errorSubnetConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Wi-Fi uses the same addresses as Wi-Fi Direct (192.168.49.x), so it can\'t be shared. Change the router\'s addresses.'**
+  String get errorSubnetConflict;
 }
 
 class _AppLocalizationsDelegate

@@ -13,6 +13,8 @@ object ErrorCodes {
     const val SERVICE_FAILED = "service_failed"
     const val PORT_IN_USE = "port_in_use"
     const val PROXY_FAILED = "proxy_failed"
+    /** The Wi-Fi itself uses 192.168.49.x, the addresses Wi-Fi Direct always takes. */
+    const val WIFI_SUBNET_CONFLICT = "wifi_subnet_conflict"
 
     // Settings validation (ShareSettings.save)
     const val INVALID_NAME = "invalid_name"
@@ -56,6 +58,8 @@ data class ShareSnapshot(
     val band: String? = null,
     /** A specific band was chosen in Settings but the group isn't on it. */
     val bandNotHonored: Boolean = false,
+    /** The group and the shared Wi-Fi are on different channels, which slows this phone's internet. */
+    val channelMismatch: Boolean = false,
     /** Every device that used the proxy this session (see [DeviceRegistry]). */
     val devices: List<DeviceSnapshot> = emptyList(),
 ) {
@@ -79,6 +83,7 @@ data class ShareSnapshot(
         "recovering" to recovering,
         "band" to band,
         "bandNotHonored" to bandNotHonored,
+        "channelMismatch" to channelMismatch,
         "devices" to devices.map { it.toMap() },
     )
 }

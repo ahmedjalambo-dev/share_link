@@ -13,6 +13,7 @@ abstract final class ErrorCode {
   static const serviceFailed = 'service_failed';
   static const portInUse = 'port_in_use';
   static const proxyFailed = 'proxy_failed';
+  static const wifiSubnetConflict = 'wifi_subnet_conflict';
 
   // Client mode (Phone B)
   static const vpnDenied = 'vpn_denied';
@@ -44,6 +45,7 @@ String shareErrorMessage(AppLocalizations l, String? code) => switch (code) {
   ErrorCode.serviceFailed => l.errorServiceFailed,
   ErrorCode.portInUse => l.errorPortInUse,
   ErrorCode.proxyFailed => l.errorProxyFailed,
+  ErrorCode.wifiSubnetConflict => l.errorSubnetConflict,
   ErrorCode.vpnDenied => l.errorVpnDenied,
   ErrorCode.notOnDirectNetwork => l.errorNotOnDirect,
   ErrorCode.hostUnreachable => l.errorHostUnreachable,

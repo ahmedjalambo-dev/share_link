@@ -22,6 +22,7 @@ class ShareStatus {
     this.recovering = false,
     this.band,
     this.bandNotHonored = false,
+    this.channelMismatch = false,
     this.devices = const [],
   });
 
@@ -50,6 +51,7 @@ class ShareStatus {
       recovering: map['recovering'] == true,
       band: map['band'] as String?,
       bandNotHonored: map['bandNotHonored'] == true,
+      channelMismatch: map['channelMismatch'] == true,
       devices: [
         for (final device in map['devices'] as List<Object?>? ?? const [])
           if (device is Map) ConnectedDevice.fromMap(device),
@@ -95,6 +97,10 @@ class ShareStatus {
   /// A band was chosen in Settings but the network isn't on it (the phone's
   /// Wi-Fi chip usually has to follow the Wi-Fi it's sharing).
   final bool bandNotHonored;
+
+  /// The network and this phone's Wi-Fi are on different channels, so the one
+  /// Wi-Fi radio keeps switching between them and this phone's internet slows down.
+  final bool channelMismatch;
 
   /// Every device that used the internet this session, active ones first.
   final List<ConnectedDevice> devices;
